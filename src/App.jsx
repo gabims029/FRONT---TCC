@@ -1,7 +1,6 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Login from "./pages/Login";
-/import ProtectedRoute from "./components/ProtectedRoute";
 import HomeAdm from "./pages/HomeAdm";
 //import Sala from "./pages/Sala"
 import DefaultLayout from "./components/DefaultLayout";

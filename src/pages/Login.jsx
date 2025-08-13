@@ -34,7 +34,7 @@ function Login() {
         localStorage.setItem("authenticated", true);
         localStorage.setItem("token", response.data.token);
         localStorage.setItem("id_usuario", response.data.user.id_usuario);
-        // navigate("home/");
+        navigate("home/");
       },
       (error) => {
         console.log(error);

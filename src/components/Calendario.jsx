@@ -37,7 +37,7 @@ function Calendario() {
     <Box
       sx={{
         width: 300,
-        border: "1px solid #f0f0f0",
+        border: "1px solid #B92626",
         borderRadius: 2,
         p: 2,
         bgcolor: "white",
@@ -75,7 +75,7 @@ function Calendario() {
       </Grid>
 
       {/* Dias do mês */}
-      <Grid container>
+      <Grid container sx={{minHeight: 200}}>
         {days.map((day, index) => (
           <Grid item xs={12 / 7} key={index}>
             <Box

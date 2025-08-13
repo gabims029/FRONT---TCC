@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, Typography, TextField, Button } from "@mui/material";
+import { Box, Typography, TextField, Button, MenuItem } from "@mui/material";
 import DefaultLayout from "../components/DefaultLayout";
 import api from "../axios/axios";
 
@@ -72,7 +72,7 @@ function Cadastro() {
             CADASTRAR USUÁRIO
           </Typography>
 
-          {["nome", "email", "cpf", "senha", "tipo"].map((field) => (
+          {["nome", "email", "cpf", "senha"].map((field) => (
             <TextField
               key={field}
               fullWidth
@@ -88,6 +88,24 @@ function Cadastro() {
               }}
             />
           ))}
+
+          {/* Campo tipo com seleção */}
+          <TextField
+            select
+            fullWidth
+            name="tipo"
+            label="TIPO"
+            value={user.tipo}
+            onChange={handleChange}
+            sx={{
+              marginBottom: 2,
+              backgroundColor: "white",
+              borderRadius: 1,
+            }}
+          >
+            <MenuItem value="Admin">Admin</MenuItem>
+            <MenuItem value="Comum">Comum</MenuItem>
+          </TextField>
 
           <Button
             type="submit"

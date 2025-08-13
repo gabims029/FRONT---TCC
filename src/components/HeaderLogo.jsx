@@ -18,10 +18,12 @@ function Header() {
   };
 
   const menuItems = [
-    { label: "HOME", path: "/" }, //mudar para /home
+    { label: "HOME", path: "/home" }, 
     { label: "PERFIL", path: "/profile" },
-    { label: "MINHAS RESERVAS", path: "/minhasReservas" },
+    { label: "CONSULTAR RESERVAS", path: "/minhasReservas" },
     { label: "CADASTRAR USUÁRIO", path: "/cadastro" },
+    { label: "CRIAR SALA", path: "/criarsala" },
+    { label: "VISUALIZAR USUÁRIOS", path: "/users" },
     { label: "SAIR", path: "/" },
   ];
 

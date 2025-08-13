@@ -31,7 +31,7 @@ function OpcaoBotao({ letra }) {
   );
 }
 
-export default function HomeAdm() {
+export default function HomeUser() {
   return (
     <Box
       sx={{

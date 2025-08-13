@@ -17,7 +17,8 @@ api.interceptors.request.use(
 );
 
 const sheets = {
-  postCadastro: (user) => api.post("/user/", user),
+    postLogin: (user) => api.post("/user/login", user),
+    postCadastro: (user) => api.post("/user/", user),
 };
 
 export default sheets;

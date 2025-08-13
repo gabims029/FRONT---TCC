@@ -6,7 +6,7 @@ import HomeAdm from "./pages/HomeAdm";
 import DefaultLayout from "./components/DefaultLayout";
 import Cadastro from "./pages/Cadastro";
 //import MinhasReservas from "./pages/ShowReservas"
-//import Profile from "./pages/Profile"
+import Perfil from "./pages/Perfil"
 
 function App() {
   return (
@@ -26,6 +26,14 @@ function App() {
           element={
             <DefaultLayout>
               <Cadastro />
+            </DefaultLayout>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <DefaultLayout>
+              <Perfil/>
             </DefaultLayout>
           }
         />

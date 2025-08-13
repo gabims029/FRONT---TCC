@@ -103,7 +103,7 @@ function Cadastro() {
               borderRadius: 1,
             }}
           >
-            <MenuItem value="Admin">Admin</MenuItem>
+            <MenuItem value="Admin">Administrador</MenuItem>
             <MenuItem value="Comum">Comum</MenuItem>
           </TextField>
 

@@ -18,9 +18,10 @@ function Header() {
   };
 
   const menuItems = [
-    { label: "HOME", path: "/home" },
+    { label: "HOME", path: "/" }, //mudar para /home
     { label: "PERFIL", path: "/profile" },
     { label: "MINHAS RESERVAS", path: "/minhasReservas" },
+    { label: "CADASTRAR USUÁRIO", path: "/cadastro" },
     { label: "SAIR", path: "/" },
   ];
 

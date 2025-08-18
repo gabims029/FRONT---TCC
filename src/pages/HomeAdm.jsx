@@ -2,6 +2,7 @@ import { Box, Container, Typography, Button } from "@mui/material";
 import HeaderLogo from "../components/HeaderLogo";
 import Footer from "../components/Footer";
 import Calendario from "../components/Calendario";
+import api from "../axios/axios";
 
 function OpcaoBotao({ letra }) {
   return (

@@ -7,6 +7,7 @@ import DefaultLayout from "./components/DefaultLayout";
 import Cadastro from "./pages/Cadastro";
 //import MinhasReservas from "./pages/ShowReservas"
 import Perfil from "./pages/Perfil"
+import ModalEditarPerfil from "./components/ModalEditarPerfil"
 
 function App() {
   return (
@@ -33,7 +34,7 @@ function App() {
           path="/profile"
           element={
             <DefaultLayout>
-              <Perfil/>
+              <ModalEditarPerfil/>
             </DefaultLayout>
           }
         />

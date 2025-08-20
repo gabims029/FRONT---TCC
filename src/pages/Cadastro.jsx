@@ -74,17 +74,17 @@ function Cadastro() {
 
           {["nome", "email", "cpf", "senha"].map((field) => (
             <TextField
-              key={field}
+              key={field} 
               fullWidth
-              name={field}
-              label={field.toUpperCase()}
-              type={field === "senha" ? "password" : "text"}
-              value={user[field]}
-              onChange={handleChange}
+              name={field} // usado pelo handleChange para atualizar o estado
+              label={field.toUpperCase()} // transforma o nome do campo em label
+              type={field === "senha" ? "password" : "text"} // esconde a senha 
+              value={user[field]} // valor controlado pelo estado
+              onChange={handleChange} // atualiza o estado 
               sx={{
-                marginBottom: 2,
-                backgroundColor: "white",
-                borderRadius: 1,
+                marginBottom: 2, 
+                backgroundColor: "white", 
+                borderRadius: 1, 
               }}
             />
           ))}

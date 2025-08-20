@@ -7,6 +7,7 @@ import DefaultLayout from "./components/DefaultLayout";
 import Cadastro from "./pages/Cadastro";
 //import MinhasReservas from "./pages/ShowReservas"
 import Perfil from "./pages/Perfil"
+import SalasPage from "./pages/Salas";
 
 function App() {
   return (
@@ -34,6 +35,14 @@ function App() {
           element={
             <DefaultLayout>
               <Perfil/>
+            </DefaultLayout>
+          }
+        />
+        <Route
+          path="/salas"
+          element={
+            <DefaultLayout>
+              <SalasPage/>
             </DefaultLayout>
           }
         />

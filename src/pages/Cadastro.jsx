@@ -12,7 +12,8 @@ function Cadastro() {
     tipo: "",
   });
 
-  const handleChange = (event) => {
+  //atualizar o estado de um objeto (captura as mudanças)
+  const onChange = (event) => {
     const { name, value } = event.target;
     setUser({ ...user, [name]: value });
   };
@@ -72,22 +73,67 @@ function Cadastro() {
             CADASTRAR USUÁRIO
           </Typography>
 
-          {["nome", "email", "cpf", "senha"].map((field) => (
-            <TextField
-              key={field} 
-              fullWidth
-              name={field} // usado pelo handleChange para atualizar o estado
-              label={field.toUpperCase()} // transforma o nome do campo em label
-              type={field === "senha" ? "password" : "text"} // esconde a senha 
-              value={user[field]} // valor controlado pelo estado
-              onChange={handleChange} // atualiza o estado 
-              sx={{
-                marginBottom: 2, 
-                backgroundColor: "white", 
-                borderRadius: 1, 
-              }}
-            />
-          ))}
+          <TextField
+            required
+            fullWidth
+            id="nome"
+            placeholder="Nome"
+            name="nome"
+            margin="dense"
+            value={user.nome}
+            onChange={onChange} //detectar mudanças
+            sx={{
+              marginBottom: 2,
+              backgroundColor: "white",
+              borderRadius: 1,
+            }}
+          />
+          <TextField
+            required
+            fullWidth
+            id="email"
+            placeholder="Email"
+            name="email"
+            margin="dense"
+            value={user.email}
+            onChange={onChange}
+            sx={{
+              marginBottom: 2,
+              backgroundColor: "white",
+              borderRadius: 1,
+            }}
+          />
+          <TextField
+            required
+            fullWidth
+            id="cpf"
+            placeholder="CPF"
+            name="cpf"
+            margin="dense"
+            value={user.cpf}
+            onChange={onChange}
+            sx={{
+              marginBottom: 2,
+              backgroundColor: "white",
+              borderRadius: 1,
+            }}
+          />
+          <TextField
+            required
+            fullWidth
+            id="senha"
+            placeholder="Senha"
+            name="senha"
+            margin="dense"
+            type="password"
+            value={user.senha}
+            onChange={onChange}
+            sx={{
+              marginBottom: 2,
+              backgroundColor: "white",
+              borderRadius: 1,
+            }}
+          />
 
           {/* Campo tipo com seleção */}
           <TextField
@@ -96,7 +142,7 @@ function Cadastro() {
             name="tipo"
             label="TIPO"
             value={user.tipo}
-            onChange={handleChange}
+            onChange={onChange}
             sx={{
               marginBottom: 2,
               backgroundColor: "white",
@@ -108,15 +154,14 @@ function Cadastro() {
           </TextField>
 
           <Button
-            type="submit"
-            variant="contained"
             sx={{
               backgroundColor: "white",
               color: "#B9181D",
               fontWeight: "bold",
-              width: "100%",
-              "&:hover": { backgroundColor: "#f0f0f0" },
+              width: "100%"
             }}
+            type="submit"
+            variant="contained"
           >
             Cadastrar
           </Button>

@@ -48,7 +48,8 @@ export default function SalasPage() {
         p: 2,
       }}
     >
-      <Container sx={{ pt: "80px" /* ajusta conforme a altura do header */ }}>
+      {/* ajusta conforme a altura do header */}
+      <Container sx={{ pt: "80px" }}>
         {/* Topo */}
         <Box
           display="flex"

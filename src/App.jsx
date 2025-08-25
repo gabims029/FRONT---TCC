@@ -34,7 +34,7 @@ function App() {
           path="/profile"
           element={
             <DefaultLayout>
-              <ModalEditarPerfil/>
+              <Perfil/>
             </DefaultLayout>
           }
         />

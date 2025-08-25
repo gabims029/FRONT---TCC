@@ -1,242 +1,133 @@
-import React, { useState, useEffect } from "react";
-import {
-  Box,
-  Typography,
-  TextField,
-  Button,
-  CircularProgress,
-  Alert,
-} from "@mui/material";
-import { useNavigate } from "react-router-dom";
-import api from "../axios/axios";
+import React, { useEffect } from "react";
+import { Dialog, Box, Typography, TextField, Button } from "@mui/material";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import api from "../axios/axios";
 
-function ModalEditarPerfil() {
-  const [userData, setUserData] = useState({
-    nome: "",
-    cpf: "",
-    email: "",
-    senha: "",
-  });
-  const navigate = useNavigate();
-
+function ModalEditarPerfil({ open, onClose, userData, setUserData, showAlert }) {
   const id_usuario = localStorage.getItem("id_usuario");
+
+  useEffect(() => {
+    async function getUserInfo() {
+      try {
+        const response = await api.getUserByID(id_usuario);
+        setUserData({
+          nome: response.data.user.nome || "",
+          email: response.data.user.email || "",
+          cpf: response.data.user.cpf || "",
+          senha: response.data.user.senha || "",
+          senhaAtual: "",
+          senhaNova: "",
+        });
+      } catch (err) {
+        console.error(err);
+        showAlert("Não foi possível carregar os dados do usuário.", "error");
+      }
+    }
+    if (open) getUserInfo();
+  }, [open]);
 
   const onChange = (event) => {
     const { name, value } = event.target;
     setUserData({ ...userData, [name]: value });
   };
 
-  async function getUserInfo() {
+  const handleSave = async () => {
     try {
-      const response = await api.getUserByID(id_usuario);
-      setUserData({
-        nome: response.data.user.nome || "",
-        email: response.data.user.email || "",
-        cpf: response.data.user.cpf || "",
-        senha: "",
-      });
-    } catch (err) {
-      console.error("Erro ao buscar usuário:", err);
-      setError("Não foi possível carregar os dados do usuário.");
-    }
-  }
+      const dataToUpload = {
+        nome: userData.nome,
+        email: userData.email,
+        cpf: userData.cpf,
+        senha: userData.senhaNova || userData.senha,
+      };
 
-  useEffect(() => {
-    getUserInfo();
-  }, []);
+      await api.updateUser(id_usuario, dataToUpload);
+      showAlert("Perfil atualizado com sucesso!", "success");
+      onClose();
+    } catch (err) {
+      console.error(err);
+      showAlert("Erro ao atualizar perfil", "error");
+    }
+  };
 
   return (
-    <Box
-      sx={{
-        minHeight: "100vh",
-        backgroundColor: "#FFE9E9",
-        display: "flex",
-        flexDirection: "column",
-        paddingTop: "60px",
-        paddingBottom: "60px",
+    <Dialog
+      open={open}
+      onClose={onClose}
+      PaperProps={{
+        sx: {
+          backgroundColor: "#B9181D",
+          borderRadius: 3,
+          padding: 3,
+        },
       }}
+      fullWidth
+      maxWidth="sm"
     >
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          flex: 1,
-          padding: 2,
-        }}
-      >
-        <Box
+      {/* Ícone */}
+      <Box sx={{ display: "flex", justifyContent: "center", mb: 3 }}>
+        <AccountCircleIcon sx={{ color: "white", fontSize: 100 }} />
+      </Box>
+
+      {/* Inputs */}
+      {[
+        { label: "NOME", name: "nome", placeholder: "Digite o novo nome", type: "text" },
+        { label: "CPF", name: "cpf", placeholder: "************", type: "text", disabled: true },
+        { label: "EMAIL", name: "email", placeholder: "Digite o novo email", type: "text" },
+        { label: "SENHA", name: "senhaAtual", placeholder: "Digite a senha atual", type: "password" },
+        { label: "NOVA SENHA", name: "senhaNova", placeholder: "Digite a nova senha", type: "password" },
+      ].map((field) => (
+        <Box key={field.name} sx={{ mb: 2 }}>
+          <Typography sx={{ color: "white", fontWeight: "bold", mb: 0.5 }}>
+            {field.label}
+          </Typography>
+          <TextField
+            fullWidth
+            name={field.name}
+            value={userData[field.name]}
+            placeholder={field.placeholder}
+            onChange={onChange}
+            type={field.type}
+            disabled={field.disabled || false}
+            sx={{
+              backgroundColor: "white",
+              borderRadius: 1,
+              "& .MuiInputBase-input": { color: "black" },
+              "& .Mui-disabled": { WebkitTextFillColor: "black", color: "black" },
+            }}
+          />
+        </Box>
+      ))}
+
+      {/* Botões lado a lado */}
+      <Box sx={{ display: "flex", gap: 2, mt: 3 }}>
+        <Button
+          variant="contained"
+          onClick={onClose}
           sx={{
-            width: "100%",
-            maxWidth: "500px",
-            backgroundColor: "#B9181D",
-            borderRadius: 2,
-            padding: 3,
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
+            flex: 1,
+            backgroundColor: "white",
+            color: "#B9181D",
+            fontWeight: "bold",
+            "&:hover": { backgroundColor: "#f0f0f0" },
           }}
         >
-          <Box
-            sx={{
-              backgroundColor: "#B9181D",
-              borderRadius: "50%",
-              width: 100,
-              height: 100,
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              marginBottom: 2,
-            }}
-          >
-            <AccountCircleIcon sx={{ color: "white", fontSize: 140 }} />
-          </Box>
-
-          <Typography
-            sx={{
-              color: "white",
-              marginBottom: 0.5,
-              marginRight: "auto",
-              fontWeight: "bold",
-            }}
-          >
-            NOME
-          </Typography>
-          <TextField
-            required
-            fullWidth
-            name="nome"
-            value={userData.nome}
-            placeholder={userData.nome}
-            onChange={onChange}
-            type="text"
-            sx={{
-              marginBottom: 3,
-              backgroundColor: "white",
-              borderRadius: 1,
-            }}
-          />
-
-          <Typography
-            sx={{
-              color: "white",
-              marginBottom: 0.5,
-              marginRight: "auto",
-              fontWeight: "bold",
-            }}
-          >
-            EMAIL
-          </Typography>
-          <TextField
-            required
-            fullWidth
-            name="email"
-            value={userData.email}
-            placeholder={userData.email}
-            onChange={onChange}
-            type="text"
-            sx={{
-              marginBottom: 3,
-              backgroundColor: "white",
-              borderRadius: 1,
-            }}
-          />
-          <Typography
-            sx={{
-              color: "white",
-              marginBottom: 0.5,
-              marginRight: "auto",
-              fontWeight: "bold",
-            }}
-          >
-            SENHA
-          </Typography>
-          <TextField
-            required
-            fullWidth
-            name="senha"
-            value=""
-            placeholder=""
-            type="password"
-            onChange={onChange}
-            sx={{
-              marginBottom: 3,
-              backgroundColor: "white",
-              borderRadius: 1,
-            }}
-          />
-          <Typography
-            sx={{
-              color: "white",
-              marginBottom: 0.5,
-              marginRight: "auto",
-              fontWeight: "bold",
-            }}
-          >
-            CPF
-          </Typography>
-          <TextField
-            required
-            fullWidth
-            disabled
-            name="cpf"
-            value={userData.cpf}
-            placeholder={userData.cpf}
-            type="number"
-            sx={{
-              marginBottom: 2.5,
-              backgroundColor: "white",
-              borderRadius: 1,
-              "& .MuiInputBase-input": {
-                color: "black", // cor do texto
-              },
-              "& .Mui-disabled": {
-                WebkitTextFillColor: "black", // força cor quando desabilitado
-                color: "black",
-              },
-            }}
-          />
-
-          <Button
-            variant="contained"
-            //onClick={handleMinhasReservas}
-            sx={{
-              backgroundColor: "white",
-              color: "#B9181D",
-              fontWeight: "bold",
-              padding: "10px 20px",
-              marginBottom: "10px",
-              width: "100%",
-              borderRadius: 1,
-              "&:hover": {
-                backgroundColor: "#f0f0f0",
-              },
-            }}
-          >
-            Cancelar
-          </Button>
-          <Button
-            variant="contained"
-            //onClick={handleMinhasReservas}
-            sx={{
-              backgroundColor: "white",
-              color: "#B9181D",
-              fontWeight: "bold",
-              padding: "10px 20px",
-              marginBottom: "10px",
-              width: "100%",
-              borderRadius: 1,
-              "&:hover": {
-                backgroundColor: "#f0f0f0",
-              },
-            }}
-          >
-            Salvar
-          </Button>
-        </Box>
+          CANCELAR
+        </Button>
+        <Button
+          variant="contained"
+          onClick={handleSave}
+          sx={{
+            flex: 1,
+            backgroundColor: "white",
+            color: "#B9181D",
+            fontWeight: "bold",
+            "&:hover": { backgroundColor: "#f0f0f0" },
+          }}
+        >
+          SALVAR
+        </Button>
       </Box>
-    </Box>
+    </Dialog>
   );
 }
 

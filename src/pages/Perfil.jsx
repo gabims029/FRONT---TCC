@@ -1,16 +1,9 @@
 import React, { useState, useEffect } from "react";
-import {
-  Box,
-  Typography,
-  TextField,
-  Button,
-  CircularProgress,
-  Alert,
-} from "@mui/material";
+import { Box, Typography, TextField, Button, Alert } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import api from "../axios/axios";
-import DefaultLayout from "../components/DefaultLayout";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import ModalEditarPerfil from "../components/ModalEditarPerfil";
 
 function Perfil() {
   const [userData, setUserData] = useState({
@@ -19,11 +12,26 @@ function Perfil() {
     email: "",
     senha: "",
   });
-  const navigate = useNavigate();
 
+  const [alert, setAlert] = useState({
+    type: "",
+    message: "",
+    visible: false,
+  });
+
+  const [openModal, setOpenModal] = useState(false);
+
+  const navigate = useNavigate();
   const id_usuario = localStorage.getItem("id_usuario");
 
-  async function getUserInfo() {
+  const showAlert = (message, type = "success") => {
+    setAlert({ type, message, visible: true });
+    setTimeout(() => {
+      setAlert((prev) => ({ ...prev, visible: false }));
+    }, 3000);
+  };
+
+  const getUserInfo = async () => {
     try {
       const response = await api.getUserByID(id_usuario);
       setUserData({
@@ -33,10 +41,10 @@ function Perfil() {
         senha: response.data.user.senha || "",
       });
     } catch (err) {
-      console.error("Erro ao buscar usuário:", err);
-      setError("Não foi possível carregar os dados do usuário.");
+      console.error(err);
+      showAlert("Não foi possível carregar os dados do usuário.", "error");
     }
-  }
+  };
 
   useEffect(() => {
     getUserInfo();
@@ -51,21 +59,18 @@ function Perfil() {
         flexDirection: "column",
         paddingTop: "60px",
         paddingBottom: "60px",
+        alignItems: "center",
       }}
     >
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          flex: 1,
-          padding: 2,
-        }}
-      >
+      <Box sx={{ width: "100%", maxWidth: "500px", padding: 2 }}>
+        {alert.visible && (
+          <Alert severity={alert.type} sx={{ width: "100%", mb: 2 }}>
+            {alert.message}
+          </Alert>
+        )}
+
         <Box
           sx={{
-            width: "100%",
-            maxWidth: "500px",
             backgroundColor: "#B9181D",
             borderRadius: 2,
             padding: 3,
@@ -76,7 +81,6 @@ function Perfil() {
         >
           <Box
             sx={{
-              backgroundColor: "#B9181D",
               borderRadius: "50%",
               width: 100,
               height: 100,
@@ -88,6 +92,7 @@ function Perfil() {
           >
             <AccountCircleIcon sx={{ color: "white", fontSize: 140 }} />
           </Box>
+
           <Typography
             variant="h6"
             component="div"
@@ -101,6 +106,7 @@ function Perfil() {
             {userData.nome || "NOME DO USUÁRIO"}
           </Typography>
 
+          {/* EMAIL */}
           <Typography
             sx={{
               color: "white",
@@ -112,10 +118,8 @@ function Perfil() {
             EMAIL
           </Typography>
           <TextField
-            required
             fullWidth
             disabled
-            name="email"
             value={userData.email}
             placeholder={userData.email}
             type="text"
@@ -123,15 +127,12 @@ function Perfil() {
               marginBottom: 3,
               backgroundColor: "white",
               borderRadius: 1,
-              "& .MuiInputBase-input": {
-                color: "black", // cor do texto
-              },
-              "& .Mui-disabled": {
-                WebkitTextFillColor: "black", // força cor quando desabilitado
-                color: "black",
-              },
+              "& .MuiInputBase-input": { color: "black" },
+              "& .Mui-disabled": { WebkitTextFillColor: "black", color: "black" },
             }}
           />
+
+          {/* SENHA */}
           <Typography
             sx={{
               color: "white",
@@ -143,10 +144,8 @@ function Perfil() {
             SENHA
           </Typography>
           <TextField
-            required
             fullWidth
             disabled
-            name="senha"
             value="********"
             placeholder="********"
             type="password"
@@ -154,15 +153,12 @@ function Perfil() {
               marginBottom: 3,
               backgroundColor: "white",
               borderRadius: 1,
-              "& .MuiInputBase-input": {
-                color: "black", // cor do texto
-              },
-              "& .Mui-disabled": {
-                WebkitTextFillColor: "black", // força cor quando desabilitado
-                color: "black",
-              },
+              "& .MuiInputBase-input": { color: "black" },
+              "& .Mui-disabled": { WebkitTextFillColor: "black", color: "black" },
             }}
           />
+
+          {/* CPF */}
           <Typography
             sx={{
               color: "white",
@@ -174,10 +170,8 @@ function Perfil() {
             CPF
           </Typography>
           <TextField
-            required
             fullWidth
             disabled
-            name="cpf"
             value={userData.cpf}
             placeholder={userData.cpf}
             type="number"
@@ -185,19 +179,14 @@ function Perfil() {
               marginBottom: 2.5,
               backgroundColor: "white",
               borderRadius: 1,
-              "& .MuiInputBase-input": {
-                color: "black", // cor do texto
-              },
-              "& .Mui-disabled": {
-                WebkitTextFillColor: "black", // força cor quando desabilitado
-                color: "black",
-              },
+              "& .MuiInputBase-input": { color: "black" },
+              "& .Mui-disabled": { WebkitTextFillColor: "black", color: "black" },
             }}
           />
 
+          {/* Botões */}
           <Button
             variant="contained"
-            //onClick={handleMinhasReservas}
             sx={{
               backgroundColor: "white",
               color: "#B9181D",
@@ -206,16 +195,17 @@ function Perfil() {
               marginBottom: "10px",
               width: "100%",
               borderRadius: 1,
-              "&:hover": {
-                backgroundColor: "#f0f0f0",
-              },
+              "&:hover": { backgroundColor: "#f0f0f0" },
             }}
+            onClick={() =>
+              showAlert("Funcionalidade Minhas Reservas ainda não implementada.", "info")
+            }
           >
             Minhas Reservas
           </Button>
+
           <Button
             variant="contained"
-            //onClick={handleMinhasReservas}
             sx={{
               backgroundColor: "white",
               color: "#B9181D",
@@ -224,16 +214,15 @@ function Perfil() {
               marginBottom: "10px",
               width: "100%",
               borderRadius: 1,
-              "&:hover": {
-                backgroundColor: "#f0f0f0",
-              },
+              "&:hover": { backgroundColor: "#f0f0f0" },
             }}
+            onClick={() => setOpenModal(true)}
           >
             Editar Perfil
           </Button>
+
           <Button
             variant="contained"
-            //onClick={handleMinhasReservas}
             sx={{
               backgroundColor: "white",
               color: "#B9181D",
@@ -242,15 +231,25 @@ function Perfil() {
               marginBottom: "10px",
               width: "100%",
               borderRadius: 1,
-              "&:hover": {
-                backgroundColor: "#f0f0f0",
-              },
+              "&:hover": { backgroundColor: "#f0f0f0" },
             }}
+            onClick={() =>
+              showAlert("Funcionalidade Deletar Perfil ainda não implementada.", "info")
+            }
           >
             Deletar Perfil
           </Button>
         </Box>
       </Box>
+
+      {/* Modal */}
+      <ModalEditarPerfil
+        open={openModal}
+        onClose={() => setOpenModal(false)}
+        userData={userData}
+        setUserData={setUserData}
+        showAlert={showAlert}
+      />
     </Box>
   );
 }

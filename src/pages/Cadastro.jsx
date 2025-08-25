@@ -44,8 +44,8 @@ function Cadastro() {
   }
 
   return (
-    <DefaultLayout headerRender={1}>
-      <Box
+    <DefaultLayout>
+      <Box //fundo
         sx={{
           minHeight: "100vh",
           backgroundColor: "#FFE9E9",
@@ -79,7 +79,6 @@ function Cadastro() {
             id="nome"
             placeholder="Nome"
             name="nome"
-            margin="dense"
             value={user.nome}
             onChange={onChange} //detectar mudanças
             sx={{
@@ -94,7 +93,6 @@ function Cadastro() {
             id="email"
             placeholder="Email"
             name="email"
-            margin="dense"
             value={user.email}
             onChange={onChange}
             sx={{
@@ -109,7 +107,6 @@ function Cadastro() {
             id="cpf"
             placeholder="CPF"
             name="cpf"
-            margin="dense"
             value={user.cpf}
             onChange={onChange}
             sx={{
@@ -124,7 +121,6 @@ function Cadastro() {
             id="senha"
             placeholder="Senha"
             name="senha"
-            margin="dense"
             type="password"
             value={user.senha}
             onChange={onChange}
@@ -140,7 +136,7 @@ function Cadastro() {
             select
             fullWidth
             name="tipo"
-            label="TIPO"
+            label="Tipo"
             value={user.tipo}
             onChange={onChange}
             sx={{
@@ -158,7 +154,7 @@ function Cadastro() {
               backgroundColor: "white",
               color: "#B9181D",
               fontWeight: "bold",
-              width: "100%"
+              width: "100%",
             }}
             type="submit"
             variant="contained"

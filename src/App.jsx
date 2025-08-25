@@ -6,14 +6,21 @@ import HomeAdm from "./pages/HomeAdm";
 import DefaultLayout from "./components/DefaultLayout";
 import Cadastro from "./pages/Cadastro";
 //import MinhasReservas from "./pages/ShowReservas"
-import Perfil from "./pages/Perfil"
+import Perfil from "./pages/Perfil";
 import SalasPage from "./pages/Salas";
 
 function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<DefaultLayout headerRender={1}><Login/></DefaultLayout>}/>
+        <Route
+          path="/"
+          element={
+            <DefaultLayout headerRender={1}>
+              <Login />
+            </DefaultLayout>
+          }
+        />
         <Route
           path="/home"
           element={
@@ -25,7 +32,7 @@ function App() {
         <Route
           path="/cadastro"
           element={
-            <DefaultLayout>
+            <DefaultLayout headerRender={2}>
               <Cadastro />
             </DefaultLayout>
           }
@@ -33,16 +40,16 @@ function App() {
         <Route
           path="/profile"
           element={
-            <DefaultLayout>
-              <Perfil/>
+            <DefaultLayout headerRender={2}>
+              <Perfil />
             </DefaultLayout>
           }
         />
         <Route
           path="/salas"
           element={
-            <DefaultLayout>
-              <SalasPage/>
+            <DefaultLayout headerRender={2}>
+              <SalasPage />
             </DefaultLayout>
           }
         />

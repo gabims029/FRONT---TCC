@@ -1,12 +1,25 @@
-# React + Vite
+# Projeto Base - FRONT
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Este repositório fornece a estrutura inicial para o Front-end do sistema de gerenciamento de reserva de salas de aula. Ele foi desenvolvido para consumir a API do projeto e servir como base para os alunos.
 
-Currently, two official plugins are available:
+## Objetivo da Sprint
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- Desenvolver a interface de autenticação e gerenciamento de reservas.
+- Criar páginas para cadastro, listagem e exclusão de salas e agendamentos.
+- Integrar o front com a API de usuários, salas, reservas e períodos.
+- Aplicar boas práticas de Clean Code e componentização no React.
 
-## Expanding the ESLint configuration
+## Pré -requisitos
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- API do backend rodando
+
+## Instalação do Projeto Base
+
+1. Clone o repositório:
+   git clone https://github.com/gabims029/FRONT---TCC
+
+2. Digite no terminal "npm i"
+
+3. Digite no terminal "npm i axios"
+
+4. Quando todas as intalações ficarem prontas, execute o comando no terminal para rodar o projeto "npm run dev"

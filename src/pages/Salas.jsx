@@ -105,7 +105,6 @@ export default function SalasPage() {
                     {sala.nome}
                   </Typography>
 
-                  {/* Exibe as propriedades */}
                   <Typography>Numero: {sala.numero}</Typography>
                   <Typography>Descrição: {sala.descricao}</Typography>
                   <Typography>Capacidade: {sala.capacidade}</Typography>

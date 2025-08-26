@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, Typography, TextField, Button, MenuItem } from "@mui/material";
+import { Box, Typography, TextField, Button, MenuItem, Snackbar, Alert } from "@mui/material";
 import DefaultLayout from "../components/DefaultLayout";
 import api from "../axios/axios";
 
@@ -12,7 +12,14 @@ function Cadastro() {
     tipo: "",
   });
 
-  //atualizar o estado de um objeto (captura as mudanças)
+  // alert do MUI
+  const [alert, setAlert] = useState({
+    type: "",       
+    message: "",    
+    visible: false, 
+  });
+
+  // Atualizar o estado de um objeto (captura as mudanças)
   const onChange = (event) => {
     const { name, value } = event.target;
     setUser({ ...user, [name]: value });
@@ -23,32 +30,48 @@ function Cadastro() {
     cadastro();
   };
 
+  // Função para cadastrar usuário
   async function cadastro() {
-    await api.postCadastro(user).then(
-      (response) => {
-        alert(response.data.message);
-        // Limpar o formulário
-        setUser({
-          nome: "",
-          email: "",
-          cpf: "",
-          senha: "",
-          tipo: "",
-        });
-      },
-      (error) => {
-        console.log(error);
-        alert(error.response.data.error);
-      }
-    );
+    try {
+      const response = await api.postCadastro(user);
+
+      setAlert({
+        type: "success",
+        message: response.data.message,
+        visible: true,
+      });
+
+      // Limpar o formulário
+      setUser({
+        nome: "",
+        email: "",
+        cpf: "",
+        senha: "",
+        tipo: "",
+      });
+    } catch (error) {
+      console.log(error);
+
+      // Mostrar alerta de erro com a mensagem da API
+      setAlert({
+        type: "error",
+        message: error.response?.data?.error || "Ocorreu um erro",
+        visible: true,
+      });
+    }
   }
+
+  // Fechar alerta
+  const handleClose = () => {
+    setAlert({ ...alert, visible: false });
+  };
 
   return (
     <DefaultLayout>
-      <Box //fundo
+      <Box
         sx={{
           minHeight: "100vh",
-          backgroundColor: "#FFE9E9",
+          backgroundColor: "#FFE9E9", // fundo
           display: "flex",
           flexDirection: "column",
           justifyContent: "center",
@@ -80,7 +103,7 @@ function Cadastro() {
             placeholder="Nome"
             name="nome"
             value={user.nome}
-            onChange={onChange} //detectar mudanças
+            onChange={onChange} // detectar mudanças
             sx={{
               marginBottom: 2,
               backgroundColor: "white",
@@ -149,6 +172,7 @@ function Cadastro() {
             <MenuItem value="Comum">Comum</MenuItem>
           </TextField>
 
+          {/* Botão Cadastrar */}
           <Button
             sx={{
               backgroundColor: "white",
@@ -162,6 +186,24 @@ function Cadastro() {
             Cadastrar
           </Button>
         </Box>
+
+        {/* Alert do MUI */}
+        <Snackbar
+          open={alert.visible}
+          autoHideDuration={4000} // tempo que o alerta fica visível
+          onClose={handleClose}
+          anchorOrigin={{ vertical: "top", horizontal: "center" }} // posição do alerta
+        >
+          {alert.type && (
+            <Alert
+              severity={alert.type}
+              onClose={handleClose}
+              sx={{ width: "100%" }}
+            >
+              {alert.message}
+            </Alert>
+          )}
+        </Snackbar>
       </Box>
     </DefaultLayout>
   );

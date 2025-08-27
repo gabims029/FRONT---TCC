@@ -1,418 +1,257 @@
 import React, { useState, useEffect } from "react";
-import {
-  Box,
-  Typography,
-  TextField,
-  Button,
-  CircularProgress,
-  Alert,
-} from "@mui/material";
+import { Box, Typography, TextField, Button, Alert } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import api from "../axios/axios";
-import DefaultLayout from "../components/DefaultLayout";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import ModalEditarPerfil from "../components/ModalEditarPerfil";
 
-const Perfil = () => {
+function Perfil() {
   const [userData, setUserData] = useState({
     nome: "",
-    senha: "",
-    email: "",
     cpf: "",
+    email: "",
+    senha: "",
   });
-  const [isEditing, setIsEditing] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(false);
+
+  const [alert, setAlert] = useState({
+    type: "",
+    message: "",
+    visible: false,
+  });
+
+  const [openModal, setOpenModal] = useState(false);
+
   const navigate = useNavigate();
+  const id_usuario = localStorage.getItem("id_usuario");
 
-  useEffect(() => {
-    const id_usuario = localStorage.getItem("id_usuario");
-
-    if (!id_usuario) {
-      navigate("/login");
-      return;
-    }
-
-    const getUserInfo = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        const response = await api.getUserByID(id_usuario);
-        setUserData({
-          nome: response.data.user.nome || "",
-          email: response.data.user.email || "",
-          cpf: response.data.user.cpf || "",
-          senha: "",
-        });
-      } catch (err) {
-        console.error("Erro ao buscar usuário:", err);
-        setError("Não foi possível carregar os dados do usuário.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    getUserInfo();
-  }, [navigate]);
-
-  const handleMinhasReservas = () => {
-    navigate("/minhasReservas");
+  const showAlert = (message, type = "success") => {
+    setAlert({ type, message, visible: true });
+    setTimeout(() => {
+      setAlert((prev) => ({ ...prev, visible: false }));
+    }, 3000);
   };
 
-  const handleEditClick = () => {
-    setIsEditing(true);
-    setError(null);
-    setSuccess(false);
-  };
-
-  const handleCancelClick = () => {
-    setIsEditing(false);
-    setError(null);
-    setSuccess(false);
-    const id_usuario = localStorage.getItem("id_usuario");
-    api
-      .getUserByID(id_usuario)
-      .then((response) => {
-        setUserData({
-          nome: response.data.user.nome || "",
-          email: response.data.user.email || "",
-          cpf: response.data.user.cpf || "",
-          senha: "",
-        });
-      })
-      .catch((err) => console.error("Erro ao recarregar dados:", err));
-  };
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setUserData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };
-
-  const handleSaveClick = async () => {
-    setError(null);
-    setSuccess(false);
-
+  const getUserInfo = async () => {
     try {
-      const id_usuario = localStorage.getItem("id_usuario");
-
-      const dataToUpdate = {
-        nome: userData.nome,
-        email: userData.email,
-        cpf: userData.cpf,
-        id: id_usuario,
-      };
-
-      if (userData.senha) {
-        dataToUpdate.senha = userData.senha;
-      }
-
-      await api.updateUser(dataToUpdate);
-
-      setSuccess(true);
-      setIsEditing(false);
-
       const response = await api.getUserByID(id_usuario);
       setUserData({
-        id_usuario: response.data.user.id_usuario || "",
         nome: response.data.user.nome || "",
         email: response.data.user.email || "",
         cpf: response.data.user.cpf || "",
-        senha: "",
+        senha: response.data.user.senha || "",
       });
     } catch (err) {
-      console.error("Erro ao atualizar perfil:", err);
-      setError(
-        err.response?.data?.error ||
-          "Erro ao atualizar o perfil. Verifique seus dados e tente novamente."
-      );
+      console.error(err);
+      showAlert("Não foi possível carregar os dados do usuário.", "error");
     }
   };
 
-  const handleDeleteAccount = async () => {
-    const confirmDelete = window.confirm(
-      "Tem certeza que deseja deletar seu perfil? Essa ação é irreversível."
-    );
-    if (!confirmDelete) return;
-
-    try {
-      const id_usuario = localStorage.getItem("id_usuario");
-      await api.deleteUser(id_usuario);
-
-      localStorage.clear();
-      navigate("/");
-    } catch (err) {
-      console.error("Erro ao deletar usuário:", err);
-      alert("Erro ao deletar o perfil. Tente novamente.");
-    }
-  };
-
-  if (loading) {
-    return (
-      <DefaultLayout headerRender={1}>
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            minHeight: "100vh",
-            backgroundColor: "#FFE9E9",
-          }}
-        >
-          <CircularProgress sx={{ color: "#B9181D" }} />
-        </Box>
-      </DefaultLayout>
-    );
-  }
+  useEffect(() => {
+    getUserInfo();
+  }, []);
 
   return (
-    <DefaultLayout headerRender={1}>
-      <Box
-        sx={{
-          minHeight: "100vh",
-          backgroundColor: "#FFE9E9",
-          display: "flex",
-          flexDirection: "column",
-          paddingTop: "60px",
-          paddingBottom: "60px",
-        }}
-      >
+    <Box
+      sx={{
+        minHeight: "100vh",
+        backgroundColor: "#FFE9E9",
+        display: "flex",
+        flexDirection: "column",
+        paddingTop: "60px",
+        paddingBottom: "60px",
+        alignItems: "center",
+      }}
+    >
+      <Box sx={{ width: "100%", maxWidth: "500px", padding: 2 }}>
+        {alert.visible && (
+          <Alert severity={alert.type} sx={{ width: "100%", mb: 2 }}>
+            {alert.message}
+          </Alert>
+        )}
+
         <Box
           sx={{
+            backgroundColor: "#B9181D",
+            borderRadius: 2,
+            padding: 3,
             display: "flex",
-            justifyContent: "center",
+            flexDirection: "column",
             alignItems: "center",
-            flex: 1,
-            padding: 2,
           }}
         >
           <Box
             sx={{
-              width: "100%",
-              maxWidth: "500px",
-              backgroundColor: "#B9181D",
-              borderRadius: 2,
-              padding: 3,
+              borderRadius: "50%",
+              width: 100,
+              height: 100,
               display: "flex",
-              flexDirection: "column",
+              justifyContent: "center",
               alignItems: "center",
+              marginBottom: 2,
             }}
           >
-            <Box
-              sx={{
-                backgroundColor: "#B9181D",
-                borderRadius: "50%",
-                width: 100,
-                height: 100,
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                marginBottom: 2,
-              }}
-            >
-              <AccountCircleIcon sx={{ color: "white", fontSize: 140 }} />
-            </Box>
-
-            <Typography
-              variant="h6"
-              component="div"
-              sx={{
-                color: "white",
-                fontWeight: "bold",
-                marginBottom: 3,
-                textAlign: "center",
-              }}
-            >
-              {userData.nome || "NOME DO USUÁRIO"}
-            </Typography>
-
-            {error && (
-              <Alert severity="error" sx={{ width: "100%", marginBottom: 2 }}>
-                {error}
-              </Alert>
-            )}
-            {success && (
-              <Alert severity="success" sx={{ width: "100%", marginBottom: 2 }}>
-                Perfil atualizado com sucesso!
-              </Alert>
-            )}
-
-            {/* Campos */}
-            {["email", "senha", "cpf"].map((field, index) => {
-              const isPassword = field === "senha";
-              const isCpf = field === "cpf";
-              const label = field.toUpperCase();
-              return (
-                <Box sx={{ width: "100%", marginBottom: 2 }} key={field}>
-                  <Typography variant="body1" sx={labelStyle}>
-                    {isPassword && !isEditing
-                      ? "SENHA"
-                      : isPassword
-                      ? "NOVA SENHA"
-                      : label}
-                  </Typography>
-                  <TextField
-                    fullWidth
-                    name={field}
-                    type={isPassword ? "password" : "text"}
-                    value={
-                      isPassword
-                        ? isEditing
-                          ? userData.senha
-                          : "********"
-                        : userData[field]
-                    }
-                    onChange={handleChange}
-                    disabled={!isEditing || isCpf}
-                    placeholder={
-                      isPassword && isEditing ? "Digite a nova senha" : ""
-                    }
-                    sx={textFieldStyle}
-                  />
-                </Box>
-              );
-            })}
-
-            {isEditing ? (
-              <Box
-                sx={{
-                  width: "100%",
-                  display: "flex",
-                  justifyContent: "space-between",
-                }}
-              >
-                <Button
-                  variant="contained"
-                  onClick={handleSaveClick}
-                  disabled={saving}
-                  sx={{
-                    backgroundColor: "white",
-                    color: "#B9181D",
-                    fontWeight: "bold",
-                    padding: "10px 20px",
-                    width: "48%",
-                    borderRadius: 1,
-                    "&:hover": {
-                      backgroundColor: "#f0f0f0",
-                    },
-                  }}
-                >
-                  {saving ? (
-                    <CircularProgress size={24} sx={{ color: "#B9181D" }} />
-                  ) : (
-                    "Salvar"
-                  )}
-                </Button>
-                <Button
-                  variant="outlined"
-                  onClick={handleCancelClick}
-                  sx={{
-                    borderColor: "white",
-                    color: "white",
-                    fontWeight: "bold",
-                    padding: "10px 20px",
-                    width: "48%",
-                    borderRadius: 1,
-                    "&:hover": {
-                      backgroundColor: "rgba(255, 255, 255, 0.1)",
-                    },
-                  }}
-                >
-                  Cancelar
-                </Button>
-              </Box>
-            ) : (
-              <>
-                <Button
-                  variant="contained"
-                  onClick={handleMinhasReservas}
-                  sx={{
-                    backgroundColor: "white",
-                    color: "#B9181D",
-                    fontWeight: "bold",
-                    padding: "10px 20px",
-                    marginBottom: "7px",
-                    width: "100%",
-                    borderRadius: 1,
-                    "&:hover": {
-                      backgroundColor: "#f0f0f0",
-                    },
-                  }}
-                >
-                  Minhas reservas
-                </Button>
-
-                <Button
-                  variant="contained"
-                  onClick={handleEditClick}
-                  sx={{
-                    backgroundColor: "white",
-                    color: "#B9181D",
-                    fontWeight: "bold",
-                    padding: "10px 20px",
-                    width: "100%",
-                    borderRadius: 1,
-                    marginTop: "15px",
-                    marginBottom: "10px",
-                    "&:hover": {
-                      backgroundColor: "#f0f0f0",
-                    },
-                  }}
-                >
-                  Editar Perfil
-                </Button>
-
-                <Button
-                  variant="outlined"
-                  color="error"
-                  onClick={handleDeleteAccount}
-                  sx={{
-                    backgroundColor: "white",
-                    color: "#B9181D",
-                    fontWeight: "bold",
-                    padding: "10px 20px",
-                    width: "100%",
-                    borderRadius: 1,
-                    marginTop: "15px",
-                    marginBottom: "10px",
-                    "&:hover": {
-                      backgroundColor: "#f0f0f0",
-                    },
-                  }}
-                >
-                  Deletar perfil
-                </Button>
-              </>
-            )}
+            <AccountCircleIcon sx={{ color: "white", fontSize: 140 }} />
           </Box>
+
+          <Typography
+            variant="h6"
+            component="div"
+            sx={{
+              color: "white",
+              fontWeight: "bold",
+              marginBottom: 3,
+              textAlign: "center",
+            }}
+          >
+            {userData.nome || "NOME DO USUÁRIO"}
+          </Typography>
+
+          {/* EMAIL */}
+          <Typography
+            sx={{
+              color: "white",
+              marginBottom: 0.5,
+              marginRight: "auto",
+              fontWeight: "bold",
+            }}
+          >
+            EMAIL
+          </Typography>
+          <TextField
+            fullWidth
+            disabled
+            value={userData.email}
+            placeholder={userData.email}
+            type="text"
+            sx={{
+              marginBottom: 3,
+              backgroundColor: "white",
+              borderRadius: 1,
+              "& .MuiInputBase-input": { color: "black" },
+              "& .Mui-disabled": { WebkitTextFillColor: "black", color: "black" },
+            }}
+          />
+
+          {/* SENHA */}
+          <Typography
+            sx={{
+              color: "white",
+              marginBottom: 0.5,
+              marginRight: "auto",
+              fontWeight: "bold",
+            }}
+          >
+            SENHA
+          </Typography>
+          <TextField
+            fullWidth
+            disabled
+            value="********"
+            placeholder="********"
+            type="password"
+            sx={{
+              marginBottom: 3,
+              backgroundColor: "white",
+              borderRadius: 1,
+              "& .MuiInputBase-input": { color: "black" },
+              "& .Mui-disabled": { WebkitTextFillColor: "black", color: "black" },
+            }}
+          />
+
+          {/* CPF */}
+          <Typography
+            sx={{
+              color: "white",
+              marginBottom: 0.5,
+              marginRight: "auto",
+              fontWeight: "bold",
+            }}
+          >
+            CPF
+          </Typography>
+          <TextField
+            fullWidth
+            disabled
+            value={userData.cpf}
+            placeholder={userData.cpf}
+            type="number"
+            sx={{
+              marginBottom: 2.5,
+              backgroundColor: "white",
+              borderRadius: 1,
+              "& .MuiInputBase-input": { color: "black" },
+              "& .Mui-disabled": { WebkitTextFillColor: "black", color: "black" },
+            }}
+          />
+
+          {/* Botões */}
+          <Button
+            variant="contained"
+            sx={{
+              backgroundColor: "white",
+              color: "#B9181D",
+              fontWeight: "bold",
+              padding: "10px 20px",
+              marginBottom: "10px",
+              width: "100%",
+              borderRadius: 1,
+              "&:hover": { backgroundColor: "#f0f0f0" },
+            }}
+            onClick={() =>
+              showAlert("Funcionalidade Minhas Reservas ainda não implementada.", "info")
+            }
+          >
+            Minhas Reservas
+          </Button>
+
+          <Button
+            variant="contained"
+            sx={{
+              backgroundColor: "white",
+              color: "#B9181D",
+              fontWeight: "bold",
+              padding: "10px 20px",
+              marginBottom: "10px",
+              width: "100%",
+              borderRadius: 1,
+              "&:hover": { backgroundColor: "#f0f0f0" },
+            }}
+            onClick={() => setOpenModal(true)}
+          >
+            Editar Perfil
+          </Button>
+
+          <Button
+            variant="contained"
+            sx={{
+              backgroundColor: "white",
+              color: "#B9181D",
+              fontWeight: "bold",
+              padding: "10px 20px",
+              marginBottom: "10px",
+              width: "100%",
+              borderRadius: 1,
+              "&:hover": { backgroundColor: "#f0f0f0" },
+            }}
+            onClick={() =>
+              showAlert("Funcionalidade Deletar Perfil ainda não implementada.", "info")
+            }
+          >
+            Deletar Perfil
+          </Button>
         </Box>
       </Box>
-    </DefaultLayout>
+
+      {/* Modal */}
+      <ModalEditarPerfil
+        open={openModal}
+        onClose={() => setOpenModal(false)}
+        userData={userData}
+        setUserData={setUserData}
+        showAlert={showAlert}
+      />
+    </Box>
   );
-};
+}
 
 export default Perfil;
-
-const labelStyle = {
-  color: "white",
-  marginBottom: 0.5,
-  marginRight: "auto",
-  fontWeight: "bold",
-};
-
-const textFieldStyle = {
-  marginBottom: 2,
-  backgroundColor: "white",
-  borderRadius: 1,
-  "& .MuiInputBase-input": {
-    color: "#333",
-    fontWeight: "medium",
-  },
-  "& .MuiInputBase-input.Mui-disabled": {
-    WebkitTextFillColor: "#333",
-    fontWeight: "medium",
-  },
-};

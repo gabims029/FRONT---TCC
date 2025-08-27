@@ -4,37 +4,54 @@ import Login from "./pages/Login";
 import HomeAdm from "./pages/HomeAdm";
 //import Sala from "./pages/Sala"
 import DefaultLayout from "./components/DefaultLayout";
+import ProtectedRoute from "./components/ProtectedRoute";
 import Cadastro from "./pages/Cadastro";
 //import MinhasReservas from "./pages/ShowReservas"
-import Perfil from "./pages/Perfil"
+import Perfil from "./pages/Perfil";
+import SalasPage from "./pages/Salas";
 
 function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<DefaultLayout headerRender={1}><Login/></DefaultLayout>}/>
+        <Route
+          path="/"
+          element={
+            <DefaultLayout headerRender={1}>
+              <Login />
+            </DefaultLayout>
+          }
+        />
         <Route
           path="/home"
           element={
-            <DefaultLayout headerRender={2}>
+            <ProtectedRoute>
               <HomeAdm />
-            </DefaultLayout>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/cadastro"
           element={
-            <DefaultLayout>
+            <ProtectedRoute>
               <Cadastro />
-            </DefaultLayout>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/profile"
           element={
-            <DefaultLayout>
+            <ProtectedRoute>
               <Perfil/>
-            </DefaultLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/salas"
+          element={
+            <ProtectedRoute>
+              <SalasPage />
+            </ProtectedRoute>
           }
         />
       </Routes>

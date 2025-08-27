@@ -20,6 +20,18 @@ export default function SalasPage() {
   const [blocoSelecionado, setBlocoSelecionado] = useState(
     blocoSelecionadoInicial
   );
+  // const [modalAberto, setModalAberto] = useState(false);
+  // const [salaSelecionada, setSalaSelecionada] = useState(null);
+
+  // const abrirModal = (sala) => {
+  //   setSalaSelecionada(sala);
+  //   setModalAberto(true);
+  // };
+
+  // const fecharModal = () => {
+  //   setSalaSelecionada(null);
+  //   setModalAberto(false);
+  // };
 
   useEffect(() => {
     const fetchSalas = async () => {
@@ -36,7 +48,7 @@ export default function SalasPage() {
 
   const salasFiltradas = salas.filter(
     (s) =>
-      s.numero?.toString().includes(search) ||
+      s.numero?.toLowerCase().includes(search.toLowerCase()) ||
       s.descricao?.toLowerCase().includes(search.toLowerCase())
   );
 
@@ -71,9 +83,9 @@ export default function SalasPage() {
             sx={{ width: 120, background: "#fff" }}
             label="Bloco"
           >
-            {["A", "B", "C", "D"].map((b) => (
-              <MenuItem key={b} value={b}>
-                {b}
+            {["A", "B", "C", "D"].map((bloco) => (
+              <MenuItem key={bloco} value={bloco}>
+                {bloco}
               </MenuItem>
             ))}
           </TextField>
@@ -84,10 +96,12 @@ export default function SalasPage() {
           {salasFiltradas.map((sala, idx) => (
             <Grid item xs={12} sm={6} md={4} key={idx}>
               <Card
+                // onClick={() => abrirModal(sala)}
                 sx={{
                   borderRadius: 2,
                   border: "1px solid #e0e0e0",
                   background: "#fff",
+                  cursor: "pointer",
                 }}
               >
                 <CardContent>
@@ -115,6 +129,11 @@ export default function SalasPage() {
           ))}
         </Grid>
       </Container>
+      {/* {modalAberto && (
+        <SeuModalComponent 
+        sala={salaSelecionada} 
+        onClose={fecharModal} />
+      )} */}
     </Box>
   );
 }

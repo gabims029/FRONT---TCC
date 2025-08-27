@@ -7,7 +7,6 @@ import senaiLogo from "../assets/senai_logo.png";
 import fotologin1 from "../assets/fotologin1.png";
 import fotologin2 from "../assets/fotologin2.png";
 
-
 function Login() {
   const [user, setUser] = useState({
     email: "",
@@ -16,10 +15,14 @@ function Login() {
   const navigate = useNavigate();
 
   const [alert, setAlert] = useState({
-    type: "",       
-    message: "",    
-    visible: false, 
+    type: "",
+    message: "",
+    visible: false,
   });
+
+  const handleClose = () => {
+    setAlert({ ...alert, visible: false });
+  };
 
   const onChange = (event) => {
     const { name, value } = event.target;
@@ -30,10 +33,6 @@ function Login() {
     event.preventDefault();
     login();
   };
-  const handleClose = () => {
-    setAlert({ ...alert, visible: false });
-  };
-
 
   async function login() {
     try {
@@ -43,11 +42,11 @@ function Login() {
         message: response.data.message,
         visible: true,
       });
-  
+
       localStorage.setItem("authenticated", true);
       localStorage.setItem("token", response.data.token);
       localStorage.setItem("id_usuario", response.data.user.id_user);
-  
+
       navigate("home/");
     } catch (error) {
       setAlert({
@@ -58,11 +57,16 @@ function Login() {
       console.log(error);
     }
   }
-  
 
   return (
-    <Box sx={{ height: "100vh", backgroundColor: "#FFE9E9", display: "flex", flexDirection: "column" }}>
-
+    <Box
+      sx={{
+        height: "100vh",
+        backgroundColor: "#FFE9E9",
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
       <Box sx={{ display: "flex", flexGrow: 1, height: "100%" }}>
         <Box
           sx={{
@@ -159,21 +163,21 @@ function Login() {
       </Box>
 
       <Snackbar
-          open={alert.visible}
-          autoHideDuration={4000} // tempo que o alerta fica visível
-          onClose={handleClose}
-          anchorOrigin={{ vertical: "top", horizontal: "center" }} // posição do alerta
-        >
-          {alert.type && (
-            <Alert
-              severity={alert.type}
-              onClose={handleClose}
-              sx={{ width: "100%" }}
-            >
-              {alert.message}
-            </Alert>
-          )}
-        </Snackbar>
+        open={alert.visible}
+        autoHideDuration={4000} // tempo que o alerta fica visível
+        onClose={handleClose}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }} // posição do alerta
+      >
+        {alert.type && (
+          <Alert
+            severity={alert.type}
+            onClose={handleClose}
+            sx={{ width: "100%" }}
+          >
+            {alert.message}
+          </Alert>
+        )}
+      </Snackbar>
     </Box>
   );
 }

@@ -36,29 +36,29 @@ function Login() {
 
 
   async function login() {
-    await api.postLogin(user).then(
-      (response) => {
-        setAlert({
-          type: "success",
-          message: response.data.message,
-          visible: true,
-        });
-        localStorage.setItem("authenticated", true);
-        localStorage.setItem("token", response.data.token);
-        localStorage.setItem("id_usuario", response.data.user.id_user);
-        navigate("home/");
-      },
-      (error) => {
-        setAlert({
-          type: "error",
-          message: error.response?.data?.error || "Ocorreu um erro",
-          visible: true,
-        });
-        console.log(error);
-        
-      }
-    );
+    try {
+      const response = await api.postLogin(user);
+      setAlert({
+        type: "success",
+        message: response.data.message,
+        visible: true,
+      });
+  
+      localStorage.setItem("authenticated", true);
+      localStorage.setItem("token", response.data.token);
+      localStorage.setItem("id_usuario", response.data.user.id_user);
+  
+      navigate("home/");
+    } catch (error) {
+      setAlert({
+        type: "error",
+        message: error.response?.data?.error || "Ocorreu um erro",
+        visible: true,
+      });
+      console.log(error);
+    }
   }
+  
 
   return (
     <Box sx={{ height: "100vh", backgroundColor: "#FFE9E9", display: "flex", flexDirection: "column" }}>

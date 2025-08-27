@@ -30,7 +30,6 @@ function Cadastro() {
     cadastro();
   };
 
-  // Função para cadastrar usuário
   async function cadastro() {
     try {
       const response = await api.postCadastro(user);
@@ -173,7 +172,6 @@ function Cadastro() {
             <MenuItem value="Comum">Comum</MenuItem>
           </TextField>
 
-          {/* Botão Cadastrar */}
           <Button
             sx={{
               backgroundColor: "white",

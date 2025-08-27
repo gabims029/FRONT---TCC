@@ -4,7 +4,7 @@ import Login from "./pages/Login";
 import HomeAdm from "./pages/HomeAdm";
 //import Sala from "./pages/Sala"
 import DefaultLayout from "./components/DefaultLayout";
-import ProtectedRoute from "./components/ProtectedRoute"
+import ProtectedRoute from "./components/ProtectedRoute";
 import Cadastro from "./pages/Cadastro";
 //import MinhasReservas from "./pages/ShowReservas"
 import Perfil from "./pages/Perfil";
@@ -42,7 +42,7 @@ function App() {
           path="/profile"
           element={
             <ProtectedRoute>
-              <Perfil />
+              <Perfil/>
             </ProtectedRoute>
           }
         />

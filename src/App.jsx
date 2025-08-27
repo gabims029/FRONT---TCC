@@ -4,6 +4,7 @@ import Login from "./pages/Login";
 import HomeAdm from "./pages/HomeAdm";
 //import Sala from "./pages/Sala"
 import DefaultLayout from "./components/DefaultLayout";
+import ProtectedRoute from "./components/ProtectedRoute"
 import Cadastro from "./pages/Cadastro";
 //import MinhasReservas from "./pages/ShowReservas"
 import Perfil from "./pages/Perfil";
@@ -24,33 +25,33 @@ function App() {
         <Route
           path="/home"
           element={
-            <DefaultLayout headerRender={2}>
+            <ProtectedRoute>
               <HomeAdm />
-            </DefaultLayout>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/cadastro"
           element={
-            <DefaultLayout headerRender={2}>
+            <ProtectedRoute>
               <Cadastro />
-            </DefaultLayout>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/profile"
           element={
-            <DefaultLayout headerRender={2}>
+            <ProtectedRoute>
               <Perfil />
-            </DefaultLayout>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/salas"
           element={
-            <DefaultLayout headerRender={2}>
+            <ProtectedRoute>
               <SalasPage />
-            </DefaultLayout>
+            </ProtectedRoute>
           }
         />
       </Routes>

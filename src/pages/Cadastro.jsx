@@ -130,6 +130,7 @@ function Cadastro() {
             id="cpf"
             placeholder="CPF"
             name="cpf"
+            type="number"
             value={user.cpf}
             onChange={onChange}
             sx={{

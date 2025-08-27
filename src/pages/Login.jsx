@@ -1,7 +1,5 @@
 import * as React from "react";
-import TextField from "@mui/material/TextField";
-import Button from "@mui/material/Button";
-import Box from "@mui/material/Box";
+import { Box, TextField, Button, Snackbar, Alert } from "@mui/material";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../axios/axios";
@@ -17,6 +15,12 @@ function Login() {
   });
   const navigate = useNavigate();
 
+  const [alert, setAlert] = useState({
+    type: "",       
+    message: "",    
+    visible: false, 
+  });
+
   const onChange = (event) => {
     const { name, value } = event.target;
     setUser({ ...user, [name]: value });
@@ -26,19 +30,32 @@ function Login() {
     event.preventDefault();
     login();
   };
+  const handleClose = () => {
+    setAlert({ ...alert, visible: false });
+  };
+
 
   async function login() {
     await api.postLogin(user).then(
       (response) => {
-        alert(response.data.message);
+        setAlert({
+          type: "success",
+          message: response.data.message,
+          visible: true,
+        });
         localStorage.setItem("authenticated", true);
         localStorage.setItem("token", response.data.token);
         localStorage.setItem("id_usuario", response.data.user.id_user);
         navigate("home/");
       },
       (error) => {
+        setAlert({
+          type: "error",
+          message: error.response?.data?.error || "Ocorreu um erro",
+          visible: true,
+        });
         console.log(error);
-        alert(error.response.data.error);
+        
       }
     );
   }
@@ -140,6 +157,23 @@ function Login() {
           }}
         />
       </Box>
+
+      <Snackbar
+          open={alert.visible}
+          autoHideDuration={4000} // tempo que o alerta fica visível
+          onClose={handleClose}
+          anchorOrigin={{ vertical: "top", horizontal: "center" }} // posição do alerta
+        >
+          {alert.type && (
+            <Alert
+              severity={alert.type}
+              onClose={handleClose}
+              sx={{ width: "100%" }}
+            >
+              {alert.message}
+            </Alert>
+          )}
+        </Snackbar>
     </Box>
   );
 }

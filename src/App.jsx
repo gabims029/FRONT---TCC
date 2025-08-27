@@ -6,6 +6,7 @@ import HomeAdm from "./pages/HomeAdm";
 import DefaultLayout from "./components/DefaultLayout";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Cadastro from "./pages/Cadastro";
+import ListarUsuario from "./pages/ListarUsuarios";
 //import MinhasReservas from "./pages/ShowReservas"
 import Perfil from "./pages/Perfil";
 import SalasPage from "./pages/Salas";
@@ -51,6 +52,14 @@ function App() {
           element={
             <ProtectedRoute>
               <SalasPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/users"
+          element={
+            <ProtectedRoute>
+              <ListarUsuario />
             </ProtectedRoute>
           }
         />

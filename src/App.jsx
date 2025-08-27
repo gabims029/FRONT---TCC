@@ -7,13 +7,21 @@ import DefaultLayout from "./components/DefaultLayout";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Cadastro from "./pages/Cadastro";
 //import MinhasReservas from "./pages/ShowReservas"
-import Perfil from "./pages/Perfil"
+import Perfil from "./pages/Perfil";
+import SalasPage from "./pages/Salas";
 
 function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<DefaultLayout headerRender={1}><Login/></DefaultLayout>}/>
+        <Route
+          path="/"
+          element={
+            <DefaultLayout headerRender={1}>
+              <Login />
+            </DefaultLayout>
+          }
+        />
         <Route
           path="/home"
           element={
@@ -35,6 +43,14 @@ function App() {
           element={
             <ProtectedRoute>
               <Perfil/>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/salas"
+          element={
+            <ProtectedRoute>
+              <SalasPage />
             </ProtectedRoute>
           }
         />

@@ -22,6 +22,7 @@ const sheets = {
     updateUser: (data) => api.put(`/user/`, data),
     getUserByID: (id_usuario) => api.get(`/user/${id_usuario}`),
     deleteUser: (id_usuario) => api.delete(`/user/${id_usuario}`),
+    getSalaByBloco: (bloco) => api.get(`/sala/${bloco}`),
 };
 
 export default sheets;

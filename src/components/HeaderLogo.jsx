@@ -26,7 +26,7 @@ function Header() {
     { label: "PERFIL", path: "/profile" },
     { label: "MINHAS RESERVAS", path: "/minhasReservas" },
     { label: "CADASTRAR USUÁRIO", path: "/cadastro" },
-    { label: "CRIAR SALA", path: "/createsala" },
+    { label: "CRIAR SALA", path: "/criarSala" },
     { label: "VISUALIZAR USUÁRIOS", path: "/users" },
     { label: "SAIR", path: "/" },
   ];

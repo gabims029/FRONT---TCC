@@ -2,14 +2,13 @@ import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Login from "./pages/Login";
 import HomeAdm from "./pages/HomeAdm";
-//import Sala from "./pages/Sala"
 import DefaultLayout from "./components/DefaultLayout";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Cadastro from "./pages/Cadastro";
 import ListarUsuario from "./pages/ListarUsuarios";
-//import MinhasReservas from "./pages/ShowReservas"
 import Perfil from "./pages/Perfil";
 import SalasPage from "./pages/Salas";
+import CriarSala from "./pages/CriarSala";
 
 function App() {
   return (
@@ -60,6 +59,14 @@ function App() {
           element={
             <ProtectedRoute>
               <ListarUsuario />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/criarSala"
+          element={
+            <ProtectedRoute>
+              <CriarSala />
             </ProtectedRoute>
           }
         />

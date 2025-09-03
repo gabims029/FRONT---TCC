@@ -51,13 +51,8 @@ function Perfil() {
         cpf: response.data.user.cpf || "",
         senha: response.data.user.senha || "",
       });
-    } catch (err) {
-      console.error(err);
-      setAlert({
-        type: "error",
-        message: error.response?.data?.error || "Ocorreu um erro",
-        visible: true,
-      });
+    } catch (error) {
+      showAlert(error.response?.data?.error || "Erro ao buscar usuário", "error");
     }
   };
 
@@ -78,11 +73,6 @@ function Perfil() {
       }}
     >
       <Box sx={{ width: "100%", maxWidth: "500px", padding: 2 }}>
-        {alert.visible && (
-          <Alert severity={alert.type} sx={{ width: "100%", mb: 2 }}>
-            {alert.message}
-          </Alert>
-        )}
 
         <Box
           sx={{
@@ -195,7 +185,7 @@ function Perfil() {
             disabled
             value={userData.cpf}
             placeholder={userData.cpf}
-            type="number"
+            type="text"
             sx={{
               marginBottom: 2.5,
               backgroundColor: "white",

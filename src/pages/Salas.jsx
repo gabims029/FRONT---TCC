@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   Box,
   Container,
@@ -13,25 +13,15 @@ import {
 import api from "../axios/axios";
 
 export default function SalasPage() {
-  const location = useLocation();
+  const location = useLocation(); //guarda a informação sobre o bloco
+  const navigate = useNavigate();
+
   const blocoSelecionadoInicial = location.state?.bloco; // bloco enviado pelo navigate
   const [salas, setSalas] = useState([]);
   const [search, setSearch] = useState("");
   const [blocoSelecionado, setBlocoSelecionado] = useState(
     blocoSelecionadoInicial
   );
-  // const [modalAberto, setModalAberto] = useState(false);
-  // const [salaSelecionada, setSalaSelecionada] = useState(null);
-
-  // const abrirModal = (sala) => {
-  //   setSalaSelecionada(sala);
-  //   setModalAberto(true);
-  // };
-
-  // const fecharModal = () => {
-  //   setSalaSelecionada(null);
-  //   setModalAberto(false);
-  // };
 
   useEffect(() => {
     const fetchSalas = async () => {
@@ -51,6 +41,10 @@ export default function SalasPage() {
       s.numero?.toLowerCase().includes(search.toLowerCase()) ||
       s.descricao?.toLowerCase().includes(search.toLowerCase())
   );
+
+  const handleCardClick = (sala) => {
+    navigate("/reserva", { state: { sala } });
+  };
 
   return (
     <Box
@@ -96,12 +90,14 @@ export default function SalasPage() {
           {salasFiltradas.map((sala, idx) => (
             <Grid item xs={12} sm={6} md={4} key={idx}>
               <Card
-                // onClick={() => abrirModal(sala)}
+                onClick={() => handleCardClick(sala)}
                 sx={{
                   borderRadius: 2,
                   border: "1px solid #e0e0e0",
                   background: "#fff",
                   cursor: "pointer",
+                  transition: "0.2s",
+                  "&:hover": { boxShadow: 4 },
                 }}
               >
                 <CardContent>
@@ -129,11 +125,6 @@ export default function SalasPage() {
           ))}
         </Grid>
       </Container>
-      {/* {modalAberto && (
-        <SeuModalComponent 
-        sala={salaSelecionada} 
-        onClose={fecharModal} />
-      )} */}
     </Box>
   );
 }

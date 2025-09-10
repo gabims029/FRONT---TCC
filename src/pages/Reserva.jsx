@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import { Box, Typography, Button, TextField, Grid } from "@mui/material";
+import { Box, Typography, Button, TextField, Grid, Alert } from "@mui/material";
 import api from "../axios/axios";
 
 export default function ReservaPage() {
@@ -14,6 +14,9 @@ export default function ReservaPage() {
   const [loading, setLoading] = useState(true);
   const [erro, setErro] = useState(false);
 
+  // estado para alert
+  const [mensagem, setMensagem] = useState("");
+
   useEffect(() => {
     const fetchHorarios = async () => {
       if (!sala) return;
@@ -21,7 +24,7 @@ export default function ReservaPage() {
       setErro(false);
 
       try {
-        const res = await api.getAllPeriodos(); // Corrigi para chamar como função
+        const res = await api.getAllPeriodos();
         setHorarios(Array.isArray(res.data) ? res.data : []);
       } catch (err) {
         console.error("Erro ao buscar horários:", err);
@@ -37,10 +40,12 @@ export default function ReservaPage() {
 
   const handleReservar = () => {
     if (!horarioSelecionado) {
-      alert("Selecione um horário!");
+      setMensagem("Selecione um horário antes de reservar!");
       return;
     }
-    alert(
+
+    // exibe alerta de sucesso
+    setMensagem(
       `Reserva feita para sala ${
         sala?.numero || "Desconhecida"
       } em ${data} no horário ${horarioSelecionado}`
@@ -63,23 +68,20 @@ export default function ReservaPage() {
         backgroundColor: "#ffe9e9",
         minHeight: "100vh",
         p: 0,
+        width: "100%",
+        overflowX: "hidden",
       }}
     >
       {/* Cabeçalho fixo */}
       <Box
-        sx={{
-          width: "100%",
-          maxWidth: "100vw", // preenche toda a tela
-          p: 3,
-          textAlign: "left",
-        }}
+        sx={{ width: "100%", p: 3, textAlign: "left", boxSizing: "border-box" }}
       >
         {/* Nome da sala */}
         <Box
           sx={{
             backgroundColor: "#f4bcbc",
             p: 2,
-            borderBottom: "1px solid #f4bcbc", // sem contraste
+            borderBottom: "1px solid #f4bcbc",
           }}
         >
           <Typography variant="h6" fontWeight="bold">
@@ -93,8 +95,8 @@ export default function ReservaPage() {
             display: "flex",
             flexDirection: "column",
             alignItems: "flex-start",
-            px: 2, // só padding horizontal
-            py: 1, // padding vertical menor
+            px: 2,
+            py: 1,
           }}
         >
           <Typography fontWeight="bold" sx={{ fontSize: "0.9rem", mb: 1 }}>
@@ -114,15 +116,7 @@ export default function ReservaPage() {
       </Box>
 
       {/* Conteúdo dos horários */}
-      <Box
-        sx={{
-          width: "100%",
-          maxWidth: 600,
-          p: 3,
-          mx: "auto",
-          mt: 2,
-        }}
-      >
+      <Box sx={{ width: "100%", maxWidth: 600, p: 3, mx: "auto", mt: 2 }}>
         {loading ? (
           <Typography textAlign="center">Carregando horários...</Typography>
         ) : erro ? (
@@ -177,11 +171,28 @@ export default function ReservaPage() {
           </Grid>
         )}
 
+        {/* Mensagem de alerta */}
+        {mensagem && (
+          <Alert
+            severity={horarioSelecionado ? "success" : "warning"}
+            sx={{ mt: 2 }}
+            onClose={() => setMensagem("")} // fecha o alerta
+          >
+            {mensagem}
+          </Alert>
+        )}
+
         {/* Botão Reservar */}
-        <Box mt={4}>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            mt: 2,
+          }}
+        >
           <Button
             variant="contained"
-            fullWidth
             sx={{
               background: "red",
               "&:hover": { background: "#c62828" },

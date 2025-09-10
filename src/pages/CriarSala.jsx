@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Box, Typography, TextField, Button, MenuItem, Snackbar, Alert } from "@mui/material";
 import DefaultLayout from "../components/DefaultLayout";
+import { useNavigate } from "react-router-dom";
 import api from "../axios/axios";
 
 function CriarSala() {
@@ -10,6 +11,8 @@ function CriarSala() {
     capacidade: "",
     bloco: "",
   });
+
+   const navigate = useNavigate();
 
   // alert do MUI
   const [alert, setAlert] = useState({
@@ -162,11 +165,25 @@ function CriarSala() {
               color: "#B9181D",
               fontWeight: "bold",
               width: "100%",
+              marginBottom:"15px"
             }}
             type="submit"
             variant="contained"
           >
             Criar
+          </Button>
+          <Button
+            sx={{
+              backgroundColor: "white",
+              color: "#B9181D",
+              fontWeight: "bold",
+              width: "100%",
+            }}
+            variant="contained"
+            onClick={() => navigate("/listarSalas")}
+            
+          >
+            Listar Salas
           </Button>
         </Box>
 

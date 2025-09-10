@@ -3,8 +3,8 @@ import { Box, Typography, Snackbar, Alert, IconButton } from "@mui/material";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import api from "../axios/axios";
 
-function ListarUsuario() {
-  const [usuarios, setUsuarios] = useState([]);
+function ListarSalas() {
+  const [salas, setSalas] = useState([]);
 
   const [alert, setAlert] = useState({
     type: "",
@@ -16,10 +16,11 @@ function ListarUsuario() {
     setAlert({ ...alert, visible: false });
   };
 
-  async function getUsers() {
+  async function getSalas() {
     try {
-      const response = await api.getUsers();
-      setUsuarios(response.data.users);
+      const response = await api.getSalas();
+      console.log(response.data.salas)
+      setSalas(response.data.salas);
     } catch (error) {
       setAlert({
         message: error.response.data.error,
@@ -30,16 +31,16 @@ function ListarUsuario() {
     }
   }
 
-  async function deleteUser(id_usuario) {
+  async function deleteSala(sala) {
     try {
-      const response = await api.deleteUser(id_usuario);
+      const response = await api.deleteSala(sala);
       setAlert({
         message: response.data.message,
         type: "success",
         visible: true,
       });
     } catch (error) {
-      console.log("Erro ao deletar usuario...", error);
+      console.log("Erro ao deletar sala...", error);
       setAlert({
         message: error.response.data.error,
         type: "error",
@@ -49,7 +50,7 @@ function ListarUsuario() {
   }
 
   useEffect(() => {
-    getUsers();
+    getSalas();
   }, []);
 
   return (
@@ -85,11 +86,11 @@ function ListarUsuario() {
               textAlign: "center",
             }}
           >
-            LISTA DE USUÁRIOS
+            LISTA DE SALAS
           </Typography>
-          {usuarios.map((usuario, index) => (
+          {salas.map((sala) => (
             <Box
-              key={index}
+              key={sala.id_sala}
               sx={{
                 backgroundColor: "#fff",
                 borderRadius: 2,
@@ -103,13 +104,13 @@ function ListarUsuario() {
             >
               <Box>
                 <Typography variant="h6" fontSize={18}>
-                  {usuario.nome}
+                  {sala.numero}
                 </Typography>
                 <Typography variant="body2" color="gray">
-                  {usuario.email}
+                  {sala.descricao}
                 </Typography>
               </Box>
-              <IconButton onClick={() => deleteUser(usuario.id_usuario)}>
+              <IconButton onClick={() => deleteSala(sala.numero)}>
                 <DeleteOutlineIcon color="error" />
               </IconButton>
             </Box>
@@ -137,4 +138,4 @@ function ListarUsuario() {
   );
 }
 
-export default ListarUsuario;
+export default ListarSalas;

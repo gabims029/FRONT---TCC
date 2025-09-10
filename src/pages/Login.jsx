@@ -46,6 +46,7 @@ function Login() {
       localStorage.setItem("authenticated", true);
       localStorage.setItem("token", response.data.token);
       localStorage.setItem("id_usuario", response.data.user.id_user);
+      localStorage.setItem("tipo", response.data.user.tipo);
 
       navigate("home/");
     } catch (error) {

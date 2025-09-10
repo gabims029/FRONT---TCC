@@ -101,7 +101,7 @@ function ModalEditarPerfil({
           type: "password",
         },
         {
-          label: "NOVA SENHA",
+          label: "NOVA SENHA(opcional)",
           name: "senhaNova",
           placeholder: "Digite a nova senha",
           type: "password",

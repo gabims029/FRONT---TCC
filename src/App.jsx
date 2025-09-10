@@ -9,6 +9,7 @@ import ListarUsuario from "./pages/ListarUsuarios";
 import Perfil from "./pages/Perfil";
 import SalasPage from "./pages/Salas";
 import CriarSala from "./pages/CriarSala";
+import ListarSalas from "./pages/ListarSalas";
 
 function App() {
   return (
@@ -42,7 +43,7 @@ function App() {
           path="/profile"
           element={
             <ProtectedRoute>
-              <Perfil/>
+              <Perfil />
             </ProtectedRoute>
           }
         />
@@ -67,6 +68,14 @@ function App() {
           element={
             <ProtectedRoute>
               <CriarSala />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/listarSalas"
+          element={
+            <ProtectedRoute>
+              <ListarSalas />
             </ProtectedRoute>
           }
         />

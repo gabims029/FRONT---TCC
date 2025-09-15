@@ -9,12 +9,10 @@ export default function ReservaPage() {
 
   const hoje = new Date().toISOString().split("T")[0];
   const [data, setData] = useState(hoje);
-  const [horarioSelecionado, setHorarioSelecionado] = useState(null);
+  const [horariosSelecionados, setHorariosSelecionados] = useState([]);
   const [horarios, setHorarios] = useState([]);
   const [loading, setLoading] = useState(true);
   const [erro, setErro] = useState(false);
-
-  // estado para alert
   const [mensagem, setMensagem] = useState("");
 
   useEffect(() => {
@@ -25,7 +23,8 @@ export default function ReservaPage() {
 
       try {
         const res = await api.getAllPeriodos();
-        setHorarios(Array.isArray(res.data) ? res.data : []);
+        const listaHorarios = res.data?.periodos || [];
+        setHorarios(listaHorarios);
       } catch (err) {
         console.error("Erro ao buscar horários:", err);
         setErro(true);
@@ -36,19 +35,28 @@ export default function ReservaPage() {
     };
 
     fetchHorarios();
-  }, [sala]);
+  }, [sala, data]);
+
+  // Função para selecionar/desmarcar horários
+  const handleToggleHorario = (intervalo, status) => {
+    if (status === "ocupado") return; // não permite selecionar ocupado
+    setHorariosSelecionados((prev) =>
+      prev.includes(intervalo)
+        ? prev.filter((h) => h !== intervalo)
+        : [...prev, intervalo]
+    );
+  };
 
   const handleReservar = () => {
-    if (!horarioSelecionado) {
-      setMensagem("Selecione um horário antes de reservar!");
+    if (horariosSelecionados.length === 0) {
+      setMensagem("Selecione pelo menos um horário antes de reservar!");
       return;
     }
 
-    // exibe alerta de sucesso
     setMensagem(
       `Reserva feita para sala ${
         sala?.numero || "Desconhecida"
-      } em ${data} no horário ${horarioSelecionado}`
+      } em ${data} nos horários: ${horariosSelecionados.join(", ")}`
     );
   };
 
@@ -69,14 +77,12 @@ export default function ReservaPage() {
         minHeight: "100vh",
         p: 0,
         width: "100%",
-        overflowX: "hidden",
       }}
     >
-      {/* Cabeçalho fixo */}
+      {/* Cabeçalho */}
       <Box
         sx={{ width: "100%", p: 3, textAlign: "left", boxSizing: "border-box" }}
       >
-        {/* Nome da sala */}
         <Box
           sx={{
             backgroundColor: "#f4bcbc",
@@ -115,7 +121,7 @@ export default function ReservaPage() {
         </Box>
       </Box>
 
-      {/* Conteúdo dos horários */}
+      {/* Horários */}
       <Box sx={{ width: "100%", maxWidth: 600, p: 3, mx: "auto", mt: 2 }}>
         {loading ? (
           <Typography textAlign="center">Carregando horários...</Typography>
@@ -127,54 +133,58 @@ export default function ReservaPage() {
           <Typography textAlign="center">Nenhum horário disponível.</Typography>
         ) : (
           <Grid container spacing={2} justifyContent="center">
-            {horarios.map((h) => (
-              <Grid item xs={6} sm={4} key={h.id}>
-                <Button
-                  variant="contained"
-                  fullWidth
-                  onClick={() =>
-                    h.status === "livre" && setHorarioSelecionado(h.label)
-                  }
-                  sx={{
-                    backgroundColor:
-                      h.status === "ocupado"
-                        ? "#e57373"
-                        : horarioSelecionado === h.label
-                        ? "#fff"
-                        : "#81c784",
-                    color:
-                      h.status === "ocupado"
-                        ? "#fff"
-                        : horarioSelecionado === h.label
-                        ? "#000"
-                        : "#fff",
-                    border:
-                      horarioSelecionado === h.label
-                        ? "2px solid red"
-                        : "1px solid transparent",
-                    "&:hover": {
+            {horarios.map((h, i) => {
+              const intervalo = `${h.horario_inicio.slice(
+                0,
+                5
+              )} - ${h.horario_fim.slice(0, 5)}`;
+              const selecionado = horariosSelecionados.includes(intervalo);
+
+              return (
+                <Grid item xs={6} sm={4} key={h.id_periodo || i}>
+                  <Button
+                    fullWidth
+                    onClick={() => handleToggleHorario(intervalo, h.status)}
+                    sx={{
                       backgroundColor:
                         h.status === "ocupado"
                           ? "#e57373"
-                          : horarioSelecionado === h.label
+                          : selecionado
                           ? "#fff"
-                          : "#66bb6a",
-                    },
-                    minHeight: "50px",
-                  }}
-                  disabled={h.status === "ocupado"}
-                >
-                  {h.label || "Indisponível"}
-                </Button>
-              </Grid>
-            ))}
+                          : "#81c784",
+                      color:
+                        h.status === "ocupado"
+                          ? "#fff"
+                          : selecionado
+                          ? "#000"
+                          : "#fff",
+                      border: selecionado
+                        ? "2px solid red"
+                        : "1px solid transparent",
+                      "&:hover": {
+                        backgroundColor:
+                          h.status === "ocupado"
+                            ? "#e57373"
+                            : selecionado
+                            ? "#fff"
+                            : "#66bb6a",
+                      },
+                      minHeight: "50px",
+                    }}
+                    disabled={h.status === "ocupado"}
+                  >
+                    {intervalo}
+                  </Button>
+                </Grid>
+              );
+            })}
           </Grid>
         )}
 
         {/* Mensagem de alerta */}
         {mensagem && (
           <Alert
-            severity={horarioSelecionado ? "success" : "warning"}
+            severity={horariosSelecionados ? "success" : "warning"}
             sx={{ mt: 2 }}
             onClose={() => setMensagem("")} // fecha o alerta
           >

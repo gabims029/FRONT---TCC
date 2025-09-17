@@ -3,7 +3,13 @@ import { Dialog, Box, Typography, TextField, Button } from "@mui/material";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import api from "../axios/axios";
 
-function ModalEditarPerfil({ open, onClose, userData, setUserData, showAlert }) {
+function ModalEditarPerfil({
+  open,
+  onClose,
+  userData,
+  setUserData,
+  showAlert,
+}) {
   const id_usuario = localStorage.getItem("id_usuario");
 
   useEffect(() => {
@@ -39,7 +45,6 @@ function ModalEditarPerfil({ open, onClose, userData, setUserData, showAlert }) 
         cpf: userData.cpf,
         senha: userData.senhaNova || userData.senha,
       };
-
       await api.updateUser(id_usuario, dataToUpload);
       showAlert("Perfil atualizado com sucesso!", "success");
       onClose();
@@ -70,11 +75,37 @@ function ModalEditarPerfil({ open, onClose, userData, setUserData, showAlert }) 
 
       {/* Inputs */}
       {[
-        { label: "NOME", name: "nome", placeholder: "Digite o novo nome", type: "text" },
-        { label: "CPF", name: "cpf", placeholder: "************", type: "text", disabled: true },
-        { label: "EMAIL", name: "email", placeholder: "Digite o novo email", type: "text" },
-        { label: "SENHA", name: "senhaAtual", placeholder: "Digite a senha atual", type: "password" },
-        { label: "NOVA SENHA", name: "senhaNova", placeholder: "Digite a nova senha", type: "password" },
+        {
+          label: "NOME",
+          name: "nome",
+          placeholder: "Digite o novo nome",
+          type: "text",
+        },
+        {
+          label: "CPF",
+          name: "cpf",
+          placeholder: "************",
+          type: "text",
+          disabled: true,
+        },
+        {
+          label: "EMAIL",
+          name: "email",
+          placeholder: "Digite o novo email",
+          type: "text",
+        },
+        {
+          label: "SENHA",
+          name: "senhaAtual",
+          placeholder: "Digite a senha atual",
+          type: "password",
+        },
+        {
+          label: "NOVA SENHA(opcional)",
+          name: "senhaNova",
+          placeholder: "Digite a nova senha",
+          type: "password",
+        },
       ].map((field) => (
         <Box key={field.name} sx={{ mb: 2 }}>
           <Typography sx={{ color: "white", fontWeight: "bold", mb: 0.5 }}>
@@ -92,13 +123,15 @@ function ModalEditarPerfil({ open, onClose, userData, setUserData, showAlert }) 
               backgroundColor: "white",
               borderRadius: 1,
               "& .MuiInputBase-input": { color: "black" },
-              "& .Mui-disabled": { WebkitTextFillColor: "black", color: "black" },
+              "& .Mui-disabled": {
+                WebkitTextFillColor: "black",
+                color: "black",
+              },
             }}
           />
         </Box>
       ))}
 
-      {/* Botões lado a lado */}
       <Box sx={{ display: "flex", gap: 2, mt: 3 }}>
         <Button
           variant="contained"

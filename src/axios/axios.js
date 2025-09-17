@@ -25,6 +25,13 @@ const sheets = {
   getSalaByBloco: (bloco) => api.get(`/sala/bloco/${bloco}`),
   postReserva: () => api.post(),
   getAllPeriodos: () => api.get("/periodo/"),
+  getUsers: () => api.get("/user"),
+  getUserByID: (id_usuario) => api.get(`/user/${id_usuario}`),
+  deleteUser: (id_usuario) => api.delete(`/user/${id_usuario}`),
+  getSala: () => api.get("/sala"),
+  getSalaByBloco: (bloco) => api.get(`/sala/bloco/${bloco}`),
+  createSala: (sala) => api.post("/sala", sala),
+  deleteSala: (sala) => api.delete(`/sala/${sala}`),
 };
 
 export default sheets;

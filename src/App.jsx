@@ -5,10 +5,13 @@ import HomeAdm from "./pages/HomeAdm";
 import DefaultLayout from "./components/DefaultLayout";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Cadastro from "./pages/Cadastro";
-//import MinhasReservas from "./pages/ShowReservas"
+import ListarUsuario from "./pages/ListarUsuarios";
 import Perfil from "./pages/Perfil";
 import SalasPage from "./pages/Salas";
 import ReservaPage from "./pages/Reserva";
+import CriarSala from "./pages/CriarSala";
+import ListarSalas from "./pages/ListarSalas";
+
 
 function App() {
   return (
@@ -42,7 +45,7 @@ function App() {
           path="/profile"
           element={
             <ProtectedRoute>
-              <Perfil/>
+              <Perfil />
             </ProtectedRoute>
           }
         />
@@ -59,6 +62,30 @@ function App() {
           element={
             <ProtectedRoute>
               <ReservaPage />
+            </ProtectedRoute>
+          }
+          />
+
+          path="/users"
+          element={
+            <ProtectedRoute>
+              <ListarUsuario />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/criarSala"
+          element={
+            <ProtectedRoute>
+              <CriarSala />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/listarSalas"
+          element={
+            <ProtectedRoute>
+              <ListarSalas />
             </ProtectedRoute>
           }
         />

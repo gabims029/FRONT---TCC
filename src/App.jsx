@@ -12,7 +12,6 @@ import ReservaPage from "./pages/Reserva";
 import CriarSala from "./pages/CriarSala";
 import ListarSalas from "./pages/ListarSalas";
 
-
 function App() {
   return (
     <Router>
@@ -64,8 +63,8 @@ function App() {
               <ReservaPage />
             </ProtectedRoute>
           }
-          />
-
+        />
+        <Route
           path="/users"
           element={
             <ProtectedRoute>

@@ -8,8 +8,10 @@ import Cadastro from "./pages/Cadastro";
 import ListarUsuario from "./pages/ListarUsuarios";
 import Perfil from "./pages/Perfil";
 import SalasPage from "./pages/Salas";
+import ReservaPage from "./pages/Reserva";
 import CriarSala from "./pages/CriarSala";
 import ListarSalas from "./pages/ListarSalas";
+
 
 function App() {
   return (
@@ -56,6 +58,14 @@ function App() {
           }
         />
         <Route
+          path="/reserva"
+          element={
+            <ProtectedRoute>
+              <ReservaPage />
+            </ProtectedRoute>
+          }
+          />
+
           path="/users"
           element={
             <ProtectedRoute>

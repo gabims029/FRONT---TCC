@@ -3,51 +3,75 @@ import { useLocation } from "react-router-dom";
 import {
   Box,
   Typography,
-  TextField,
   Button,
+  TextField,
   Grid,
   Alert,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Select,
   Chip,
+  OutlinedInput,
+  Snackbar,
 } from "@mui/material";
 import api from "../axios/axios";
+import ModalReserva from "../components/ModalReserva";
 
-export default function ReservaPage({ idUsuario }) {
+export default function ReservaPage() {
   const location = useLocation();
   const sala = location.state?.sala;
-  const idSala = sala?.id_sala;
 
   const hoje = new Date().toISOString().split("T")[0];
-  const id_usuario = localStorage.getItem("id_usuario");
 
-  const [datasSelecionadas, setDatasSelecionadas] = useState([hoje]);
+  const idUsuario = localStorage.getItem("id_usuario");
+
   const [horariosSelecionados, setHorariosSelecionados] = useState([]);
   const [horarios, setHorarios] = useState([]);
-  const [mensagem, setMensagem] = useState("");
-  const [mensagemTipo, setMensagemTipo] = useState("success");
+  const [loading, setLoading] = useState(true);
+  const [erro, setErro] = useState(false);
 
-  // Carrega horários disponíveis
-  useEffect(() => {
-    const fetchHorarios = async () => {
-      try {
-        const res = await api.getAllPeriodos();
-        setHorarios(res.data?.periodos || []);
-      } catch (err) {
-        console.error("Erro ao buscar horários:", err);
-        setHorarios([]);
-      }
-    };
-    fetchHorarios();
-  }, []);
+  const [alert, setAlert] = useState({
+    type: "",
+    message: "",
+    visible: false,
+  });
 
-  const handleAddData = (novaData) => {
-    if (!datasSelecionadas.includes(novaData)) {
-      setDatasSelecionadas([...datasSelecionadas, novaData]);
+  const [dataInicio, setDataInicio] = useState(hoje);
+  const [dataFim, setDataFim] = useState(hoje);
+  const [DiaSelecionado, setDiasSelecionado] = useState([]);
+
+  // Função para fechar o alerta
+  const handleClose = () => {
+    setAlert({ ...alert, visible: false });
+  };
+
+  // Função para buscar os horários, agora isolada
+  const fetchHorarios = async () => {
+    if (!sala) return;
+    setLoading(true);
+    setErro(false);
+    try {
+      const res = await api.getAllPeriodos();
+      setHorarios(res.data?.periodos || []);
+    } catch (err) {
+      console.error("Erro ao buscar horários:", err);
+      setErro(true);
+      setHorarios([]);
+      setAlert({
+        type: "warning",
+        message:
+          "Atenção: A reserva foi feita, mas houve um erro ao atualizar a lista de horários.",
+        visible: true,
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleRemoveData = (data) => {
-    setDatasSelecionadas(datasSelecionadas.filter((d) => d !== data));
-  };
+  useEffect(() => {
+    fetchHorarios();
+  }, [sala]);
 
   const handleToggleHorario = (id_periodo, status) => {
     if (status === "ocupado") return;
@@ -60,46 +84,73 @@ export default function ReservaPage({ idUsuario }) {
 
   const handleReservar = async () => {
     if (
-      !idSala ||
       horariosSelecionados.length === 0 ||
-      datasSelecionadas.length === 0
+      !dataInicio ||
+      !dataFim ||
+      DiaSelecionado.length === 0
     ) {
-      setMensagem(
-        "Selecione pelo menos um horário e uma data antes de reservar!"
-      );
-      setMensagemTipo("warning");
+      setAlert({
+        type: "warning",
+        message:
+          "Selecione pelo menos um dia da semana, um horário e defina a data de início e fim antes de reservar!",
+        visible: true,
+      });
+      return;
+    }
+
+    if (!idUsuario) {
+      setAlert({
+        type: "error",
+        message:
+          "ID do usuário não encontrado. Por favor, faça login novamente.",
+        visible: true,
+      });
       return;
     }
 
     try {
-      const reservas = [];
+      for (const id_periodo of horariosSelecionados) {
+        const reserva = {
+          fk_id_periodo: id_periodo,
+          fk_id_user: idUsuario,
+          fk_id_sala: sala.id_sala,
+          dias: DiaSelecionado,
+          data_inicio: dataInicio,
+          data_fim: dataFim,
+        };
+        await api.createReserva(reserva);
+      }
 
-      // Para cada data selecionada, envia os horários escolhidos
-      datasSelecionadas.forEach((dia) => {
-        horariosSelecionados.forEach((id_periodo) => {
-          reservas.push({
-            fk_id_periodo: id_periodo,
-            fk_id_user: id_usuario,
-            fk_id_sala: idSala,
-            dias: [], 
-            data_inicio: dia,
-            data_fim: dia,
-          });
-        });
+      setAlert({
+        type: "success",
+        message: `Reserva feita para sala ${sala?.numero || "Desconhecida"}!`,
+        visible: true,
       });
-
-      // Chamada para o backend
-      await api.createReserva(reservas);
-
-      setMensagem("Reserva realizada com sucesso!");
-      setMensagemTipo("success");
-      setDatasSelecionadas([hoje]);
       setHorariosSelecionados([]);
+      setDiasSelecionado([]);
+      setDataInicio(hoje);
+      setDataFim(hoje);
     } catch (err) {
       console.error("Erro ao reservar:", err);
-      setMensagem("Erro ao fazer a reserva. Tente novamente.");
-      setMensagemTipo("warning");
+      const errorMessage =
+        err.response?.data?.error ||
+        "Erro ao fazer a reserva. Tente novamente.";
+
+      if (!errorMessage.includes("A sala já está reservada")) {
+        setHorariosSelecionados([]);
+        setDiasSelecionado([]);
+        setDataInicio(hoje);
+        setDataFim(hoje);
+      }
+
+      setAlert({
+        type: "error",
+        message: errorMessage,
+        visible: true,
+      });
     }
+
+    fetchHorarios();
   };
 
   if (!sala) {
@@ -121,7 +172,6 @@ export default function ReservaPage({ idUsuario }) {
         width: "100%",
       }}
     >
-      {/* Cabeçalho */}
       <Box
         sx={{ width: "100%", p: 3, textAlign: "left", boxSizing: "border-box" }}
       >
@@ -133,11 +183,11 @@ export default function ReservaPage({ idUsuario }) {
           }}
         >
           <Typography variant="h6" fontWeight="bold">
-            {sala?.numero}
+            {sala?.numero || "Sala"}
           </Typography>
         </Box>
 
-        {/* Seletor de datas */}
+        {/* NOVO: Container Único para Datas e Dias */}
         <Box
           sx={{
             display: "flex",
@@ -145,91 +195,148 @@ export default function ReservaPage({ idUsuario }) {
             alignItems: "flex-start",
             px: 2,
             py: 1,
+            maxWidth: 600,
+            mx: "auto",
           }}
         >
           <Typography fontWeight="bold" sx={{ fontSize: "0.9rem", mb: 1 }}>
-            Selecione datas:
+            Data Início:
           </Typography>
           <TextField
             type="date"
             size="small"
+            value={dataInicio}
+            onChange={(e) => setDataInicio(e.target.value)}
             sx={{
               background: "#ddd",
               "& input": { fontSize: "0.85rem", padding: "6px 8px" },
             }}
-            onChange={(e) => handleAddData(e.target.value)}
           />
-          <Box sx={{ mt: 1, display: "flex", gap: 1, flexWrap: "wrap" }}>
-            {datasSelecionadas.map((d) => (
-              <Chip
-                key={d}
-                label={d}
-                onDelete={() => handleRemoveData(d)}
-                color="primary"
-                size="small"
-              />
-            ))}
-          </Box>
+
+          <Typography
+            fontWeight="bold"
+            sx={{ fontSize: "0.9rem", mb: 1, mt: 1 }}
+          >
+            Data Fim:
+          </Typography>
+          <TextField
+            type="date"
+            size="small"
+            value={dataFim}
+            onChange={(e) => setDataFim(e.target.value)}
+            sx={{
+              background: "#ddd",
+              "& input": { fontSize: "0.85rem", padding: "6px 8px" },
+            }}
+          />
+
+          {/* Seletor de Dias da Semana*/}
+          <Typography
+            fontWeight="bold"
+            sx={{ fontSize: "0.9rem", mb: 1, mt: 1 }}
+          >
+            Dias da semana:
+          </Typography>
+          <FormControl fullWidth>
+            <InputLabel>Dias da semana</InputLabel>
+            <Select
+              multiple
+              value={DiaSelecionado}
+              onChange={(e) => setDiasSelecionado(e.target.value)}
+              input={<OutlinedInput label="Dias da semana" />}
+              renderValue={(selected) => (
+                <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
+                  {selected.map((value) => (
+                    <Chip key={value} label={value} />
+                  ))}
+                </Box>
+              )}
+            >
+              {["Seg", "Ter", "Qua", "Qui", "Sex", "Sab"].map((dias) => (
+                <MenuItem key={dias} value={dias}>
+                  {dias}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
         </Box>
       </Box>
 
       {/* Horários */}
       <Box sx={{ width: "100%", maxWidth: 600, p: 3, mx: "auto", mt: 2 }}>
-        <Grid container spacing={2} justifyContent="center">
-          {horarios.map((h) => {
-            const selecionado = horariosSelecionados.includes(h.id_periodo);
-            return (
-              <Grid item xs={6} sm={4} key={h.id_periodo}>
-                <Button
-                  fullWidth
-                  onClick={() => handleToggleHorario(h.id_periodo, h.status)}
-                  sx={{
-                    backgroundColor:
-                      h.status === "ocupado"
-                        ? "#e57373"
-                        : selecionado
-                        ? "#fff"
-                        : "#81c784",
-                    color:
-                      h.status === "ocupado"
-                        ? "#fff"
-                        : selecionado
-                        ? "#000"
-                        : "#fff",
-                    border: selecionado
-                      ? "2px solid red"
-                      : "1px solid transparent",
-                    "&:hover": {
+        {loading ? (
+          <Typography textAlign="center">Carregando horários...</Typography>
+        ) : erro ? (
+          <Typography color="error" textAlign="center">
+            Erro ao carregar horários. Tente novamente.
+          </Typography>
+        ) : horarios.length === 0 ? (
+          <Typography textAlign="center">Nenhum horário disponível.</Typography>
+        ) : (
+          <Grid container spacing={2} justifyContent="center">
+            {horarios.map((h) => {
+              const selecionado = horariosSelecionados.includes(h.id_periodo);
+              return (
+                <Grid item xs={6} sm={4} key={h.id_periodo}>
+                  <Button
+                    fullWidth
+                    onClick={() => handleToggleHorario(h.id_periodo, h.status)}
+                    sx={{
                       backgroundColor:
                         h.status === "ocupado"
                           ? "#e57373"
                           : selecionado
                           ? "#fff"
-                          : "#66bb6a",
-                    },
-                    minHeight: "50px",
-                  }}
-                  disabled={h.status === "ocupado"}
-                >
-                  {`${h.horario_inicio.slice(0, 5)} - ${h.horario_fim.slice(
-                    0,
-                    5
-                  )}`}
-                </Button>
-              </Grid>
-            );
-          })}
-        </Grid>
-
-        {mensagem && (
-          <Alert
-            severity={mensagemTipo}
-            sx={{ mt: 2 }}
-            onClose={() => setMensagem("")}
-          >
-            {mensagem}
-          </Alert>
+                          : "#81c784",
+                      color:
+                        h.status === "ocupado"
+                          ? "#fff"
+                          : selecionado
+                          ? "#000"
+                          : "#fff",
+                      border: selecionado
+                        ? "2px solid red"
+                        : "1px solid transparent",
+                      "&:hover": {
+                        backgroundColor:
+                          h.status === "ocupado"
+                            ? "#e57373"
+                            : selecionado
+                            ? "#fff"
+                            : "#66bb6a",
+                      },
+                      minHeight: "50px",
+                    }}
+                    disabled={h.status === "ocupado"}
+                  >
+                    {`${h.horario_inicio.slice(0, 5)} - ${h.horario_fim.slice(
+                      0,
+                      5
+                    )}`}
+                  </Button>
+                </Grid>
+              );
+            })}
+          </Grid>
         )}
+
+        {/* Componente de alerta do MUI */}
+        <Snackbar
+          open={alert.visible}
+          autoHideDuration={4000}
+          onClose={handleClose}
+          anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        >
+          {alert.type && (
+            <Alert
+              severity={alert.type}
+              onClose={handleClose}
+              sx={{ width: "100%" }}
+            >
+              {alert.message}
+            </Alert>
+          )}
+        </Snackbar>
 
         <Box
           sx={{

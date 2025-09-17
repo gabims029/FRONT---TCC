@@ -30,12 +30,12 @@ function Perfil() {
     setAlert({ ...alert, visible: false });
   };
   const showAlert = (message, type = "info") => {
-  setAlert({
-    message,
-    type,
-    visible: true,
-  });
- };
+    setAlert({
+      message,
+      type,
+      visible: true,
+    });
+  };
 
   const [openModal, setOpenModal] = useState(false);
 
@@ -52,7 +52,25 @@ function Perfil() {
         senha: response.data.user.senha || "",
       });
     } catch (error) {
-      showAlert(error.response?.data?.error || "Erro ao buscar usuário", "error");
+      showAlert(
+        error.response?.data?.error || "Erro ao buscar usuário",
+        "error"
+      );
+    }
+  };
+
+  const deleteUser = async () => {
+    try {
+      const response = await api.deleteUser(id_usuario);
+      showAlert(response.data.message, "success");
+      localStorage.removeItem("id_usuario");
+      localStorage.removeItem("token");
+      navigate("/login");
+    } catch (error) {
+      showAlert(
+        error.response?.data?.error || "Erro ao deletar usuário",
+        "error"
+      );
     }
   };
 
@@ -73,7 +91,6 @@ function Perfil() {
       }}
     >
       <Box sx={{ width: "100%", maxWidth: "500px", padding: 2 }}>
-
         <Box
           sx={{
             backgroundColor: "#B9181D",
@@ -265,7 +282,6 @@ function Perfil() {
             </Alert>
           )}
         </Snackbar>
-        
       </Box>
 
       {/* Modal */}

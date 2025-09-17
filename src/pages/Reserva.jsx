@@ -1,63 +1,105 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import { Box, Typography, Button, TextField, Grid, Alert } from "@mui/material";
+import {
+  Box,
+  Typography,
+  TextField,
+  Button,
+  Grid,
+  Alert,
+  Chip,
+} from "@mui/material";
 import api from "../axios/axios";
 
-export default function ReservaPage() {
+export default function ReservaPage({ idUsuario }) {
   const location = useLocation();
   const sala = location.state?.sala;
+  const idSala = sala?.id_sala;
 
   const hoje = new Date().toISOString().split("T")[0];
-  const [data, setData] = useState(hoje);
+  const id_usuario = localStorage.getItem("id_usuario");
+
+  const [datasSelecionadas, setDatasSelecionadas] = useState([hoje]);
   const [horariosSelecionados, setHorariosSelecionados] = useState([]);
   const [horarios, setHorarios] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [erro, setErro] = useState(false);
   const [mensagem, setMensagem] = useState("");
+  const [mensagemTipo, setMensagemTipo] = useState("success");
 
+  // Carrega horários disponíveis
   useEffect(() => {
     const fetchHorarios = async () => {
-      if (!sala) return;
-      setLoading(true);
-      setErro(false);
-
       try {
         const res = await api.getAllPeriodos();
-        const listaHorarios = res.data?.periodos || [];
-        setHorarios(listaHorarios);
+        setHorarios(res.data?.periodos || []);
       } catch (err) {
         console.error("Erro ao buscar horários:", err);
-        setErro(true);
         setHorarios([]);
-      } finally {
-        setLoading(false);
       }
     };
-
     fetchHorarios();
-  }, [sala, data]);
+  }, []);
 
-  // Função para selecionar/desmarcar horários
-  const handleToggleHorario = (intervalo, status) => {
-    if (status === "ocupado") return; // não permite selecionar ocupado
+  const handleAddData = (novaData) => {
+    if (!datasSelecionadas.includes(novaData)) {
+      setDatasSelecionadas([...datasSelecionadas, novaData]);
+    }
+  };
+
+  const handleRemoveData = (data) => {
+    setDatasSelecionadas(datasSelecionadas.filter((d) => d !== data));
+  };
+
+  const handleToggleHorario = (id_periodo, status) => {
+    if (status === "ocupado") return;
     setHorariosSelecionados((prev) =>
-      prev.includes(intervalo)
-        ? prev.filter((h) => h !== intervalo)
-        : [...prev, intervalo]
+      prev.includes(id_periodo)
+        ? prev.filter((h) => h !== id_periodo)
+        : [...prev, id_periodo]
     );
   };
 
-  const handleReservar = () => {
-    if (horariosSelecionados.length === 0) {
-      setMensagem("Selecione pelo menos um horário antes de reservar!");
+  const handleReservar = async () => {
+    if (
+      !idSala ||
+      horariosSelecionados.length === 0 ||
+      datasSelecionadas.length === 0
+    ) {
+      setMensagem(
+        "Selecione pelo menos um horário e uma data antes de reservar!"
+      );
+      setMensagemTipo("warning");
       return;
     }
 
-    setMensagem(
-      `Reserva feita para sala ${
-        sala?.numero || "Desconhecida"
-      } em ${data} nos horários: ${horariosSelecionados.join(", ")}`
-    );
+    try {
+      const reservas = [];
+
+      // Para cada data selecionada, envia os horários escolhidos
+      datasSelecionadas.forEach((dia) => {
+        horariosSelecionados.forEach((id_periodo) => {
+          reservas.push({
+            fk_id_periodo: id_periodo,
+            fk_id_user: id_usuario,
+            fk_id_sala: idSala,
+            dias: [], 
+            data_inicio: dia,
+            data_fim: dia,
+          });
+        });
+      });
+
+      // Chamada para o backend
+      await api.createReserva(reservas);
+
+      setMensagem("Reserva realizada com sucesso!");
+      setMensagemTipo("success");
+      setDatasSelecionadas([hoje]);
+      setHorariosSelecionados([]);
+    } catch (err) {
+      console.error("Erro ao reservar:", err);
+      setMensagem("Erro ao fazer a reserva. Tente novamente.");
+      setMensagemTipo("warning");
+    }
   };
 
   if (!sala) {
@@ -91,11 +133,11 @@ export default function ReservaPage() {
           }}
         >
           <Typography variant="h6" fontWeight="bold">
-            {sala?.numero || "Sala"}
+            {sala?.numero}
           </Typography>
         </Box>
 
-        {/* Seletor de data */}
+        {/* Seletor de datas */}
         <Box
           sx={{
             display: "flex",
@@ -106,93 +148,89 @@ export default function ReservaPage() {
           }}
         >
           <Typography fontWeight="bold" sx={{ fontSize: "0.9rem", mb: 1 }}>
-            Selecione a data:
+            Selecione datas:
           </Typography>
           <TextField
             type="date"
-            value={data}
-            onChange={(e) => setData(e.target.value)}
             size="small"
             sx={{
               background: "#ddd",
               "& input": { fontSize: "0.85rem", padding: "6px 8px" },
             }}
+            onChange={(e) => handleAddData(e.target.value)}
           />
+          <Box sx={{ mt: 1, display: "flex", gap: 1, flexWrap: "wrap" }}>
+            {datasSelecionadas.map((d) => (
+              <Chip
+                key={d}
+                label={d}
+                onDelete={() => handleRemoveData(d)}
+                color="primary"
+                size="small"
+              />
+            ))}
+          </Box>
         </Box>
       </Box>
 
       {/* Horários */}
       <Box sx={{ width: "100%", maxWidth: 600, p: 3, mx: "auto", mt: 2 }}>
-        {loading ? (
-          <Typography textAlign="center">Carregando horários...</Typography>
-        ) : erro ? (
-          <Typography color="error" textAlign="center">
-            Erro ao carregar horários. Tente novamente.
-          </Typography>
-        ) : horarios.length === 0 ? (
-          <Typography textAlign="center">Nenhum horário disponível.</Typography>
-        ) : (
-          <Grid container spacing={2} justifyContent="center">
-            {horarios.map((h, i) => {
-              const intervalo = `${h.horario_inicio.slice(
-                0,
-                5
-              )} - ${h.horario_fim.slice(0, 5)}`;
-              const selecionado = horariosSelecionados.includes(intervalo);
-
-              return (
-                <Grid item xs={6} sm={4} key={h.id_periodo || i}>
-                  <Button
-                    fullWidth
-                    onClick={() => handleToggleHorario(intervalo, h.status)}
-                    sx={{
+        <Grid container spacing={2} justifyContent="center">
+          {horarios.map((h) => {
+            const selecionado = horariosSelecionados.includes(h.id_periodo);
+            return (
+              <Grid item xs={6} sm={4} key={h.id_periodo}>
+                <Button
+                  fullWidth
+                  onClick={() => handleToggleHorario(h.id_periodo, h.status)}
+                  sx={{
+                    backgroundColor:
+                      h.status === "ocupado"
+                        ? "#e57373"
+                        : selecionado
+                        ? "#fff"
+                        : "#81c784",
+                    color:
+                      h.status === "ocupado"
+                        ? "#fff"
+                        : selecionado
+                        ? "#000"
+                        : "#fff",
+                    border: selecionado
+                      ? "2px solid red"
+                      : "1px solid transparent",
+                    "&:hover": {
                       backgroundColor:
                         h.status === "ocupado"
                           ? "#e57373"
                           : selecionado
                           ? "#fff"
-                          : "#81c784",
-                      color:
-                        h.status === "ocupado"
-                          ? "#fff"
-                          : selecionado
-                          ? "#000"
-                          : "#fff",
-                      border: selecionado
-                        ? "2px solid red"
-                        : "1px solid transparent",
-                      "&:hover": {
-                        backgroundColor:
-                          h.status === "ocupado"
-                            ? "#e57373"
-                            : selecionado
-                            ? "#fff"
-                            : "#66bb6a",
-                      },
-                      minHeight: "50px",
-                    }}
-                    disabled={h.status === "ocupado"}
-                  >
-                    {intervalo}
-                  </Button>
-                </Grid>
-              );
-            })}
-          </Grid>
-        )}
+                          : "#66bb6a",
+                    },
+                    minHeight: "50px",
+                  }}
+                  disabled={h.status === "ocupado"}
+                >
+                  {`${h.horario_inicio.slice(0, 5)} - ${h.horario_fim.slice(
+                    0,
+                    5
+                  )}`}
+                </Button>
+              </Grid>
+            );
+          })}
+        </Grid>
 
-        {/* Mensagem de alerta */}
         {mensagem && (
           <Alert
-            severity={horariosSelecionados ? "success" : "warning"}
+            severity={mensagemTipo}
             sx={{ mt: 2 }}
-            onClose={() => setMensagem("")} // fecha o alerta
+            onClose={() => setMensagem("")}
           >
             {mensagem}
           </Alert>
         )}
 
-        {/* Botão Reservar */}
         <Box
           sx={{
             display: "flex",

@@ -1,16 +1,20 @@
 import * as React from "react";
-import Box from "@mui/material/Box";
+import { useState } from "react";
+import { Box, Button } from "@mui/material";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import IconButton from "@mui/material/IconButton";
 import Drawer from "@mui/material/Drawer";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemText from "@mui/material/ListItemText";
-import Typography from "@mui/material/Typography";
+import Dialog from "@mui/material/Dialog";
+import DialogTitle from "@mui/material/DialogTitle";
+import DialogActions from "@mui/material/DialogActions";
 import { useNavigate } from "react-router-dom";
 
 function Header() {
-  const [drawerOpen, setDrawerOpen] = React.useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [confirmLogoutOpen, setConfirmLogoutOpen] = useState(false);
   const navigate = useNavigate();
 
   const toggleDrawer = (open) => () => {
@@ -22,18 +26,28 @@ function Header() {
     { label: "PERFIL", path: "/profile" },
     { label: "MINHAS RESERVAS", path: "/minhasReservas" },
     { label: "CADASTRAR USUÁRIO", path: "/cadastro" },
-    { label: "CRIAR SALA", path: "/createsala" },
+    { label: "CRIAR SALA", path: "/criarSala" },
     { label: "VISUALIZAR USUÁRIOS", path: "/users" },
     { label: "SAIR", path: "/" },
   ];
 
   const handleMenuClick = (item) => {
     if (item.label === "SAIR") {
-      const confirmExit = window.confirm("Tem certeza que deseja sair?");
-      if (!confirmExit) return; // Se cancelar, não navega
+      setConfirmLogoutOpen(true); // Abrir modal de confirmação
+    } else {
+      navigate(item.path);
+      setDrawerOpen(false);
     }
-    navigate(item.path);
+  };
+
+  const handleLogoutConfirm = () => {
+    setConfirmLogoutOpen(false);
+    navigate("/");
     setDrawerOpen(false);
+  };
+
+  const handleLogoutCancel = () => {
+    setConfirmLogoutOpen(false);
   };
 
   return (
@@ -80,6 +94,72 @@ function Header() {
           </List>
         </Box>
       </Drawer>
+
+      <Dialog
+        open={confirmLogoutOpen}
+        onClose={handleLogoutCancel}
+        PaperProps={{
+          sx: {
+            backgroundColor: "#C91E1E",
+            borderRadius: 3,
+            padding: 3,
+            minWidth: 300,
+          },
+        }}
+      >
+        <DialogTitle
+          sx={{
+            color: "#fff",
+            textAlign: "center",
+            fontWeight: "bold",
+            fontSize: "1.4rem",
+            paddingBottom: 2,
+          }}
+        >
+          Deseja realmente sair?
+        </DialogTitle>
+
+        <DialogActions sx={{ justifyContent: "center", gap: 2 }}>
+          <Button
+            onClick={handleLogoutCancel}
+            variant="outlined"
+            sx={{
+              color: "#C91E1E",
+              backgroundColor: "#fff",
+              borderColor: "#fff",
+              borderRadius: 2,
+              textTransform: "none",
+              fontWeight: "bold",
+              paddingX: 3,
+              "&:hover": {
+                backgroundColor: "#f5f5f5",
+                borderColor: "#fff",
+              },
+            }}
+          >
+            Cancelar
+          </Button>
+          <Button
+            onClick={handleLogoutConfirm}
+            variant="outlined"
+            sx={{
+              color: "#C91E1E",
+              backgroundColor: "#fff",
+              borderColor: "#fff",
+              borderRadius: 2,
+              textTransform: "none",
+              fontWeight: "bold",
+              paddingX: 3,
+              "&:hover": {
+                backgroundColor: "#f5f5f5",
+                borderColor: "#fff",
+              },
+            }}
+          >
+            Sair
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 }

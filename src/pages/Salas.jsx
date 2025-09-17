@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   Box,
   Container,
@@ -13,7 +13,9 @@ import {
 import api from "../axios/axios";
 
 export default function SalasPage() {
-  const location = useLocation();
+  const location = useLocation(); //guarda a informação sobre o bloco
+  const navigate = useNavigate();
+
   const blocoSelecionadoInicial = location.state?.bloco; // bloco enviado pelo navigate
   const [salas, setSalas] = useState([]);
   const [search, setSearch] = useState("");
@@ -36,9 +38,13 @@ export default function SalasPage() {
 
   const salasFiltradas = salas.filter(
     (s) =>
-      s.numero?.toString().includes(search) ||
+      s.numero?.toLowerCase().includes(search.toLowerCase()) ||
       s.descricao?.toLowerCase().includes(search.toLowerCase())
   );
+
+  const handleCardClick = (sala) => {
+    navigate("/reserva", { state: { sala } });
+  };
 
   return (
     <Box
@@ -71,9 +77,9 @@ export default function SalasPage() {
             sx={{ width: 120, background: "#fff" }}
             label="Bloco"
           >
-            {["A", "B", "C", "D"].map((b) => (
-              <MenuItem key={b} value={b}>
-                {b}
+            {["A", "B", "C", "D"].map((bloco) => (
+              <MenuItem key={bloco} value={bloco}>
+                {bloco}
               </MenuItem>
             ))}
           </TextField>
@@ -84,10 +90,14 @@ export default function SalasPage() {
           {salasFiltradas.map((sala, idx) => (
             <Grid item xs={12} sm={6} md={4} key={idx}>
               <Card
+                onClick={() => handleCardClick(sala)}
                 sx={{
                   borderRadius: 2,
                   border: "1px solid #e0e0e0",
                   background: "#fff",
+                  cursor: "pointer",
+                  transition: "0.2s",
+                  "&:hover": { boxShadow: 4 },
                 }}
               >
                 <CardContent>

@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { Box, Typography, TextField, Button, Alert } from "@mui/material";
+import {
+  Box,
+  Typography,
+  TextField,
+  Button,
+  Alert,
+  Snackbar,
+} from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import api from "../axios/axios";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
@@ -19,17 +26,21 @@ function Perfil() {
     visible: false,
   });
 
+  const handleClose = () => {
+    setAlert({ ...alert, visible: false });
+  };
+  const showAlert = (message, type = "info") => {
+  setAlert({
+    message,
+    type,
+    visible: true,
+  });
+ };
+
   const [openModal, setOpenModal] = useState(false);
 
   const navigate = useNavigate();
   const id_usuario = localStorage.getItem("id_usuario");
-
-  const showAlert = (message, type = "success") => {
-    setAlert({ type, message, visible: true });
-    setTimeout(() => {
-      setAlert((prev) => ({ ...prev, visible: false }));
-    }, 3000);
-  };
 
   const getUserInfo = async () => {
     try {
@@ -40,9 +51,8 @@ function Perfil() {
         cpf: response.data.user.cpf || "",
         senha: response.data.user.senha || "",
       });
-    } catch (err) {
-      console.error(err);
-      showAlert("Não foi possível carregar os dados do usuário.", "error");
+    } catch (error) {
+      showAlert(error.response?.data?.error || "Erro ao buscar usuário", "error");
     }
   };
 
@@ -63,11 +73,6 @@ function Perfil() {
       }}
     >
       <Box sx={{ width: "100%", maxWidth: "500px", padding: 2 }}>
-        {alert.visible && (
-          <Alert severity={alert.type} sx={{ width: "100%", mb: 2 }}>
-            {alert.message}
-          </Alert>
-        )}
 
         <Box
           sx={{
@@ -128,7 +133,10 @@ function Perfil() {
               backgroundColor: "white",
               borderRadius: 1,
               "& .MuiInputBase-input": { color: "black" },
-              "& .Mui-disabled": { WebkitTextFillColor: "black", color: "black" },
+              "& .Mui-disabled": {
+                WebkitTextFillColor: "black",
+                color: "black",
+              },
             }}
           />
 
@@ -154,7 +162,10 @@ function Perfil() {
               backgroundColor: "white",
               borderRadius: 1,
               "& .MuiInputBase-input": { color: "black" },
-              "& .Mui-disabled": { WebkitTextFillColor: "black", color: "black" },
+              "& .Mui-disabled": {
+                WebkitTextFillColor: "black",
+                color: "black",
+              },
             }}
           />
 
@@ -174,13 +185,16 @@ function Perfil() {
             disabled
             value={userData.cpf}
             placeholder={userData.cpf}
-            type="number"
+            type="text"
             sx={{
               marginBottom: 2.5,
               backgroundColor: "white",
               borderRadius: 1,
               "& .MuiInputBase-input": { color: "black" },
-              "& .Mui-disabled": { WebkitTextFillColor: "black", color: "black" },
+              "& .Mui-disabled": {
+                WebkitTextFillColor: "black",
+                color: "black",
+              },
             }}
           />
 
@@ -197,9 +211,6 @@ function Perfil() {
               borderRadius: 1,
               "&:hover": { backgroundColor: "#f0f0f0" },
             }}
-            onClick={() =>
-              showAlert("Funcionalidade Minhas Reservas ainda não implementada.", "info")
-            }
           >
             Minhas Reservas
           </Button>
@@ -233,13 +244,28 @@ function Perfil() {
               borderRadius: 1,
               "&:hover": { backgroundColor: "#f0f0f0" },
             }}
-            onClick={() =>
-              showAlert("Funcionalidade Deletar Perfil ainda não implementada.", "info")
-            }
           >
             Deletar Perfil
           </Button>
         </Box>
+
+        <Snackbar
+          open={alert.visible}
+          autoHideDuration={4000} // tempo que o alerta fica visível
+          onClose={handleClose}
+          anchorOrigin={{ vertical: "top", horizontal: "center" }} // posição do alerta
+        >
+          {alert.type && (
+            <Alert
+              severity={alert.type}
+              onClose={handleClose}
+              sx={{ width: "100%" }}
+            >
+              {alert.message}
+            </Alert>
+          )}
+        </Snackbar>
+        
       </Box>
 
       {/* Modal */}

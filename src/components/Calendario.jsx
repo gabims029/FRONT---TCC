@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import { Box, IconButton, Typography, Grid } from "@mui/material";
 import { ArrowBack, ArrowForward } from "@mui/icons-material";
+import { useNavigate } from "react-router-dom";
 
 function Calendario() {
-  const [currentDate, setCurrentDate] = useState(new Date()); //guarda a data atual
-  const [selectedDays, setSelectedDays] = useState([]); //array que armazena os dias do mês que o usuário clicou
+  const [currentDate, setCurrentDate] = useState(new Date());
+  const [selectedDays, setSelectedDays] = useState([]);
+  const navigate = useNavigate();
 
   const daysOfWeek = ["DOM", "SEG", "TER", "QUA", "QUI", "SEX", "SÁB"];
 
@@ -12,25 +14,36 @@ function Calendario() {
     setCurrentDate(
       new Date(currentDate.getFullYear(), currentDate.getMonth() + offset)
     );
-    setSelectedDays([]); //limpa a seleção quando muda o mês
+    setSelectedDays([]);
   };
 
-  const year = currentDate.getFullYear(); // ano atual
-  const month = currentDate.getMonth(); //mês atual
-  const firstDayOfMonth = new Date(year, month, 1).getDay(); // dia da semana (0 = dom, 6 = sáb)
-  const lastDayOfMonth = new Date(year, month + 1, 0).getDate(); // quantos dias o mês tem
+  const year = currentDate.getFullYear();
+  const month = currentDate.getMonth();
+  const firstDayOfMonth = new Date(year, month, 1).getDay();
+  const lastDayOfMonth = new Date(year, month + 1, 0).getDate();
 
   const days = [
-    ...Array(firstDayOfMonth).fill(""), // espaços em branco até o primeiro dia
+    ...Array(firstDayOfMonth).fill(""),
     ...Array.from({ length: lastDayOfMonth }, (_, i) => i + 1),
   ];
 
   const toggleDay = (day) => {
     if (selectedDays.includes(day)) {
-      setSelectedDays(selectedDays.filter((d) => d !== day)); // tira o selecionado
+      setSelectedDays(selectedDays.filter((d) => d !== day));
     } else {
-      setSelectedDays([...selectedDays, day]); // selecionado
+      setSelectedDays([...selectedDays, day]);
     }
+  };
+
+  const handleDayClick = (day) => {
+    if (!day) return;
+
+    toggleDay(day);
+
+    const selectedDate = new Date(year, month, day).toISOString().split("T")[0];
+
+    // navega para a tela de salas enviando data e bloco A
+    navigate("/salas", { state: { data: selectedDate, bloco: "A" } });
   };
 
   return (
@@ -52,7 +65,7 @@ function Calendario() {
           mb: 2,
         }}
       >
-        <IconButton onClick={() => changeMonth(-1)}> {/*trocar o mês*/}
+        <IconButton onClick={() => changeMonth(-1)}>
           <ArrowBack />
         </IconButton>
         <Typography variant="h6">
@@ -79,7 +92,7 @@ function Calendario() {
         {days.map((day, index) => (
           <Grid item xs={12 / 7} key={index}>
             <Box
-              onClick={() => day && toggleDay(day)}
+              onClick={() => handleDayClick(day)}
               sx={{
                 m: 0.5,
                 p: 1,

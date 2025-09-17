@@ -11,6 +11,7 @@ import { useNavigate } from "react-router-dom";
 import api from "../axios/axios";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import ModalEditarPerfil from "../components/ModalEditarPerfil";
+import ConfirmDialog from "../components/ConfirmDialog";
 
 function Perfil() {
   const [userData, setUserData] = useState({
@@ -26,6 +27,12 @@ function Perfil() {
     visible: false,
   });
 
+  const [openModal, setOpenModal] = useState(false);
+  const [openConfirm, setOpenConfirm] = useState(false); // estado do modal de confirmação
+
+  const navigate = useNavigate();
+  const id_usuario = localStorage.getItem("id_usuario");
+
   const handleClose = () => {
     setAlert({ ...alert, visible: false });
   };
@@ -36,11 +43,6 @@ function Perfil() {
       visible: true,
     });
   };
-
-  const [openModal, setOpenModal] = useState(false);
-
-  const navigate = useNavigate();
-  const id_usuario = localStorage.getItem("id_usuario");
 
   const getUserInfo = async () => {
     try {
@@ -59,13 +61,14 @@ function Perfil() {
     }
   };
 
-  const deleteUser = async () => {
+  // Confirmar exclusão
+  const handleConfirmDelete = async () => {
     try {
-      const response = await api.deleteUser(id_usuario);
-      showAlert(response.data.message, "success");
-      localStorage.removeItem("id_usuario");
+      await api.deleteUser(id_usuario);
       localStorage.removeItem("token");
-      navigate("/login");
+      localStorage.removeItem("authenticated");
+      navigate("/");
+      showAlert("Usuário deletado com sucesso!", "success");
     } catch (error) {
       showAlert(
         error.response?.data?.error || "Erro ao deletar usuário",
@@ -261,16 +264,18 @@ function Perfil() {
               borderRadius: 1,
               "&:hover": { backgroundColor: "#f0f0f0" },
             }}
+            onClick={() => setOpenConfirm(true)} // abre modal
           >
             Deletar Perfil
           </Button>
         </Box>
 
+        {/* Snackbar */}
         <Snackbar
           open={alert.visible}
-          autoHideDuration={4000} // tempo que o alerta fica visível
+          autoHideDuration={4000}
           onClose={handleClose}
-          anchorOrigin={{ vertical: "top", horizontal: "center" }} // posição do alerta
+          anchorOrigin={{ vertical: "top", horizontal: "center" }}
         >
           {alert.type && (
             <Alert
@@ -284,13 +289,19 @@ function Perfil() {
         </Snackbar>
       </Box>
 
-      {/* Modal */}
       <ModalEditarPerfil
         open={openModal}
         onClose={() => setOpenModal(false)}
         userData={userData}
         setUserData={setUserData}
         showAlert={showAlert}
+      />
+
+      <ConfirmDialog
+        open={openConfirm}
+        onClose={() => setOpenConfirm(false)}
+        onConfirm={handleConfirmDelete}
+        title="Deseja realmente deletar seu perfil?"
       />
     </Box>
   );

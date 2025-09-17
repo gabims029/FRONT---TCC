@@ -1,16 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { Box, Typography, Snackbar, Alert, IconButton } from "@mui/material";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+import ConfirmDialog from "../components/ConfirmDialog";
 import api from "../axios/axios";
 
 function ListarUsuario() {
   const [usuarios, setUsuarios] = useState([]);
-
-  const [alert, setAlert] = useState({
-    type: "",
-    message: "",
-    visible: false,
-  });
+  const [openConfirm, setOpenConfirm] = useState(false);
+  const [selectedUserId, setSelectedUserId] = useState(null);
+  const [alert, setAlert] = useState({ type: "", message: "", visible: false });
 
   const handleClose = () => {
     setAlert({ ...alert, visible: false });
@@ -30,23 +28,32 @@ function ListarUsuario() {
     }
   }
 
-  async function deleteUser(id_usuario) {
+  const handleDeleteClick = (id) => {
+    setSelectedUserId(id);
+    setOpenConfirm(true); // abre o modal
+  };
+
+  // executa a exclusão depois da confirmação no modal
+  const handleConfirmDelete = async () => {
     try {
-      const response = await api.deleteUser(id_usuario);
+      const response = await api.deleteUser(selectedUserId);
+      setUsuarios((prev) =>
+        prev.filter((usuario) => usuario.id_user !== selectedUserId)
+      );
+
       setAlert({
         message: response.data.message,
         type: "success",
         visible: true,
       });
     } catch (error) {
-      console.log("Erro ao deletar usuario...", error);
       setAlert({
-        message: error.response.data.error,
+        message: error.response?.data?.error || "Erro ao deletar usuário",
         type: "error",
         visible: true,
       });
     }
-  }
+  };
 
   useEffect(() => {
     getUsers();
@@ -109,13 +116,20 @@ function ListarUsuario() {
                   {usuario.email}
                 </Typography>
               </Box>
-              <IconButton onClick={() => deleteUser(usuario.id_usuario)}>
+              <IconButton onClick={() => handleDeleteClick(usuario.id_user)}>
                 <DeleteOutlineIcon color="error" />
               </IconButton>
             </Box>
           ))}
         </Box>
       </Box>
+
+      <ConfirmDialog
+        open={openConfirm}
+        onClose={() => setOpenConfirm(false)}
+        onConfirm={handleConfirmDelete}
+        title="Deseja realmente deletar esse perfil?"
+      />
 
       <Snackbar
         open={alert.visible}

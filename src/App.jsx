@@ -11,7 +11,7 @@ import SalasPage from "./pages/Salas";
 import ReservaPage from "./pages/Reserva";
 import CriarSala from "./pages/CriarSala";
 import ListarSalas from "./pages/ListarSalas";
-// import MinhasReservas from "./pages/MinhasReservas";
+import MinhasReservas from "./pages/MinhasReservas";
 
 function App() {
   return (
@@ -36,7 +36,7 @@ function App() {
         <Route
           path="/cadastro"
           element={
-            <ProtectedRoute tipo="Admin" >
+            <ProtectedRoute tipo="Admin">
               <Cadastro />
             </ProtectedRoute>
           }
@@ -76,7 +76,7 @@ function App() {
         <Route
           path="/criarSala"
           element={
-            <ProtectedRoute tipo="Admin" >
+            <ProtectedRoute tipo="Admin">
               <CriarSala />
             </ProtectedRoute>
           }
@@ -89,14 +89,14 @@ function App() {
             </ProtectedRoute>
           }
         />
-        {/* <Route
-          path="/"
+        <Route
+          path="/minhasReservas"
           element={
             <ProtectedRoute>
               <MinhasReservas />
             </ProtectedRoute>
           }
-        /> */}
+        />
       </Routes>
     </Router>
   );

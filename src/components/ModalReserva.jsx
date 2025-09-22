@@ -6,51 +6,6 @@ import {
   Button,
   Typography,
 } from "@mui/material";
-import { styled } from "@mui/system";
-
-const StyledDialog = styled(Dialog)({
-  "& .MuiDialog-paper": {
-    borderRadius: "10px",
-    border: "2px solid #ccc",
-  },
-});
-
-const StyledDialogTitle = styled(DialogTitle)({
-  backgroundColor: "#b10e14",
-  color: "#fff",
-  textAlign: "center",
-  fontWeight: "bold",
-  padding: "16px",
-});
-
-const StyledDialogContent = styled(DialogContent)({
-  padding: "20px 24px",
-  "& .MuiTypography-root": {
-    fontSize: "1.1rem",
-    fontWeight: "bold",
-    marginBottom: "10px",
-  },
-});
-
-const StyledButton = styled(Button)(({ variant, ...props }) => ({
-  fontWeight: "bold",
-  textTransform: "uppercase",
-  minWidth: "120px",
-  "&.cancelar": {
-    backgroundColor: "#f0d5d7",
-    color: "#b10e14",
-    "&:hover": {
-      backgroundColor: "#e0c5c7",
-    },
-  },
-  "&.confirmar": {
-    backgroundColor: "#b2e3b2",
-    color: "#4f8d4f",
-    "&:hover": {
-      backgroundColor: "#a2d3a2",
-    },
-  },
-}));
 
 export default function ModalReserva({
   open,
@@ -61,29 +16,82 @@ export default function ModalReserva({
   if (!reserva) return null;
 
   return (
-    <StyledDialog open={open} onClose={handleClose}>
-      <StyledDialogTitle>RESERVAR</StyledDialogTitle>
-      <StyledDialogContent dividers>
+    <Dialog
+      open={open}
+      onClose={handleClose}
+      PaperProps={{
+        sx: {
+          borderRadius: "10px",
+          border: "2px solid #ccc",
+        },
+      }}
+    >
+      <DialogTitle
+        sx={{
+          backgroundColor: "#b10e14",
+          color: "#fff",
+          textAlign: "center",
+          fontWeight: "bold",
+          padding: "16px",
+        }}
+      >
+        RESERVAR
+      </DialogTitle>
+      <DialogContent
+        dividers
+        sx={{
+          padding: "20px 24px",
+          "& .MuiTypography-root": {
+            fontSize: "1.1rem",
+            fontWeight: "bold",
+            marginBottom: "10px",
+          },
+        }}
+      >
         <Typography>SALA: {reserva.sala}</Typography>
         <Typography>DATA: {reserva.data}</Typography>
         <Typography>HORÁRIO: {reserva.horario}</Typography>
-      </StyledDialogContent>
+      </DialogContent>
       <DialogActions sx={{ padding: "16px 24px" }}>
-        <StyledButton
+        <Button
           onClick={handleClose}
           className="cancelar"
           disableElevation
+          sx={{
+            fontWeight: "bold",
+            textTransform: "uppercase",
+            minWidth: "120px",
+            "&.cancelar": {
+              backgroundColor: "#f0d5d7",
+              color: "#b10e14",
+              "&:hover": {
+                backgroundColor: "#e0c5c7",
+              },
+            },
+          }}
         >
           CANCELAR
-        </StyledButton>
-        <StyledButton
+        </Button>
+        <Button
           onClick={onConfirm}
           className="confirmar"
           disableElevation
+          sx={{
+            fontWeight: "bold",
+            textTransform: "uppercase",
+            minWidth: "120px",
+            "&.confirmar": {
+              backgroundColor: "#b2e3b2",
+              color: "#4f8d4f",
+              "&:hover": {
+                backgroundColor: "#a2d3a2",
+              },
+            },
+          }}
         >
           CONFIRMAR
-        </StyledButton>
+        </Button>
       </DialogActions>
-    </StyledDialog>
+    </Dialog>
   );
 }

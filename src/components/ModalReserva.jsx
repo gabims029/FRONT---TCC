@@ -5,53 +5,85 @@ import {
   DialogActions,
   Button,
   Typography,
-  List,
-  ListItem,
-  Alert,
 } from "@mui/material";
+import { styled } from "@mui/system";
+
+const StyledDialog = styled(Dialog)({
+  "& .MuiDialog-paper": {
+    borderRadius: "10px",
+    border: "2px solid #ccc",
+  },
+});
+
+const StyledDialogTitle = styled(DialogTitle)({
+  backgroundColor: "#b10e14",
+  color: "#fff",
+  textAlign: "center",
+  fontWeight: "bold",
+  padding: "16px",
+});
+
+const StyledDialogContent = styled(DialogContent)({
+  padding: "20px 24px",
+  "& .MuiTypography-root": {
+    fontSize: "1.1rem",
+    fontWeight: "bold",
+    marginBottom: "10px",
+  },
+});
+
+const StyledButton = styled(Button)(({ variant, ...props }) => ({
+  fontWeight: "bold",
+  textTransform: "uppercase",
+  minWidth: "120px",
+  "&.cancelar": {
+    backgroundColor: "#f0d5d7",
+    color: "#b10e14",
+    "&:hover": {
+      backgroundColor: "#e0c5c7",
+    },
+  },
+  "&.confirmar": {
+    backgroundColor: "#b2e3b2",
+    color: "#4f8d4f",
+    "&:hover": {
+      backgroundColor: "#a2d3a2",
+    },
+  },
+}));
 
 export default function ModalReserva({
-  sala,
-  data,
-  horariosSelecionados,
-  isOpen, // Recebe a prop de controle de visibilidade
-  onClose, // Recebe a função para fechar o modal
+  open,
+  handleClose,
+  reserva,
+  onConfirm,
 }) {
+  if (!reserva) return null;
+
   return (
-    <Dialog open={isOpen} onClose={onClose} fullWidth maxWidth="sm">
-      <DialogTitle>Reserva Concluída!</DialogTitle>
-      <DialogContent>
-        <Typography variant="subtitle1" mb={1}>
-          Sua reserva foi realizada com sucesso.
-        </Typography>
-        <Typography variant="subtitle1" mb={1}>
-          Sala: {sala?.numero || "Desconhecida"}
-        </Typography>
-        <Typography variant="subtitle1" mb={1}>
-          Data de Início: {data?.data_inicio}
-        </Typography>
-        <Typography variant="subtitle1" mb={1}>
-          Data de Fim: {data?.data_fim}
-        </Typography>
-        <Typography variant="subtitle1" mb={1}>
-          Horários e dias selecionados:
-        </Typography>
-        <List dense>
-          {horariosSelecionados.map((h, i) => (
-            <ListItem key={i} sx={{ pl: 0 }}>
-              {h}
-            </ListItem>
-          ))}
-        </List>
-        <Alert severity="success" sx={{ mt: 2 }}>
-          Reserva para {sala?.numero || "Desconhecida"} confirmada!
-        </Alert>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose} color="primary" variant="contained">
-          Fechar
-        </Button>
+    <StyledDialog open={open} onClose={handleClose}>
+      <StyledDialogTitle>RESERVAR</StyledDialogTitle>
+      <StyledDialogContent dividers>
+        <Typography>SALA: {reserva.sala}</Typography>
+        <Typography>DATA: {reserva.data}</Typography>
+        <Typography>HORÁRIO: {reserva.horario}</Typography>
+      </StyledDialogContent>
+      <DialogActions sx={{ padding: "16px 24px" }}>
+        <StyledButton
+          onClick={handleClose}
+          className="cancelar"
+          disableElevation
+        >
+          CANCELAR
+        </StyledButton>
+        <StyledButton
+          onClick={onConfirm}
+          className="confirmar"
+          disableElevation
+        >
+          CONFIRMAR
+        </StyledButton>
       </DialogActions>
-    </Dialog>
+    </StyledDialog>
   );
 }

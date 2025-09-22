@@ -19,41 +19,32 @@ import api from "../axios/axios";
 import ModalReserva from "../components/ModalReserva";
 
 export default function ReservaPage() {
-  const location = useLocation();
-  const sala = location.state?.sala;
+  const { state } = useLocation();
+  const sala = state?.sala;
 
   const hoje = new Date().toISOString().split("T")[0];
-
   const idUsuario = localStorage.getItem("id_usuario");
+  const nomeUsuario = localStorage.getItem("nome_usuario") || "Usuário";
 
   const [horariosSelecionados, setHorariosSelecionados] = useState([]);
   const [horarios, setHorarios] = useState([]);
   const [loading, setLoading] = useState(true);
   const [erro, setErro] = useState(false);
-
-  const [alert, setAlert] = useState({
-    type: "",
-    message: "",
-    visible: false,
-  });
-
+  const [alert, setAlert] = useState({ type: "", message: "", visible: false });
   const [dataInicio, setDataInicio] = useState(hoje);
   const [dataFim, setDataFim] = useState(hoje);
-  const [DiaSelecionado, setDiasSelecionado] = useState([]);
+  const [diasSelecionados, setDiasSelecionados] = useState([]);
+  const [modalOpen, setModalOpen] = useState(false);
 
-  // Função para fechar o alerta
-  const handleClose = () => {
-    setAlert({ ...alert, visible: false });
-  };
+  const handleClose = () => setAlert((prev) => ({ ...prev, visible: false }));
 
-  // Função para buscar os horários, agora isolada
   const fetchHorarios = async () => {
     if (!sala) return;
-    setLoading(true);
-    setErro(false);
     try {
+      setLoading(true);
       const res = await api.getAllPeriodos();
       setHorarios(res.data?.periodos || []);
+      setErro(false);
     } catch (err) {
       console.error("Erro ao buscar horários:", err);
       setErro(true);
@@ -73,52 +64,40 @@ export default function ReservaPage() {
     fetchHorarios();
   }, [sala]);
 
-  const handleToggleHorario = (id_periodo, status) => {
+  const handleToggleHorario = (id, status) => {
     if (status === "ocupado") return;
     setHorariosSelecionados((prev) =>
-      prev.includes(id_periodo)
-        ? prev.filter((h) => h !== id_periodo)
-        : [...prev, id_periodo]
+      prev.includes(id) ? prev.filter((h) => h !== id) : [...prev, id]
     );
   };
 
-  const handleReservar = async () => {
-    if (
-      horariosSelecionados.length === 0 ||
-      !dataInicio ||
-      !dataFim ||
-      DiaSelecionado.length === 0
-    ) {
-      setAlert({
-        type: "warning",
-        message:
-          "Selecione pelo menos um dia da semana, um horário e defina a data de início e fim antes de reservar!",
-        visible: true,
-      });
-      return;
-    }
+  const resetForm = () => {
+    setHorariosSelecionados([]);
+    setDiasSelecionados([]);
+    setDataInicio(hoje);
+    setDataFim(hoje);
+  };
 
+  const handleReservar = async () => {
     if (!idUsuario) {
-      setAlert({
+      return setAlert({
         type: "error",
-        message:
-          "ID do usuário não encontrado. Por favor, faça login novamente.",
+        message: "ID do usuário não encontrado. Faça login novamente.",
         visible: true,
       });
-      return;
     }
 
     try {
-      for (const id_periodo of horariosSelecionados) {
-        const reserva = {
-          fk_id_periodo: id_periodo,
+      for (let i = 0; i < horariosSelecionados.length; i++) {
+        const id = horariosSelecionados[i];
+        await api.createReserva({
+          fk_id_periodo: id,
           fk_id_user: idUsuario,
           fk_id_sala: sala.id_sala,
-          dias: DiaSelecionado,
+          dias: diasSelecionados,
           data_inicio: dataInicio,
           data_fim: dataFim,
-        };
-        await api.createReserva(reserva);
+        });
       }
 
       setAlert({
@@ -126,31 +105,36 @@ export default function ReservaPage() {
         message: `Reserva feita para sala ${sala?.numero || "Desconhecida"}!`,
         visible: true,
       });
-      setHorariosSelecionados([]);
-      setDiasSelecionado([]);
-      setDataInicio(hoje);
-      setDataFim(hoje);
+      resetForm();
     } catch (err) {
       console.error("Erro ao reservar:", err);
       const errorMessage =
         err.response?.data?.error ||
         "Erro ao fazer a reserva. Tente novamente.";
 
-      if (!errorMessage.includes("A sala já está reservada")) {
-        setHorariosSelecionados([]);
-        setDiasSelecionado([]);
-        setDataInicio(hoje);
-        setDataFim(hoje);
-      }
+      if (!errorMessage.includes("A sala já está reservada")) resetForm();
 
-      setAlert({
-        type: "error",
-        message: errorMessage,
-        visible: true,
-      });
+      setAlert({ type: "error", message: errorMessage, visible: true });
     }
 
     fetchHorarios();
+  };
+
+  const handleAbrirModal = () => {
+    if (
+      !dataInicio ||
+      !dataFim ||
+      diasSelecionados.length === 0 ||
+      horariosSelecionados.length === 0
+    ) {
+      return setAlert({
+        type: "warning",
+        message:
+          "Selecione dias da semana, horário e defina a data de início e fim!",
+        visible: true,
+      });
+    }
+    setModalOpen(true);
   };
 
   if (!sala) {
@@ -164,17 +148,8 @@ export default function ReservaPage() {
   }
 
   return (
-    <Box
-      sx={{
-        backgroundColor: "#ffe9e9",
-        minHeight: "100vh",
-        p: 0,
-        width: "100%",
-      }}
-    >
-      <Box
-        sx={{ width: "100%", p: 3, textAlign: "left", boxSizing: "border-box" }}
-      >
+    <Box sx={{ backgroundColor: "#ffe9e9", minHeight: "100vh", width: "100%" }}>
+      <Box sx={{ width: "100%", p: 3, boxSizing: "border-box" }}>
         <Box
           sx={{
             backgroundColor: "#f4bcbc",
@@ -187,7 +162,7 @@ export default function ReservaPage() {
           </Typography>
         </Box>
 
-        {/* NOVO: Container Único para Datas e Dias */}
+        {/* Campos de datas e dias */}
         <Box
           sx={{
             display: "flex",
@@ -199,50 +174,47 @@ export default function ReservaPage() {
             mx: "auto",
           }}
         >
-          <Typography fontWeight="bold" sx={{ fontSize: "0.9rem", mb: 1 }}>
-            Data Início:
-          </Typography>
-          <TextField
-            type="date"
-            size="small"
-            value={dataInicio}
-            onChange={(e) => setDataInicio(e.target.value)}
-            sx={{
-              background: "#ddd",
-              "& input": { fontSize: "0.85rem", padding: "6px 8px" },
-            }}
-          />
+          <Box sx={{ width: "100%", mb: 1 }}>
+            <Typography sx={{ fontSize: "0.9rem", mb: 1 }}>
+              Data Início:
+            </Typography>
+            <TextField
+              type="date"
+              size="small"
+              value={dataInicio}
+              onChange={(e) => setDataInicio(e.target.value)}
+              sx={{
+                background: "#ddd",
+                "& input": { fontSize: "0.85rem", padding: "6px 8px" },
+              }}
+            />
+          </Box>
 
-          <Typography
-            fontWeight="bold"
-            sx={{ fontSize: "0.9rem", mb: 1, mt: 1 }}
-          >
-            Data Fim:
-          </Typography>
-          <TextField
-            type="date"
-            size="small"
-            value={dataFim}
-            onChange={(e) => setDataFim(e.target.value)}
-            sx={{
-              background: "#ddd",
-              "& input": { fontSize: "0.85rem", padding: "6px 8px" },
-            }}
-          />
+          <Box sx={{ width: "100%", mb: 1 }}>
+            <Typography sx={{ fontSize: "0.9rem", mb: 1 }}>
+              Data Fim:
+            </Typography>
+            <TextField
+              type="date"
+              size="small"
+              value={dataFim}
+              onChange={(e) => setDataFim(e.target.value)}
+              sx={{
+                background: "#ddd",
+                "& input": { fontSize: "0.85rem", padding: "6px 8px" },
+              }}
+            />
+          </Box>
 
-          {/* Seletor de Dias da Semana*/}
-          <Typography
-            fontWeight="bold"
-            sx={{ fontSize: "0.9rem", mb: 1, mt: 1 }}
-          >
+          <Typography sx={{ fontSize: "0.9rem", mb: 1 }}>
             Dias da semana:
           </Typography>
           <FormControl fullWidth>
             <InputLabel>Dias da semana</InputLabel>
             <Select
               multiple
-              value={DiaSelecionado}
-              onChange={(e) => setDiasSelecionado(e.target.value)}
+              value={diasSelecionados}
+              onChange={(e) => setDiasSelecionados(e.target.value)}
               input={<OutlinedInput label="Dias da semana" />}
               renderValue={(selected) => (
                 <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
@@ -252,9 +224,9 @@ export default function ReservaPage() {
                 </Box>
               )}
             >
-              {["Seg", "Ter", "Qua", "Qui", "Sex", "Sab"].map((dias) => (
-                <MenuItem key={dias} value={dias}>
-                  {dias}
+              {["Seg", "Ter", "Qua", "Qui", "Sex", "Sab"].map((dia) => (
+                <MenuItem key={dia} value={dia}>
+                  {dia}
                 </MenuItem>
               ))}
             </Select>
@@ -262,7 +234,7 @@ export default function ReservaPage() {
         </Box>
       </Box>
 
-      {/* Horários */}
+      {/* Lista de horários */}
       <Box sx={{ width: "100%", maxWidth: 600, p: 3, mx: "auto", mt: 2 }}>
         {loading ? (
           <Typography textAlign="center">Carregando horários...</Typography>
@@ -320,7 +292,7 @@ export default function ReservaPage() {
           </Grid>
         )}
 
-        {/* Componente de alerta do MUI */}
+        {/* Alertas */}
         <Snackbar
           open={alert.visible}
           autoHideDuration={4000}
@@ -338,14 +310,7 @@ export default function ReservaPage() {
           )}
         </Snackbar>
 
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            mt: 2,
-          }}
-        >
+        <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
           <Button
             variant="contained"
             sx={{
@@ -353,12 +318,39 @@ export default function ReservaPage() {
               "&:hover": { background: "#c62828" },
               py: 1.5,
             }}
-            onClick={handleReservar}
+            onClick={handleAbrirModal}
           >
             Reservar
           </Button>
         </Box>
       </Box>
+
+      {/* Modal de confirmação */}
+      <ModalReserva
+        open={modalOpen}
+        handleClose={() => setModalOpen(false)}
+        reserva={{
+          sala: sala?.numero,
+          data: `${dataInicio} a ${dataFim}`,
+          horario: horariosSelecionados
+            .map(
+              (id) =>
+                horarios
+                  .find((h) => h.id_periodo === id)
+                  ?.horario_inicio.slice(0, 5) +
+                " - " +
+                horarios
+                  .find((h) => h.id_periodo === id)
+                  ?.horario_fim.slice(0, 5)
+            )
+            .join(", "),
+          usuario: nomeUsuario,
+        }}
+        onConfirm={() => {
+          handleReservar();
+          setModalOpen(false);
+        }}
+      />
     </Box>
   );
 }

@@ -11,6 +11,7 @@ import SalasPage from "./pages/Salas";
 import ReservaPage from "./pages/Reserva";
 import CriarSala from "./pages/CriarSala";
 import ListarSalas from "./pages/ListarSalas";
+// import MinhasReservas from "./pages/MinhasReservas";
 
 function App() {
   return (
@@ -88,6 +89,14 @@ function App() {
             </ProtectedRoute>
           }
         />
+        {/* <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <MinhasReservas />
+            </ProtectedRoute>
+          }
+        /> */}
       </Routes>
     </Router>
   );

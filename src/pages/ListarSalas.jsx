@@ -2,15 +2,13 @@ import React, { useState, useEffect } from "react";
 import { Box, Typography, Snackbar, Alert, IconButton } from "@mui/material";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import api from "../axios/axios";
+import ConfirmDialog from "../components/ConfirmDialog";
 
 function ListarSalas() {
   const [salas, setSalas] = useState([]);
-
-  const [alert, setAlert] = useState({
-    type: "",
-    message: "",
-    visible: false,
-  });
+  const [alert, setAlert] = useState({ type: "", message: "", visible: false });
+  const [openConfirm, setOpenConfirm] = useState(false);
+  const [selectedSalaId, setSelectedSalaId] = useState(null);
 
   const handleClose = () => {
     setAlert({ ...alert, visible: false });
@@ -18,12 +16,11 @@ function ListarSalas() {
 
   async function getSalas() {
     try {
-      const response = await api.getSalas();
-      console.log(response.data.salas)
+      const response = await api.getSala();
       setSalas(response.data.salas);
     } catch (error) {
       setAlert({
-        message: error.response.data.error,
+        message: error.response?.data?.error || "Erro ao carregar salas",
         type: "error",
         visible: true,
       });
@@ -31,9 +28,16 @@ function ListarSalas() {
     }
   }
 
-  async function deleteSala(sala) {
+  const handleDeleteClick = (id) => {
+    setSelectedSalaId(id);
+    setOpenConfirm(true);
+  };
+
+  const handleConfirmDelete = async () => {
     try {
-      const response = await api.deleteSala(sala);
+      const response = await api.deleteSala(selectedSalaId);
+      setSalas((prev) => prev.filter((s) => s.numero !== selectedSalaId));
+
       setAlert({
         message: response.data.message,
         type: "success",
@@ -42,12 +46,14 @@ function ListarSalas() {
     } catch (error) {
       console.log("Erro ao deletar sala...", error);
       setAlert({
-        message: error.response.data.error,
+        message: error.response?.data?.error || "Erro ao deletar sala",
         type: "error",
         visible: true,
       });
+    } finally {
+      setOpenConfirm(false);
     }
-  }
+  };
 
   useEffect(() => {
     getSalas();
@@ -104,13 +110,13 @@ function ListarSalas() {
             >
               <Box>
                 <Typography variant="h6" fontSize={18}>
-                  {sala.numero}
+                  Sala {sala.numero}
                 </Typography>
                 <Typography variant="body2" color="gray">
                   {sala.descricao}
                 </Typography>
               </Box>
-              <IconButton onClick={() => deleteSala(sala.numero)}>
+              <IconButton onClick={() => handleDeleteClick(sala.numero)}>
                 <DeleteOutlineIcon color="error" />
               </IconButton>
             </Box>
@@ -118,11 +124,19 @@ function ListarSalas() {
         </Box>
       </Box>
 
+      {/* 🔹 Modal de Confirmação */}
+      <ConfirmDialog
+        open={openConfirm}
+        onClose={() => setOpenConfirm(false)}
+        onConfirm={handleConfirmDelete}
+        title="Deseja realmente deletar esta sala?"
+      />
+
       <Snackbar
         open={alert.visible}
-        autoHideDuration={4000} // tempo que o alerta fica visível
+        autoHideDuration={4000}
         onClose={handleClose}
-        anchorOrigin={{ vertical: "top", horizontal: "center" }} // posição do alerta
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
       >
         {alert.type && (
           <Alert

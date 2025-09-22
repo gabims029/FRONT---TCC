@@ -16,13 +16,13 @@ function ModalEditarPerfil({
     async function getUserInfo() {
       try {
         const response = await api.getUserByID(id_usuario);
+
         setUserData({
           nome: response.data.user.nome || "",
           email: response.data.user.email || "",
           cpf: response.data.user.cpf || "",
-          senha: response.data.user.senha || "",
           senhaAtual: "",
-          senhaNova: "",
+          senha: "",
         });
       } catch (err) {
         console.error(err);
@@ -40,17 +40,26 @@ function ModalEditarPerfil({
   const handleSave = async () => {
     try {
       const dataToUpload = {
+        id: id_usuario, // id do usuário
         nome: userData.nome,
         email: userData.email,
         cpf: userData.cpf,
-        senha: userData.senhaNova || userData.senha,
+        senhaAtual: userData.senhaAtual,
       };
-      await api.updateUser(id_usuario, dataToUpload);
+
+      // Só envia nova senha se o usuário quiser trocar
+      if (!userData.senha) {
+        dataToUpload.senha = userData.senhaAtual;
+      } else {
+        dataToUpload.senha = userData.senha;
+      }
+
+      await api.updateUser(dataToUpload); // PUT /user/
       showAlert("Perfil atualizado com sucesso!", "success");
       onClose();
     } catch (err) {
       console.error(err);
-      showAlert("Erro ao atualizar perfil", "error");
+      showAlert(err.response?.data?.error, "error");
     }
   };
 
@@ -73,64 +82,136 @@ function ModalEditarPerfil({
         <AccountCircleIcon sx={{ color: "white", fontSize: 100 }} />
       </Box>
 
-      {/* Inputs */}
-      {[
-        {
-          label: "NOME",
-          name: "nome",
-          placeholder: "Digite o novo nome",
-          type: "text",
-        },
-        {
-          label: "CPF",
-          name: "cpf",
-          placeholder: "************",
-          type: "text",
-          disabled: true,
-        },
-        {
-          label: "EMAIL",
-          name: "email",
-          placeholder: "Digite o novo email",
-          type: "text",
-        },
-        {
-          label: "SENHA",
-          name: "senhaAtual",
-          placeholder: "Digite a senha atual",
-          type: "password",
-        },
-        {
-          label: "NOVA SENHA(opcional)",
-          name: "senhaNova",
-          placeholder: "Digite a nova senha",
-          type: "password",
-        },
-      ].map((field) => (
-        <Box key={field.name} sx={{ mb: 2 }}>
-          <Typography sx={{ color: "white", fontWeight: "bold", mb: 0.5 }}>
-            {field.label}
-          </Typography>
-          <TextField
-            fullWidth
-            name={field.name}
-            value={userData[field.name]}
-            placeholder={field.placeholder}
-            onChange={onChange}
-            type={field.type}
-            disabled={field.disabled || false}
-            sx={{
-              backgroundColor: "white",
-              borderRadius: 1,
-              "& .MuiInputBase-input": { color: "black" },
-              "& .Mui-disabled": {
-                WebkitTextFillColor: "black",
-                color: "black",
-              },
-            }}
-          />
-        </Box>
-      ))}
+      {/* NOME */}
+      <Typography
+        sx={{
+          color: "white",
+          marginBottom: 0.5,
+          marginRight: "auto",
+          fontWeight: "bold",
+        }}
+      >
+        NOME
+      </Typography>
+      <TextField
+        fullWidth
+        name="nome"
+        value={userData.nome}
+        placeholder="Digite o novo nome"
+        onChange={onChange}
+        type="text"
+        sx={{
+          marginBottom: 3,
+          backgroundColor: "white",
+          borderRadius: 1,
+          "& .MuiInputBase-input": { color: "black" },
+        }}
+      />
+
+      {/* CPF */}
+      <Typography
+        sx={{
+          color: "white",
+          marginBottom: 0.5,
+          marginRight: "auto",
+          fontWeight: "bold",
+        }}
+      >
+        CPF
+      </Typography>
+      <TextField
+        fullWidth
+        name="cpf"
+        value={userData.cpf}
+        placeholder="************"
+        type="text"
+        disabled
+        sx={{
+          marginBottom: 3,
+          backgroundColor: "white",
+          borderRadius: 1,
+          "& .MuiInputBase-input": { color: "black" },
+          "& .Mui-disabled": { WebkitTextFillColor: "black", color: "black" },
+        }}
+      />
+
+      {/* EMAIL */}
+      <Typography
+        sx={{
+          color: "white",
+          marginBottom: 0.5,
+          marginRight: "auto",
+          fontWeight: "bold",
+        }}
+      >
+        EMAIL
+      </Typography>
+      <TextField
+        fullWidth
+        name="email"
+        value={userData.email}
+        placeholder="Digite o novo email"
+        onChange={onChange}
+        type="text"
+        sx={{
+          marginBottom: 3,
+          backgroundColor: "white",
+          borderRadius: 1,
+          "& .MuiInputBase-input": { color: "black" },
+        }}
+      />
+
+      {/* SENHA ATUAL */}
+      <Typography
+        sx={{
+          color: "white",
+          marginBottom: 0.5,
+          marginRight: "auto",
+          fontWeight: "bold",
+        }}
+      >
+        SENHA
+      </Typography>
+      <TextField
+        fullWidth
+        name="senhaAtual"
+        value={userData.senhaAtual}
+        placeholder="Digite a senha atual"
+        onChange={onChange}
+        type="password"
+        sx={{
+          marginBottom: 3,
+          backgroundColor: "white",
+          borderRadius: 1,
+          "& .MuiInputBase-input": { color: "black" },
+        }}
+      />
+
+      {/* NOVA SENHA */}
+      <Typography
+        sx={{
+          color: "white",
+          marginBottom: 0.5,
+          marginRight: "auto",
+          fontWeight: "bold",
+        }}
+      >
+        NOVA SENHA (opcional)
+      </Typography>
+      <TextField
+        fullWidth
+        name="senha"
+        value={userData.senha}
+        placeholder="Digite a nova senha"
+        onChange={onChange}
+        type="password"
+        sx={{
+          marginBottom: 3,
+          backgroundColor: "white",
+          borderRadius: 1,
+          "& .MuiInputBase-input": { color: "black" },
+        }}
+      />
 
       <Box sx={{ display: "flex", gap: 2, mt: 3 }}>
         <Button

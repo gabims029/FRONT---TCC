@@ -1,13 +1,19 @@
 import { Navigate } from "react-router-dom";
 import DefaultLayout from "./DefaultLayout";
 
-const ProtectedRoute = ({ children }) => {
+const ProtectedRoute = ({ children, tipo }) => {
   const isAuthenticated = localStorage.getItem("authenticated");
-  return isAuthenticated ? (
-    <DefaultLayout headerRender={2}>{children}</DefaultLayout>
-  ) : (
-    <Navigate to="/" />
-  );
+  const userTipo = localStorage.getItem("tipo");
+
+  if (!isAuthenticated) {
+    return <Navigate to="/" />;
+  }
+
+  if (tipo && tipo !== userTipo) {
+    return <Navigate to="/home" />;
+  }
+
+  return <DefaultLayout headerRender={2}>{children}</DefaultLayout>;
 };
 
 export default ProtectedRoute;

@@ -11,6 +11,7 @@ import SalasPage from "./pages/Salas";
 import ReservaPage from "./pages/Reserva";
 import CriarSala from "./pages/CriarSala";
 import ListarSalas from "./pages/ListarSalas";
+// import MinhasReservas from "./pages/MinhasReservas";
 
 function App() {
   return (
@@ -35,7 +36,7 @@ function App() {
         <Route
           path="/cadastro"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute tipo="Admin" >
               <Cadastro />
             </ProtectedRoute>
           }
@@ -67,7 +68,7 @@ function App() {
         <Route
           path="/users"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute tipo="Admin">
               <ListarUsuario />
             </ProtectedRoute>
           }
@@ -75,7 +76,7 @@ function App() {
         <Route
           path="/criarSala"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute tipo="Admin" >
               <CriarSala />
             </ProtectedRoute>
           }
@@ -83,11 +84,19 @@ function App() {
         <Route
           path="/listarSalas"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute tipo="Admin">
               <ListarSalas />
             </ProtectedRoute>
           }
         />
+        {/* <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <MinhasReservas />
+            </ProtectedRoute>
+          }
+        /> */}
       </Routes>
     </Router>
   );

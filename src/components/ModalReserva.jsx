@@ -1,4 +1,3 @@
-import { useState } from "react";
 import {
   Dialog,
   DialogTitle,
@@ -6,81 +5,85 @@ import {
   DialogActions,
   Button,
   Typography,
-  List,
-  ListItem,
-  Alert,
 } from "@mui/material";
+import { styled } from "@mui/system";
+
+const StyledDialog = styled(Dialog)({
+  "& .MuiDialog-paper": {
+    borderRadius: "10px",
+    border: "2px solid #ccc",
+  },
+});
+
+const StyledDialogTitle = styled(DialogTitle)({
+  backgroundColor: "#b10e14",
+  color: "#fff",
+  textAlign: "center",
+  fontWeight: "bold",
+  padding: "16px",
+});
+
+const StyledDialogContent = styled(DialogContent)({
+  padding: "20px 24px",
+  "& .MuiTypography-root": {
+    fontSize: "1.1rem",
+    fontWeight: "bold",
+    marginBottom: "10px",
+  },
+});
+
+const StyledButton = styled(Button)(({ variant, ...props }) => ({
+  fontWeight: "bold",
+  textTransform: "uppercase",
+  minWidth: "120px",
+  "&.cancelar": {
+    backgroundColor: "#f0d5d7",
+    color: "#b10e14",
+    "&:hover": {
+      backgroundColor: "#e0c5c7",
+    },
+  },
+  "&.confirmar": {
+    backgroundColor: "#b2e3b2",
+    color: "#4f8d4f",
+    "&:hover": {
+      backgroundColor: "#a2d3a2",
+    },
+  },
+}));
 
 export default function ModalReserva({
-  sala,
-  data,
-  horariosSelecionados,
-  children,
+  open,
+  handleClose,
+  reserva,
+  onConfirm,
 }) {
-  const [open, setOpen] = useState(false);
-  const [mensagem, setMensagem] = useState("");
-
-  const handleOpen = () => {
-    if (horariosSelecionados.length === 0) {
-      setMensagem("Selecione pelo menos um horário antes de reservar!");
-      return;
-    }
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-  };
-
-  const handleConfirm = () => {
-    setMensagem(
-      `Reserva feita para sala ${
-        sala?.numero || "Desconhecida"
-      } em ${data} nos horários: ${horariosSelecionados.join(", ")}`
-    );
-    setOpen(false);
-  };
+  if (!reserva) return null;
 
   return (
-    <>
-      {/* Elemento que abre o modal */}
-      <span onClick={handleOpen}>{children}</span>
-
-      {/* Modal */}
-      <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">
-        <DialogTitle>Confirmação de Reserva</DialogTitle>
-        <DialogContent>
-          <Typography variant="subtitle1" mb={1}>
-            Sala: {sala?.numero || "Desconhecida"}
-          </Typography>
-          <Typography variant="subtitle1" mb={1}>
-            Data: {data}
-          </Typography>
-          <Typography variant="subtitle1" mb={1}>
-            Horários selecionados:
-          </Typography>
-          <List dense>
-            {horariosSelecionados.map((h, i) => (
-              <ListItem key={i} sx={{ pl: 0 }}>
-                {h}
-              </ListItem>
-            ))}
-          </List>
-          {mensagem && (
-            <Alert severity="success" sx={{ mt: 2 }}>
-              {mensagem}
-            </Alert>
-          )}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose} color="inherit">
-            Cancelar
-          </Button>
-          <Button onClick={handleConfirm} color="primary" variant="contained">
-            Confirmar
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </>
+    <StyledDialog open={open} onClose={handleClose}>
+      <StyledDialogTitle>RESERVAR</StyledDialogTitle>
+      <StyledDialogContent dividers>
+        <Typography>SALA: {reserva.sala}</Typography>
+        <Typography>DATA: {reserva.data}</Typography>
+        <Typography>HORÁRIO: {reserva.horario}</Typography>
+      </StyledDialogContent>
+      <DialogActions sx={{ padding: "16px 24px" }}>
+        <StyledButton
+          onClick={handleClose}
+          className="cancelar"
+          disableElevation
+        >
+          CANCELAR
+        </StyledButton>
+        <StyledButton
+          onClick={onConfirm}
+          className="confirmar"
+          disableElevation
+        >
+          CONFIRMAR
+        </StyledButton>
+      </DialogActions>
+    </StyledDialog>
   );
 }

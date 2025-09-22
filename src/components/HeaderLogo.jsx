@@ -16,6 +16,7 @@ function Header() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [confirmLogoutOpen, setConfirmLogoutOpen] = useState(false);
   const navigate = useNavigate();
+  const tipo = localStorage.getItem("tipo");
 
   const toggleDrawer = (open) => () => {
     setDrawerOpen(open);
@@ -25,9 +26,13 @@ function Header() {
     { label: "HOME", path: "/home" },
     { label: "PERFIL", path: "/profile" },
     { label: "MINHAS RESERVAS", path: "/minhasReservas" },
-    { label: "CADASTRAR USUÁRIO", path: "/cadastro" },
-    { label: "CRIAR SALA", path: "/criarSala" },
-    { label: "VISUALIZAR USUÁRIOS", path: "/users" },
+    ...(tipo === "Admin"
+      ? [
+          { label: "CADASTRAR USUÁRIO", path: "/cadastro" },
+          { label: "CRIAR SALA", path: "/criarSala" },
+          { label: "VISUALIZAR USUÁRIOS", path: "/users" },
+        ]
+      : []),
     { label: "SAIR", path: "/" },
   ];
 

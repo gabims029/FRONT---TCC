@@ -35,7 +35,7 @@ function App() {
         <Route
           path="/cadastro"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute tipo="Admin" >
               <Cadastro />
             </ProtectedRoute>
           }
@@ -67,7 +67,7 @@ function App() {
         <Route
           path="/users"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute tipo="Admin">
               <ListarUsuario />
             </ProtectedRoute>
           }
@@ -75,7 +75,7 @@ function App() {
         <Route
           path="/criarSala"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute tipo="Admin" >
               <CriarSala />
             </ProtectedRoute>
           }
@@ -83,7 +83,7 @@ function App() {
         <Route
           path="/listarSalas"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute tipo="Admin">
               <ListarSalas />
             </ProtectedRoute>
           }

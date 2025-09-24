@@ -1,6 +1,8 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Dialog, Box, Typography, TextField, Button } from "@mui/material";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import api from "../axios/axios";
 
 function ModalEditarPerfil({
@@ -31,6 +33,17 @@ function ModalEditarPerfil({
     }
     if (open) getUserInfo();
   }, [open]);
+
+  const [showPassword, setShowPassword] = useState(false);
+  const [showPassword2, setShowPassword2] = useState(false);
+
+  const passwordVisibility = () => {
+    setShowPassword((state) => !state);
+  };
+
+  const passwordVisibility2 = () => {
+    setShowPassword2((state) => !state);
+  };
 
   const onChange = (event) => {
     const { name, value } = event.target;
@@ -178,12 +191,26 @@ function ModalEditarPerfil({
         value={userData.senhaAtual}
         placeholder="Digite a senha atual"
         onChange={onChange}
-        type="password"
+        type={showPassword ? "text" : "password"}
         sx={{
           marginBottom: 3,
           backgroundColor: "white",
           borderRadius: 1,
           "& .MuiInputBase-input": { color: "black" },
+        }}
+        InputProps={{
+          endAdornment: (
+            <Button
+              onClick={passwordVisibility}
+              sx={{ minWidth: "auto", padding: 0, color: "black" }}
+            >
+              {showPassword ? (
+                <VisibilityIcon color="disabled" />
+              ) : (
+                <VisibilityOffIcon color="disabled" />
+              )}
+            </Button>
+          ),
         }}
       />
 
@@ -204,12 +231,26 @@ function ModalEditarPerfil({
         value={userData.senha}
         placeholder="Digite a nova senha"
         onChange={onChange}
-        type="password"
+        type={showPassword2 ? "text" : "password"}
         sx={{
           marginBottom: 3,
           backgroundColor: "white",
           borderRadius: 1,
           "& .MuiInputBase-input": { color: "black" },
+        }}
+        InputProps={{
+          endAdornment: (
+            <Button
+              onClick={passwordVisibility2}
+              sx={{ minWidth: "auto", padding: 0, color: "black" }}
+            >
+              {showPassword2 ? (
+                <VisibilityIcon color="disabled" />
+              ) : (
+                <VisibilityOffIcon color="disabled" />
+              )}
+            </Button>
+          ),
         }}
       />
 

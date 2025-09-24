@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { Box, Typography, TextField, Button, MenuItem, Snackbar, Alert } from "@mui/material";
 import DefaultLayout from "../components/DefaultLayout";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import api from "../axios/axios";
 
 function Cadastro() {
@@ -19,6 +21,8 @@ function Cadastro() {
     visible: false, 
   });
 
+  const [showPassword, setShowPassword] = useState(false);
+
   // Atualizar o estado de um objeto (captura as mudanças)
   const onChange = (event) => {
     const { name, value } = event.target;
@@ -28,6 +32,10 @@ function Cadastro() {
   const handleSubmit = (event) => {
     event.preventDefault();
     cadastro();
+  };
+
+  const passwordVisibility = () => {
+    setShowPassword((state) => !state);
   };
 
   async function cadastro() {
@@ -144,7 +152,7 @@ function Cadastro() {
             id="senha"
             placeholder="Senha"
             name="senha"
-            type="password"
+            type={showPassword ? "text" : "password"}
             value={user.senha}
             onChange={onChange}
             sx={{
@@ -152,6 +160,20 @@ function Cadastro() {
               backgroundColor: "white",
               borderRadius: 1,
             }}
+            InputProps={{
+                endAdornment: (
+                  <Button
+                    onClick={passwordVisibility}
+                    sx={{ minWidth: "auto", padding: 0, color: "black" }}
+                  >
+                    {showPassword ? (
+                      <VisibilityIcon color="disabled" />
+                    ) : (
+                      <VisibilityOffIcon color="disabled" />
+                    )}
+                  </Button>
+                ),
+              }}
           />
 
           {/* Campo tipo com seleção */}

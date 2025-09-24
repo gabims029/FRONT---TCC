@@ -73,7 +73,7 @@ export default function MinhasReservas() {
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        pt: 10,
+        pt: 8,
         pb: 4,
       }}
     >

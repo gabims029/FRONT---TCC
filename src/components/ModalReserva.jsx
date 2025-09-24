@@ -6,18 +6,6 @@ import {
   Button,
   Typography,
 } from "@mui/material";
-
-function formatarData(dataString) {
-  if (!dataString) return "Data não informada";
-
-  const data = new Date(dataString); // cria objeto Date
-  const dia = String(data.getDate()).padStart(2, "0"); // dia com 2 dígitos
-  const mes = String(data.getMonth() + 1).padStart(2, "0"); // mês começa em 0
-  const ano = data.getFullYear(); // ano completo
-
-  return `${dia}-${mes}-${ano}`;
-}
-
 export default function ModalReserva({
   open,
   handleClose,
@@ -25,18 +13,13 @@ export default function ModalReserva({
   onConfirm,
 }) {
   if (!reserva) return null;
-
   return (
     <Dialog
       open={open}
       onClose={handleClose}
-      PaperProps={{
-        sx: {
-          borderRadius: "10px",
-          border: "2px solid #ccc",
-        },
-      }}
+      PaperProps={{ sx: { borderRadius: "10px", border: "2px solid #ccc" } }}
     >
+      {" "}
       <DialogTitle
         sx={{
           backgroundColor: "#b10e14",
@@ -46,8 +29,9 @@ export default function ModalReserva({
           padding: "16px",
         }}
       >
-        RESERVAR
-      </DialogTitle>
+        {" "}
+        RESERVAR{" "}
+      </DialogTitle>{" "}
       <DialogContent
         dividers
         sx={{
@@ -59,11 +43,13 @@ export default function ModalReserva({
           },
         }}
       >
-        <Typography>SALA: {reserva.sala}</Typography>
-        <Typography>DATA: {formatarData(reserva.data)}</Typography>
-        <Typography>HORÁRIO: {reserva.horario}</Typography>
-      </DialogContent>
+        {" "}
+        <Typography>SALA: {reserva.sala}</Typography>{" "}
+        <Typography>DATA: {reserva.data}</Typography>{" "}
+        <Typography>HORÁRIO: {reserva.horario}</Typography>{" "}
+      </DialogContent>{" "}
       <DialogActions sx={{ padding: "16px 24px" }}>
+        {" "}
         <Button
           onClick={handleClose}
           className="cancelar"
@@ -75,14 +61,13 @@ export default function ModalReserva({
             "&.cancelar": {
               backgroundColor: "#f0d5d7",
               color: "#b10e14",
-              "&:hover": {
-                backgroundColor: "#e0c5c7",
-              },
+              "&:hover": { backgroundColor: "#e0c5c7" },
             },
           }}
         >
-          CANCELAR
-        </Button>
+          {" "}
+          CANCELAR{" "}
+        </Button>{" "}
         <Button
           onClick={onConfirm}
           className="confirmar"
@@ -94,15 +79,14 @@ export default function ModalReserva({
             "&.confirmar": {
               backgroundColor: "#b2e3b2",
               color: "#4f8d4f",
-              "&:hover": {
-                backgroundColor: "#a2d3a2",
-              },
+              "&:hover": { backgroundColor: "#a2d3a2" },
             },
           }}
         >
-          CONFIRMAR
-        </Button>
-      </DialogActions>
+          {" "}
+          CONFIRMAR{" "}
+        </Button>{" "}
+      </DialogActions>{" "}
     </Dialog>
   );
 }

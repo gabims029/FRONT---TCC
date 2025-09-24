@@ -7,6 +7,17 @@ import {
   Typography,
 } from "@mui/material";
 
+function formatarData(dataString) {
+  if (!dataString) return "Data não informada";
+
+  const data = new Date(dataString); // cria objeto Date
+  const dia = String(data.getDate()).padStart(2, "0"); // dia com 2 dígitos
+  const mes = String(data.getMonth() + 1).padStart(2, "0"); // mês começa em 0
+  const ano = data.getFullYear(); // ano completo
+
+  return `${dia}-${mes}-${ano}`;
+}
+
 export default function ModalReserva({
   open,
   handleClose,
@@ -49,7 +60,7 @@ export default function ModalReserva({
         }}
       >
         <Typography>SALA: {reserva.sala}</Typography>
-        <Typography>DATA: {reserva.data}</Typography>
+        <Typography>DATA: {formatarData(reserva.data)}</Typography>
         <Typography>HORÁRIO: {reserva.horario}</Typography>
       </DialogContent>
       <DialogActions sx={{ padding: "16px 24px" }}>

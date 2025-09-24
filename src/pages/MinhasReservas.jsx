@@ -73,7 +73,7 @@ export default function MinhasReservas() {
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        pt: 8,
+        pt: 10,
         pb: 4,
       }}
     >
@@ -140,6 +140,7 @@ export default function MinhasReservas() {
                       id_reserva,
                       descricaoSala = "Sem descrição",
                       nomeSala = "Sala não informada",
+                      dias = "",
                       horario_inicio = "",
                       horario_fim = "",
                     } = reserva || {};
@@ -185,6 +186,16 @@ export default function MinhasReservas() {
                                 Máx. 16
                               </Typography>
                             </Box>
+                            <Typography
+                              variant="body2"
+                              sx={{
+                                mt: 1,
+                                fontWeight: "bold",
+                                textAlign: "center",
+                              }}
+                            >
+                              {dias}
+                            </Typography>
                             <Typography
                               variant="body2"
                               sx={{

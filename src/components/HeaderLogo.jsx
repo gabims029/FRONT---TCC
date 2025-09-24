@@ -31,6 +31,7 @@ function Header() {
           { label: "CADASTRAR USUÁRIO", path: "/cadastro" },
           { label: "CRIAR SALA", path: "/criarSala" },
           { label: "VISUALIZAR USUÁRIOS", path: "/users" },
+          { label: "RESERVAS", path: "/reservas"},
         ]
       : []),
     { label: "SAIR", path: "/" },

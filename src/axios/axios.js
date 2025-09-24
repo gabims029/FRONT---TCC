@@ -29,7 +29,7 @@ const sheets = {
   getSala: () => api.get("/sala"),
   createSala: (sala) => api.post("/sala", sala),
   deleteSala: (sala) => api.delete(`/sala/${sala}`),
-  getScheduleById: (id_usuario) => api.get(`/reserva/usuario/${id_usuario}`),
+  getSchedulesByUserID: (id_usuario) => api.get(`/reserva/usuario/${id_usuario}`),
 };
 
 export default sheets;

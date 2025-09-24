@@ -19,7 +19,6 @@ export default function MinhasReservas() {
 
   const handleClose = () => setAlert({ ...alert, visible: false });
 
-  // Função para carregar reservas
   const carregarReservas = useCallback(() => {
     if (!idUsuario) {
       setAlert({
@@ -32,16 +31,17 @@ export default function MinhasReservas() {
     }
 
     setLoading(true);
+
     api
-      .getScheduleById(idUsuario)
+      .getSchedulesByUserID(idUsuario)
       .then((res) => {
-        const dados = res.data.data || [];
+        const dados = res.data?.reservas || [];
         setReservas(dados);
       })
       .catch((e) => {
         setAlert({
           type: "error",
-          message: e.response?.data?.message || e.message,
+          message: e.response?.data?.error || e.message,
           visible: true,
         });
       })
@@ -52,11 +52,14 @@ export default function MinhasReservas() {
     carregarReservas();
   }, [carregarReservas]);
 
-  // Agrupar reservas por data (YYYY-MM-DD)
+  // Agrupar reservas por data
   const reservasPorData = {};
   reservas.forEach((reserva) => {
-    // Garantir formato YYYY-MM-DD
-    const dataFormatada = reserva.data.split("T")[0];
+    let dataFormatada = "Data não informada";
+    if (reserva?.data_inicio) {
+      const [ano, mes, dia] = reserva.data_inicio.split("T")[0].split("-");
+      dataFormatada = `${dia}-${mes}-${ano}`;
+    }
     if (!reservasPorData[dataFormatada]) reservasPorData[dataFormatada] = [];
     reservasPorData[dataFormatada].push(reserva);
   });
@@ -70,7 +73,7 @@ export default function MinhasReservas() {
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        pt: 4,
+        pt: 8,
         pb: 4,
       }}
     >
@@ -108,85 +111,99 @@ export default function MinhasReservas() {
 
       {!loading && reservas.length > 0 && (
         <Box sx={{ width: "90%", maxWidth: "800px" }}>
-          <Box
-            sx={{
-              backgroundColor: "#B9181D",
-              borderRadius: 2,
-              p: 4,
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-            }}
-          >
-            <Typography
-              variant="h5"
-              sx={{
-                color: "white",
-                fontWeight: "bold",
-                mb: 3,
-                textAlign: "center",
-              }}
-            >
-              MINHAS RESERVAS
-            </Typography>
-
-            {Object.keys(reservasPorData)
-              .sort()
-              .map((data) => (
-                <Box key={data} sx={{ width: "100%", mb: 3 }}>
-                  <Box
-                    sx={{
-                      bgcolor: "#f0c9c9",
-                      color: "#b10e14",
-                      p: 1.5,
-                      mb: 2,
-                      fontWeight: "bold",
-                      borderRadius: 1,
-                    }}
+          {Object.keys(reservasPorData)
+            .sort()
+            .map((data) => (
+              <Box key={data} sx={{ width: "100%", mb: 3 }}>
+                <Box
+                  sx={{
+                    width: "100%",
+                    bgcolor: "#FF9696",
+                    py: 1,
+                    px: 2,
+                    borderRadius: 1,
+                    mb: 1,
+                  }}
+                >
+                  <Typography
+                    variant="body1"
+                    sx={{ fontWeight: "bold", color: "black" }}
                   >
-                    <Typography variant="body1">{data}</Typography>
-                  </Box>
-                  <Grid container spacing={2}>
-                    {reservasPorData[data].map(
-                      ({ id, titulo, sala, horario }) => (
-                        <Grid item key={id}>
-                          <Card
-                            sx={{
-                              width: 200,
-                              borderRadius: 2,
-                              border: "1px solid #ccc",
-                              boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+                    {data}
+                  </Typography>
+                </Box>
+
+                {/* Grid com as salas */}
+                <Grid container spacing={2}>
+                  {reservasPorData[data]?.map((reserva) => {
+                    const {
+                      id_reserva,
+                      descricaoSala = "Sem descrição",
+                      nomeSala = "Sala não informada",
+                      horario_inicio = "",
+                      horario_fim = "",
+                    } = reserva || {};
+
+                    return (
+                      <Grid item key={id_reserva || Math.random()}>
+                        <Card
+                          sx={{
+                            width: 200,
+                            borderRadius: 2,
+                            boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
+                          }}
+                        >
+                          <CardHeader
+                            title={descricaoSala}
+                            titleTypographyProps={{
+                              textAlign: "center",
+                              fontWeight: "bold",
+                              fontSize: "0.95rem",
+                              color: "white",
                             }}
-                          >
-                            <CardHeader
-                              title={titulo}
-                              titleTypographyProps={{
-                                textAlign: "center",
-                                fontWeight: "bold",
-                                fontSize: "1rem",
-                                color: "white",
+                            sx={{ bgcolor: "#b9181d", p: 1 }}
+                          />
+                          <CardContent sx={{ p: 1.5 }}>
+                            <Box
+                              sx={{
+                                bgcolor: "#f5f5f5",
+                                p: 1,
+                                borderRadius: 1,
+                                mb: 1,
                               }}
-                              sx={{ bgcolor: "#b10e14", p: 1.5 }}
-                            />
-                            <CardContent sx={{ p: 2 }}>
-                              <Typography variant="body2">
-                                Sala {sala}
+                            >
+                              <Typography
+                                variant="body2"
+                                sx={{ fontWeight: "bold", textAlign: "center" }}
+                              >
+                                {nomeSala}
                               </Typography>
                               <Typography
-                                variant="body1"
-                                sx={{ mt: 2, fontWeight: "bold" }}
+                                variant="body2"
+                                sx={{ fontSize: "0.8rem", textAlign: "center" }}
                               >
-                                {horario}
+                                Máx. 16
                               </Typography>
-                            </CardContent>
-                          </Card>
-                        </Grid>
-                      )
-                    )}
-                  </Grid>
-                </Box>
-              ))}
-          </Box>
+                            </Box>
+                            <Typography
+                              variant="body2"
+                              sx={{
+                                mt: 1,
+                                fontWeight: "bold",
+                                textAlign: "center",
+                              }}
+                            >
+                              {horario_inicio?.slice(0, 5)}{" "}
+                              {horario_fim && `- ${horario_fim.slice(0, 5)}`}
+                            </Typography>
+                          </CardContent>
+                        </Card>
+                      </Grid>
+                    );
+                  })}
+                </Grid>
+              </Box>
+            ))}
         </Box>
       )}
 

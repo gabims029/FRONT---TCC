@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { Box, Container, Snackbar, Alert } from "@mui/material";
+import { Box, Container, Snackbar, Alert, Paper, Typography } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -9,20 +8,17 @@ import "dayjs/locale/pt-br";
 import api from "../axios/axios";
 
 export default function ReservasAdmin() {
-  const navigate = useNavigate();
   const [dataSelecionada, setDataSelecionada] = useState(null);
   const [reservas, setReservas] = useState({});
   const [alert, setAlert] = useState({ type: "", message: "", visible: false });
-
-  const diasSemana = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sab"];
 
   const handleClose = () => {
     setAlert({ ...alert, visible: false });
   };
 
-  async function getReservas() {
+  async function getReservas(dataFormatada) {
     try {
-      const response = await api.getReservas();
+      const response = await api.getReservasByData(dataFormatada);
       console.log("Reservas recebidas:", response.data.schedulesByDay);
       setReservas(response.data.schedulesByDay);
     } catch (error) {
@@ -36,16 +32,13 @@ export default function ReservasAdmin() {
   }
 
   useEffect(() => {
-    getReservas();
-  }, []);
-
-  // Pega o dia da semana da data selecionada
-  const diaSelecionado = dataSelecionada
-    ? diasSemana[dataSelecionada.day()]
-    : null;
-  const reservasFiltradas = diaSelecionado
-    ? reservas[diaSelecionado] || []
-    : [];
+    if (dataSelecionada) {
+      const dataFormatada = dayjs(dataSelecionada).format("YYYY-MM-DD");
+      getReservas(dataFormatada);
+    } else {
+      setReservas({});
+    }
+  }, [dataSelecionada]);
 
   return (
     <Box
@@ -65,7 +58,7 @@ export default function ReservasAdmin() {
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          gap: 2,
+          gap: 3,
         }}
       >
         <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="pt-br">
@@ -76,47 +69,49 @@ export default function ReservasAdmin() {
           />
         </LocalizationProvider>
 
-        {dataSelecionada && reservasFiltradas.length === 0 && (
-          <p>Nenhuma reserva para esta data.</p>
-        )}
-
-        {reservasFiltradas.length > 0 && (
-          <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap", mt: 2 }}>
-            {reservasFiltradas.map((reserva) => (
-              <Box
-                key={reserva.id_reserva}
-                sx={{
-                  border: "1px solid #ddd",
-                  borderRadius: 2,
-                  width: 200,
-                  backgroundColor: "#F5F5F5",
-                }}
-              >
-                <Box
-                  sx={{
-                    backgroundColor: "#C62828",
-                    color: "#fff",
-                    p: 1,
-                    textAlign: "center",
-                    fontWeight: "bold",
-                  }}
-                >
-                  {reserva.tipo}
-                </Box>
-                <Box sx={{ p: 1, textAlign: "center" }}>
-                  <strong>{reserva.sala}</strong>
-                  <p>Máx. 16</p>
-                  <p>
-                    {dayjs(reserva.data_inicio).locale("pt-br").format("DD/MM/YYYY")}-{" "}
-                    {dayjs(reserva.data_fim).locale("pt-br").format("DD/MM/YYYY")}
-                  </p>
-                  <p>{reserva.dias}</p>
-                  <p>{reserva.usernome}</p>
+        {/* Renderização das reservas agrupadas por sala */}
+        {Object.keys(reservas).length > 0 ? (
+          <Box sx={{ width: "100%", mt: 4, display: "flex", flexDirection: "column", gap: 3 }}>
+            {Object.entries(reservas).map(([nomeSala, listaReservas]) => (
+              <Box key={reservas.id_reserva}>
+                <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2 }}>
+                  {listaReservas.map((reserva) => (
+                    <Paper
+                      key={reserva.id_reserva}
+                      sx={{
+                        width: 250,
+                        p: 2,
+                        borderRadius: 2,
+                        boxShadow: 3,
+                        backgroundColor: "#fff",
+                        display: "flex",
+                        flexDirection: "column",
+                        justifyContent: "space-between",
+                      }}
+                    >
+                      <Typography
+                        sx={{
+                          fontWeight: "bold",
+                          fontSize: 16,
+                          mb: 1,
+                          color: "#b22222",
+                        }}
+                      >
+                        {reserva.nomeUsuario}
+                      </Typography>
+                      <Typography sx={{ fontSize: 14 }}>
+                        Horário: {reserva.horario_inicio} - {reserva.horario_fim}
+                      </Typography>
+                      <Typography sx={{ fontSize: 14 }}>Dias: {reserva.dias}</Typography>
+                    </Paper>
+                  ))}
                 </Box>
               </Box>
             ))}
           </Box>
-        )}
+        ) : dataSelecionada ? (
+          <Typography sx={{ mt: 4 }}>Nenhuma reserva para esta data.</Typography>
+        ) : null}
       </Container>
 
       <Snackbar

@@ -52,6 +52,7 @@ function Perfil() {
         email: response.data.user.email || "",
         cpf: response.data.user.cpf || "",
         senha: response.data.user.senha || "",
+        foto: response.data.user.foto || null, // 👈 adiciona a foto aqui
       });
     } catch (error) {
       showAlert(
@@ -107,15 +108,25 @@ function Perfil() {
           <Box
             sx={{
               borderRadius: "50%",
-              width: 100,
-              height: 100,
+              width: 140,
+              height: 140,
+              overflow: "hidden",
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
               marginBottom: 2,
+              backgroundColor: "white",
             }}
           >
-            <AccountCircleIcon sx={{ color: "white", fontSize: 140 }} />
+            {userData.foto ? (
+              <img
+                src={`data:image/jpeg;base64,${userData.foto}`}
+                alt="Foto do usuário"
+                style={{ width: "100%", height: "100%", objectFit: "cover" }}
+              />
+            ) : (
+              <AccountCircleIcon sx={{ color: "#B9181D", fontSize: 140 }} />
+            )}
           </Box>
 
           <Typography
@@ -231,6 +242,7 @@ function Perfil() {
               borderRadius: 1,
               "&:hover": { backgroundColor: "#f0f0f0" },
             }}
+            onClick={() => navigate("/minhasReservas")}
           >
             Minhas Reservas
           </Button>

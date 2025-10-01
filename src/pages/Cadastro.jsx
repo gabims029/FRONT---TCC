@@ -1,5 +1,13 @@
 import React, { useState } from "react";
-import { Box, Typography, TextField, Button, MenuItem, Snackbar, Alert } from "@mui/material";
+import {
+  Box,
+  Typography,
+  TextField,
+  Button,
+  MenuItem,
+  Snackbar,
+  Alert,
+} from "@mui/material";
 import DefaultLayout from "../components/DefaultLayout";
 import api from "../axios/axios";
 
@@ -12,17 +20,23 @@ function Cadastro() {
     tipo: "",
   });
 
+  const [imagem, setImagem] = useState(null);
+
   // alert do MUI
   const [alert, setAlert] = useState({
-    type: "",       
-    message: "",    
-    visible: false, 
+    type: "",
+    message: "",
+    visible: false,
   });
 
   // Atualizar o estado de um objeto (captura as mudanças)
   const onChange = (event) => {
     const { name, value } = event.target;
     setUser({ ...user, [name]: value });
+  };
+
+  const handleFileChange = (e) => {
+    setImagem(e.target.files[0]);
   };
 
   const handleSubmit = (event) => {
@@ -32,7 +46,7 @@ function Cadastro() {
 
   async function cadastro() {
     try {
-      const response = await api.postCadastro(user);
+      const response = await api.postCadastro(user, imagem);
 
       setAlert({
         type: "success",
@@ -94,6 +108,13 @@ function Cadastro() {
           <Typography variant="h5" sx={{ color: "white", marginBottom: 2 }}>
             CADASTRAR USUÁRIO
           </Typography>
+
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleFileChange}
+            style={{ marginBottom: 16 }}
+          />
 
           <TextField
             required

@@ -6,6 +6,7 @@ import {
   Button,
   Typography,
 } from "@mui/material";
+
 export default function ModalReserva({
   open,
   handleClose,
@@ -13,13 +14,13 @@ export default function ModalReserva({
   onConfirm,
 }) {
   if (!reserva) return null;
+
   return (
     <Dialog
       open={open}
       onClose={handleClose}
       PaperProps={{ sx: { borderRadius: "10px", border: "2px solid #ccc" } }}
     >
-      {" "}
       <DialogTitle
         sx={{
           backgroundColor: "#b10e14",
@@ -29,9 +30,9 @@ export default function ModalReserva({
           padding: "16px",
         }}
       >
-        {" "}
-        RESERVAR{" "}
-      </DialogTitle>{" "}
+        RESERVAR
+      </DialogTitle>
+
       <DialogContent
         dividers
         sx={{
@@ -43,13 +44,12 @@ export default function ModalReserva({
           },
         }}
       >
-        {" "}
-        <Typography>SALA: {reserva.sala}</Typography>{" "}
-        <Typography>DATA: {reserva.data}</Typography>{" "}
-        <Typography>HORÁRIO: {reserva.horario}</Typography>{" "}
-      </DialogContent>{" "}
+        <Typography>SALA: {reserva.sala}</Typography>
+        <Typography>DATA: {reserva.data}</Typography>
+        <Typography>HORÁRIO: {reserva.horario}</Typography>
+      </DialogContent>
+
       <DialogActions sx={{ padding: "16px 24px" }}>
-        {" "}
         <Button
           onClick={handleClose}
           className="cancelar"
@@ -65,9 +65,9 @@ export default function ModalReserva({
             },
           }}
         >
-          {" "}
-          CANCELAR{" "}
-        </Button>{" "}
+          CANCELAR
+        </Button>
+
         <Button
           onClick={onConfirm}
           className="confirmar"
@@ -83,10 +83,9 @@ export default function ModalReserva({
             },
           }}
         >
-          {" "}
-          CONFIRMAR{" "}
-        </Button>{" "}
-      </DialogActions>{" "}
+          CONFIRMAR
+        </Button>
+      </DialogActions>
     </Dialog>
   );
 }

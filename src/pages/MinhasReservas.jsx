@@ -10,11 +10,14 @@ import {
   Alert,
 } from "@mui/material";
 import api from "../axios/axios";
+import ModalExcluirReserva from "../components/ModalExcluirReserva";
 
 export default function MinhasReservas() {
   const [reservas, setReservas] = useState([]);
   const [loading, setLoading] = useState(true);
   const [alert, setAlert] = useState({ type: "", message: "", visible: false });
+  const [modalOpen, setModalOpen] = useState(false);
+  const [reservaSelecionada, setReservaSelecionada] = useState(null);
   const idUsuario = localStorage.getItem("id_usuario");
 
   const handleClose = () => setAlert({ ...alert, visible: false });
@@ -51,6 +54,36 @@ export default function MinhasReservas() {
   useEffect(() => {
     carregarReservas();
   }, [carregarReservas]);
+
+  const handleExcluir = async () => {
+    if (!reservaSelecionada?.id_reserva) return;
+
+    try {
+      await api.deleteSchedule(reservaSelecionada.id_reserva);
+
+      setAlert({
+        type: "success",
+        message: "Reserva excluída com sucesso!",
+        visible: true,
+      });
+
+      setModalOpen(false);
+      carregarReservas();
+    } catch (err) {
+      setAlert({
+        type: "error",
+        message: err.response?.data?.error || "Erro ao excluir a reserva.",
+        visible: true,
+      });
+    }
+  };
+
+  <ModalExcluirReserva
+    open={modalOpen}
+    handleClose={() => setModalOpen(false)}
+    reserva={reservaSelecionada}
+    onConfirm={handleExcluir}
+  />;
 
   // Agrupar reservas por data
   const reservasPorData = {};
@@ -90,7 +123,6 @@ export default function MinhasReservas() {
           <Typography>Carregando...</Typography>
         </Box>
       )}
-
       {!loading && !reservas.length && (
         <Box
           sx={{
@@ -108,7 +140,6 @@ export default function MinhasReservas() {
           </Typography>
         </Box>
       )}
-
       {!loading && reservas.length > 0 && (
         <Box sx={{ width: "90%", maxWidth: "800px" }}>
           {Object.keys(reservasPorData)
@@ -148,10 +179,15 @@ export default function MinhasReservas() {
                     return (
                       <Grid item key={id_reserva || Math.random()}>
                         <Card
+                          onClick={() => {
+                            setReservaSelecionada(reserva);
+                            setModalOpen(true);
+                          }}
                           sx={{
                             width: 200,
                             borderRadius: 2,
                             boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
+                            cursor: "pointer",
                           }}
                         >
                           <CardHeader
@@ -217,6 +253,12 @@ export default function MinhasReservas() {
             ))}
         </Box>
       )}
+      <ModalExcluirReserva
+        open={modalOpen}
+        handleClose={() => setModalOpen(false)}
+        reserva={reservaSelecionada}
+        onConfirm={handleExcluir}
+      />
 
       <Snackbar
         open={alert.visible}

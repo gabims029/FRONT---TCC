@@ -56,7 +56,9 @@ function Login() {
       localStorage.setItem("id_usuario", response.data.user.id_user);
       localStorage.setItem("tipo", response.data.user.tipo);
 
-      navigate("home/");
+      setTimeout(() => {
+        navigate("home/");
+      }, 600);
     } catch (error) {
       setAlert({
         type: "error",

@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://10.89.240.88:3000/api",
+  baseURL: "http://10.89.240.81:3000/api",
   headers: { accept: "application/json" },
 });
 
@@ -29,6 +29,7 @@ const sheets = {
   getSala: () => api.get("/sala"),
   createSala: (sala) => api.post("/sala", sala),
   deleteSala: (sala) => api.delete(`/sala/${sala}`),
+  getReservas: () => api.get("/reserva"),
 };
 
 export default sheets;

@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://10.89.240.81:3000/api",
+  baseURL: "http://10.89.240.114:3000/api",
   headers: { accept: "application/json" },
 });
 
@@ -69,6 +69,7 @@ const sheets = {
   getSchedulesByUserID: (id_usuario) =>
     api.get(`/reserva/usuario/${id_usuario}`),
   deleteSchedule: (id_reserva) => api.delete(`/reserva/${id_reserva}`),
+  getPeriodoStatus: () => api.get("/periodo/status"),
 };
 
 export default sheets;

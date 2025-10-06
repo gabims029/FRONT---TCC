@@ -42,8 +42,22 @@ export default function ReservaPage() {
     if (!sala) return;
     try {
       setLoading(true);
-      const res = await api.getAllPeriodos();
-      setHorarios(res.data?.periodos || []);
+      const res = await api.getPeriodoStatus(sala.id_sala, dataInicio);
+
+      const horariosDisponiveis = res.data.horarios?.Disponiveis || [];
+      const horariosIndisponiveis = res.data.horarios?.Indisponiveis || [];
+
+      const disponiveisMarcados = horariosDisponiveis.map((h) => ({
+        ...h,
+        reservado: false,
+      }));
+
+      const indisponiveisMarcados = horariosIndisponiveis.map((h) => ({
+        ...h,
+        reservado: true,
+      }));
+
+      setHorarios([...disponiveisMarcados, ...indisponiveisMarcados]);
       setErro(false);
     } catch (err) {
       console.error("Erro ao buscar horários:", err);
@@ -51,8 +65,7 @@ export default function ReservaPage() {
       setHorarios([]);
       setAlert({
         type: "warning",
-        message:
-          "Atenção: A reserva foi feita, mas houve um erro ao atualizar a lista de horários.",
+        message: "Não foi possível carregar os horários.",
         visible: true,
       });
     } finally {
@@ -152,8 +165,10 @@ export default function ReservaPage() {
       <Box sx={{ width: "100%", p: 3, boxSizing: "border-box" }}>
         <Box
           sx={{
+            width: "100%",
             backgroundColor: "#f4bcbc",
-            p: 2,
+            py: 2, // padding vertical
+            px: 2, // padding horizontal pequeno
             borderBottom: "1px solid #f4bcbc",
           }}
         >
@@ -252,34 +267,26 @@ export default function ReservaPage() {
                 <Grid item xs={6} sm={4} key={h.id_periodo}>
                   <Button
                     fullWidth
-                    onClick={() => handleToggleHorario(h.id_periodo, h.status)}
+                    onClick={() =>
+                      !h.reservado && handleToggleHorario(h.id_periodo)
+                    }
+                    disabled={h.reservado}
                     sx={{
-                      backgroundColor:
-                        h.status === "ocupado"
-                          ? "#e57373"
-                          : selecionado
-                          ? "#fff"
-                          : "#81c784",
-                      color:
-                        h.status === "ocupado"
-                          ? "#fff"
-                          : selecionado
-                          ? "#000"
-                          : "#fff",
+                      backgroundColor: h.reservado
+                        ? "#E56565"
+                        : selecionado
+                        ? "#feffffff"
+                        : "#a5d6a7",
+                      color: "black",
                       border: selecionado
-                        ? "2px solid red"
+                        ? "2px solid #b22222"
                         : "1px solid transparent",
                       "&:hover": {
-                        backgroundColor:
-                          h.status === "ocupado"
-                            ? "#e57373"
-                            : selecionado
-                            ? "#fff"
-                            : "#66bb6a",
+                        backgroundColor: h.reservado ? "#E56565" : "#81c784",
                       },
+
                       minHeight: "50px",
                     }}
-                    disabled={h.status === "ocupado"}
                   >
                     {`${h.horario_inicio.slice(0, 5)} - ${h.horario_fim.slice(
                       0,

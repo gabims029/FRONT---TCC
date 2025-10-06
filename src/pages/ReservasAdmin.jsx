@@ -1,5 +1,12 @@
 import { useState, useEffect } from "react";
-import { Box, Container, Snackbar, Alert, Paper, Typography } from "@mui/material";
+import {
+  Box,
+  Container,
+  Snackbar,
+  Alert,
+  Paper,
+  Typography,
+} from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -19,8 +26,8 @@ export default function ReservasAdmin() {
   async function getReservas(dataFormatada) {
     try {
       const response = await api.getReservasByData(dataFormatada);
-      console.log("Reservas recebidas:", response.data.schedulesByDay);
-      setReservas(response.data.schedulesByDay);
+      console.log("Reservas recebidas:", response.data.schedulesBySala);
+      setReservas(response.data.schedulesBySala);
     } catch (error) {
       setAlert({
         message: error.response?.data?.error || "Erro desconhecido",
@@ -69,49 +76,85 @@ export default function ReservasAdmin() {
           />
         </LocalizationProvider>
 
-        {/* Renderização das reservas agrupadas por sala */}
-        {Object.keys(reservas).length > 0 ? (
-          <Box sx={{ width: "100%", mt: 4, display: "flex", flexDirection: "column", gap: 3 }}>
-            {Object.entries(reservas).map(([nomeSala, listaReservas]) => (
-              <Box key={reservas.id_reserva}>
-                <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2 }}>
-                  {listaReservas.map((reserva) => (
+        <Box sx={{display: "flex", flexDirection: "column", gap: 3}}>
+          {Object.entries(reservas).map(([nomeSala, listaReservas]) => (
+            <Box
+              key={reservas.id_reserva}
+              sx={{ display: "flex", flexWrap: "wrap", gap: 2 }}
+            >
+              {listaReservas.map((reserva) => (
+                <Paper
+                  key={reserva.id_reserva}
+                  sx={{
+                    height: 180,
+                    borderRadius: "8px",
+                    border: "1px solid #b22222",
+                    minWidth: 250,
+                    cursor: "pointer",
+                    overflow: "hidden",
+                    display: "flex",
+                    flexDirection: "column",
+                    marginLeft: "15px",
+                  }}
+                >
+                  <Typography
+                    sx={{
+                      backgroundColor: "#b22222",
+                      color: "#fff",
+                      padding: "15px",
+                      fontWeight: "bold",
+                      fontSize: "18px",
+                    }}
+                  >
+                    {reserva.nomeUsuario || "Disciplina"}
+                  </Typography>
+
+                  <Box
+                    sx={{
+                      padding: "10px",
+                      flexGrow: 1,
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}
+                  >
                     <Paper
-                      key={reserva.id_reserva}
+                      elevation={0}
                       sx={{
-                        width: 250,
-                        p: 2,
-                        borderRadius: 2,
-                        boxShadow: 3,
-                        backgroundColor: "#fff",
+                        backgroundColor: "#f5f5f5", // cinza claro
                         display: "flex",
                         flexDirection: "column",
-                        justifyContent: "space-between",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        textAlign: "center",
+                        p: 2,
+                        borderRadius: 2,
+                        width: "50%",
                       }}
                     >
-                      <Typography
-                        sx={{
-                          fontWeight: "bold",
-                          fontSize: 16,
-                          mb: 1,
-                          color: "#b22222",
-                        }}
-                      >
-                        {reserva.nomeUsuario}
+                      <Typography sx={{ fontSize: "17px" }}>
+                        {reserva.nomeSala || "N/A"}
                       </Typography>
-                      <Typography sx={{ fontSize: 14 }}>
-                        Horário: {reserva.horario_inicio} - {reserva.horario_fim}
+                      <Typography sx={{ fontSize: "17px" }}>
+                        Máx. {reserva.capacidade || "N/A"}
                       </Typography>
-                      <Typography sx={{ fontSize: 14 }}>Dias: {reserva.dias}</Typography>
                     </Paper>
-                  ))}
-                </Box>
-              </Box>
-            ))}
-          </Box>
-        ) : dataSelecionada ? (
-          <Typography sx={{ mt: 4 }}>Nenhuma reserva para esta data.</Typography>
-        ) : null}
+                  </Box>
+                  <Box
+                    sx={{
+                      padding: "8px",
+                      textAlign: "center",
+                      fontWeight: "bold",
+                      fontSize: "16px",
+                    }}
+                  >
+                    {reserva.horarioInicio} - {reserva.horarioFim}
+                  </Box>
+                </Paper>
+              ))}
+            </Box>
+          ))}
+        </Box>
       </Container>
 
       <Snackbar

@@ -43,8 +43,8 @@ function Calendario() {
     // Armazena a data selecionada
     const selectedDate = new Date(year, month, day).toISOString().split("T")[0];
 
-    // Navega para a tela /salas e envia a data no state
-    navigate("/salas", { state: { data: selectedDate, bloco: "A" } });
+    // Navega para a tela de salas e envia a data no state
+    navigate("/salas", { state: { data: selectedDate } });
   };
 
   return (
@@ -98,7 +98,9 @@ function Calendario() {
                 m: 0.5,
                 p: 1,
                 borderRadius: "50%",
-                bgcolor: selectedDays.includes(day) ? "#1976d2" : "transparent",
+                bgcolor: selectedDays.includes(day)
+                  ? "#c9c9c9ff"
+                  : "transparent",
                 color: day
                   ? selectedDays.includes(day)
                     ? "white"

@@ -49,6 +49,7 @@ export default function SalasPage() {
     fetchSalas();
   }, [blocoSelecionado, dataSelecionada]);
 
+  {/*Pesquisar*/}
   const salasFiltradas = salas.filter(
     (s) =>
       s.numero?.toString().toLowerCase().includes(search.toLowerCase()) ||
@@ -125,10 +126,9 @@ export default function SalasPage() {
                         mb: 2,
                       }}
                     >
-                      {sala.numero}
+                      {sala.numero} - {sala.descricao}
                     </Typography>
 
-                    <Typography>Descrição: {sala.descricao}</Typography>
                     <Typography>Capacidade: {sala.capacidade}</Typography>
                     <Typography>Bloco: {sala.bloco}</Typography>
                   </CardContent>

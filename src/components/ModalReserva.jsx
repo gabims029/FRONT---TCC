@@ -15,6 +15,12 @@ export default function ModalReserva({
 }) {
   if (!reserva) return null;
 
+  const formatarDataBR = (dataISO) => {
+    if (!dataISO) return "";
+    const [ano, mes, dia] = dataISO.split("-");
+    return `${dia}/${mes}/${ano}`;
+  };
+
   return (
     <Dialog
       open={open}
@@ -45,7 +51,9 @@ export default function ModalReserva({
         }}
       >
         <Typography>SALA: {reserva.sala}</Typography>
-        <Typography>DATA: {reserva.data}</Typography>
+        <Typography>
+          DATA: {reserva.data.split(" a ").map(formatarDataBR).join(" a ")}
+        </Typography>
         <Typography>HORÁRIO: {reserva.horario}</Typography>
       </DialogContent>
 

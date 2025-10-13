@@ -215,12 +215,6 @@ export default function MinhasReservas() {
                               >
                                 {nomeSala}
                               </Typography>
-                              <Typography
-                                variant="body2"
-                                sx={{ fontSize: "0.8rem", textAlign: "center" }}
-                              >
-                                Máx. 16
-                              </Typography>
                             </Box>
                             <Typography
                               variant="body2"

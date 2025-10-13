@@ -33,7 +33,7 @@ export default function HomeAdm() {
       >
         <Typography
           variant="h6"
-          sx={{ color: "black", fontWeight: "bold", textAlign: "center" }}
+          sx={{ color: "black", fontWeight: "bold", textAlign: "center", mb: 3 }}
         >
           SEJA BEM-VINDO AO RESERVAS SENAI
         </Typography>
@@ -49,7 +49,7 @@ export default function HomeAdm() {
 
         <Typography
           variant="body1"
-          sx={{ color: "black", textAlign: "center", mt: -3 }}
+          sx={{ color: "black", textAlign: "center", mt: -1 }}
         >
           Visualizar salas disponíveis:
         </Typography>

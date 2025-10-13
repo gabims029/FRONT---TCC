@@ -1,5 +1,13 @@
 import React, { useState } from "react";
-import { Box, Typography, TextField, Button, MenuItem, Snackbar, Alert } from "@mui/material";
+import {
+  Box,
+  Typography,
+  TextField,
+  Button,
+  MenuItem,
+  Snackbar,
+  Alert,
+} from "@mui/material";
 import DefaultLayout from "../components/DefaultLayout";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
@@ -16,9 +24,9 @@ function Cadastro() {
 
   // alert do MUI
   const [alert, setAlert] = useState({
-    type: "",       
-    message: "",    
-    visible: false, 
+    type: "success", // default
+    message: "", // default
+    visible: false,
   });
 
   const [showPassword, setShowPassword] = useState(false);
@@ -59,10 +67,9 @@ function Cadastro() {
     } catch (error) {
       console.log(error);
 
-      // Mostrar alerta de erro com a mensagem da API
       setAlert({
         type: "error",
-        message: error.response?.data?.error || "Ocorreu um erro",
+        message: error.response?.data?.error ?? "Ocorreu um erro inesperado",
         visible: true,
       });
     }
@@ -161,19 +168,19 @@ function Cadastro() {
               borderRadius: 1,
             }}
             InputProps={{
-                endAdornment: (
-                  <Button
-                    onClick={passwordVisibility}
-                    sx={{ minWidth: "auto", padding: 0, color: "black" }}
-                  >
-                    {showPassword ? (
-                      <VisibilityIcon color="disabled" />
-                    ) : (
-                      <VisibilityOffIcon color="disabled" />
-                    )}
-                  </Button>
-                ),
-              }}
+              endAdornment: (
+                <Button
+                  onClick={passwordVisibility}
+                  sx={{ minWidth: "auto", padding: 0, color: "black" }}
+                >
+                  {showPassword ? (
+                    <VisibilityIcon color="disabled" />
+                  ) : (
+                    <VisibilityOffIcon color="disabled" />
+                  )}
+                </Button>
+              ),
+            }}
           />
 
           {/* Campo tipo com seleção */}
@@ -211,11 +218,11 @@ function Cadastro() {
         {/* Alert do MUI */}
         <Snackbar
           open={alert.visible}
-          autoHideDuration={4000} // tempo que o alerta fica visível
+          autoHideDuration={4000}
           onClose={handleClose}
-          anchorOrigin={{ vertical: "top", horizontal: "center" }} // posição do alerta
+          anchorOrigin={{ vertical: "top", horizontal: "center" }}
         >
-          {alert.type && (
+          {alert.visible && alert.message && alert.type && (
             <Alert
               severity={alert.type}
               onClose={handleClose}

@@ -30,6 +30,7 @@ const sheets = {
   createSala: (sala) => api.post("/sala", sala),
   deleteSala: (sala) => api.delete(`/sala/${sala}`),
   getReservasByData: (data) => api.get(`/reservas/data/${data}`),
+  deleteReserva: (id_reserva) => api.delete(`/reserva/${id_reserva}`)
 };
 
 export default sheets;

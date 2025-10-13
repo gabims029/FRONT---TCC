@@ -20,8 +20,6 @@ function Cadastro() {
     tipo: "",
   });
 
-  const [imagem, setImagem] = useState(null);
-
   // alert do MUI
   const [alert, setAlert] = useState({
     type: "",
@@ -35,10 +33,6 @@ function Cadastro() {
     setUser({ ...user, [name]: value });
   };
 
-  const handleFileChange = (e) => {
-    setImagem(e.target.files[0]);
-  };
-
   const handleSubmit = (event) => {
     event.preventDefault();
     cadastro();
@@ -46,7 +40,7 @@ function Cadastro() {
 
   async function cadastro() {
     try {
-      const response = await api.postCadastro(user, imagem);
+      const response = await api.postCadastro(user);
 
       setAlert({
         type: "success",
@@ -108,13 +102,6 @@ function Cadastro() {
           <Typography variant="h5" sx={{ color: "white", marginBottom: 2 }}>
             CADASTRAR USUÁRIO
           </Typography>
-
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleFileChange}
-            style={{ marginBottom: 16 }}
-          />
 
           <TextField
             required

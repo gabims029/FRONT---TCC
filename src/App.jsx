@@ -1,7 +1,7 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Login from "./pages/Login";
-import HomeAdm from "./pages/HomeAdm";
+import Home from "./pages/Home";
 import DefaultLayout from "./components/DefaultLayout";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Cadastro from "./pages/Cadastro";
@@ -29,7 +29,7 @@ function App() {
           path="/home"
           element={
             <ProtectedRoute>
-              <HomeAdm />
+              <Home />
             </ProtectedRoute>
           }
         />

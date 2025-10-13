@@ -40,9 +40,10 @@ function Calendario() {
 
     toggleDay(day);
 
+    // Armazena a data selecionada
     const selectedDate = new Date(year, month, day).toISOString().split("T")[0];
 
-    // navega para a tela de salas enviando data e bloco A
+    // Navega para a tela /salas e envia a data no state
     navigate("/salas", { state: { data: selectedDate, bloco: "A" } });
   };
 

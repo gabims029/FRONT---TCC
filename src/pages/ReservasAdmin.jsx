@@ -50,6 +50,7 @@ export default function ReservasAdmin() {
   return (
     <Box
       sx={{
+        fontFamily: "Arial",
         height: "100%",
         backgroundColor: "#FFE9E9",
         display: "flex",
@@ -86,28 +87,28 @@ export default function ReservasAdmin() {
                 <Paper
                   key={reserva.id_reserva}
                   sx={{
-                    height: 180,
-                    borderRadius: "8px",
-                    border: "1px solid #b22222",
-                    minWidth: 250,
-                    cursor: "pointer",
-                    overflow: "hidden",
-                    display: "flex",
-                    flexDirection: "column",
-                    marginLeft: "15px",
-                  }}
+                  height:"20%",
+                  borderRadius: "8px",
+                  border: "1px solid #b22222",
+                  minWidth: 250,
+                  cursor: "pointer",
+                  overflow: "hidden",
+                  display: "flex",
+                  flexDirection: "column",
+                  marginLeft:"15px"
+                }}
                 >
-                  <Typography
-                    sx={{
-                      backgroundColor: "#b22222",
-                      color: "#fff",
-                      padding: "15px",
-                      fontWeight: "bold",
-                      fontSize: "18px",
-                    }}
-                  >
-                    {reserva.nomeUsuario || "Disciplina"}
-                  </Typography>
+                  <Box
+                      sx={{
+                        backgroundColor: "#b22222",
+                        color: "#fff",
+                        padding: "15px",
+                        fontWeight: "bold",
+                        fontSize: "18px",
+                      }}
+                    >
+                      {reserva.descricao || "Disciplina"}
+                    </Box>
 
                   <Box
                     sx={{
@@ -144,11 +145,10 @@ export default function ReservasAdmin() {
                     sx={{
                       padding: "8px",
                       textAlign: "center",
-                      fontWeight: "bold",
-                      fontSize: "16px",
                     }}
                   >
-                    {reserva.horarioInicio} - {reserva.horarioFim}
+                    <Typography sx={{fontWeight: "bold", fontSize: "16px",}}> {dayjs(reserva.data_inicio).format("DD/MM/YYYY")} - {dayjs(reserva.data_fim).format("DD/MM/YYYY")}</Typography>
+                    <Typography sx={{fontWeight: "bold", fontSize: "16px",}}>{reserva.horario_inicio.slice(0, 5)} - {reserva.horario_fim.slice(0, 5)}</Typography>
                   </Box>
                 </Paper>
               ))}

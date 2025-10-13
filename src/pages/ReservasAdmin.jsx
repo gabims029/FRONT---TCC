@@ -8,7 +8,6 @@ import {
   Typography,
   Button,
 } from "@mui/material";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { DateCalendar } from "@mui/x-date-pickers/DateCalendar";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -16,6 +15,8 @@ import dayjs from "dayjs";
 import "dayjs/locale/pt-br";
 import api from "../axios/axios";
 import ConfirmDialog from "../components/ConfirmDialog";
+import Blocos from "../components/Blocos"; // Adicione esta linha de importação
+
 
 export default function ReservasAdmin() {
   const [dataSelecionada, setDataSelecionada] = useState(null);
@@ -23,6 +24,7 @@ export default function ReservasAdmin() {
   const [alert, setAlert] = useState({ type: "", message: "", visible: false });
   const [reservaId, setReservaId] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
+  const [filtroLetra, setFiltroLetra] = useState(null);
 
   const handleOpenDialog = (id) => {
     setReservaId(id); // Define o ID da reserva que será deletada
@@ -85,6 +87,11 @@ export default function ReservasAdmin() {
     }
   }, [dataSelecionada]);
 
+  const handleClick = (letra) => {
+    console.log(`Botão clicado: ${letra}`);
+      setFiltroLetra((prev) => (prev === letra ? null : letra));
+  };
+
   return (
     <Box
       sx={{
@@ -99,15 +106,15 @@ export default function ReservasAdmin() {
     >
       <Container
         sx={{
-          mt: 10,
+          mt: 4,
           flex: 1,
           display: "flex",
           flexDirection: "column",
-          gap: 3,
+          gap: 2,
         }}
       >
         <Typography
-          sx={{ textAlign: "center", fontWeight: "bold", fontSize: "20px" }}
+          sx={{ textAlign: "center", fontWeight: "bold", fontSize: "20px", mb:-1 }}
         >
           Selecione uma data:
         </Typography>
@@ -115,13 +122,18 @@ export default function ReservasAdmin() {
           <DateCalendar
             value={dataSelecionada}
             onChange={(novaData) => setDataSelecionada(novaData)}
-            sx={{ backgroundColor: "white", border: "1px solid black" }}
+            sx={{ backgroundColor: "white", border: "1px solid black", marginBottom:3,}}
           />
         </LocalizationProvider>
 
+        <Blocos handleClick={handleClick} />
+
         <Box sx={{ display: "flex", flexDirection: "column" }}>
           {Object.entries(reservas)
-            .sort(([nomeSalaA], [nomeSalaB]) =>
+            .filter(([nomeSala]) => {
+              if (!filtroLetra) return true;
+              return nomeSala.startsWith(filtroLetra);
+            }).sort(([nomeSalaA], [nomeSalaB]) =>
               nomeSalaA.localeCompare(nomeSalaB)
             )
             .map(([nomeSala, listaReservas]) => (
@@ -134,6 +146,7 @@ export default function ReservasAdmin() {
                     fontWeight: "bold",
                     fontSize: "20px",
                     marginBottom: "8px",
+                    mt:-4
                   }}
                 >
                   {nomeSala} - {listaReservas[0]?.descricao}

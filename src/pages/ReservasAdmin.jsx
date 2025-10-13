@@ -65,7 +65,6 @@ export default function ReservasAdmin() {
           flex: 1,
           display: "flex",
           flexDirection: "column",
-          alignItems: "center",
           gap: 3,
         }}
       >
@@ -78,96 +77,107 @@ export default function ReservasAdmin() {
         </LocalizationProvider>
 
         <Box sx={{ display: "flex", flexDirection: "column" }}>
-          {Object.entries(reservas).map(([nomeSala, listaReservas]) => (
-            <Box
-              key={reservas.id_reserva}
-              sx={{
-                display: "flex",
-                flexWrap: "wrap",
-              }}
-            >
-              {listaReservas.map((reserva) => (
-                <Paper
-                  key={reserva.id_reserva}
-                  sx={{
-                    borderRadius: "8px",
-                    border: "1px solid #b22222",
-                    minWidth: "22%",
-                    cursor: "pointer",
-                    overflow: "hidden",
-                    display: "flex",
-                    flexDirection: "column",
-                    marginLeft: "15px",
-                    marginBottom: 2,
-                  }}
-                >
-                  <Box
-                    sx={{
-                      backgroundColor: "#b22222",
-                      color: "#fff",
-                      padding: "15px",
-                      fontWeight: "bold",
-                      fontSize: "20px",
-                    }}
-                  >
-                    {reserva.nomeSala || "Disciplina"}
-                  </Box>
+          {Object.entries(reservas).sort(([nomeSalaA], [nomeSalaB]) => nomeSalaA.localeCompare(nomeSalaB)).map(([nomeSala, listaReservas]) => (
+            <Box key={nomeSala} sx={{ mb: 5 }}>
+              <Box
+                sx={{
+                  color: "black",
+                  padding: "2px 2px",
+                  textAlign: "left",
+                  fontWeight: "bold",
+                  fontSize: "20px",
+                  marginBottom: "8px",
+                }}
+              >
+                {nomeSala} - {listaReservas[0]?.descricao}
+              </Box>
 
-                  <Box
+              <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2 }}>
+                {listaReservas.map((reserva) => (
+                  <Paper
+                    key={reserva.id_sala}
                     sx={{
-                      padding: "10px",
-                      flexGrow: 1,
+                      borderRadius: "8px",
+                      border: "1px solid #b22222",
+                      minWidth: "22%",
+                      cursor: "pointer",
+                      overflow: "hidden",
                       display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
+                      flexDirection: "column",
+                      //marginLeft: "15px",
+                      marginBottom: 2,
                     }}
                   >
-                    <Paper
-                      elevation={0}
+                    <Box
                       sx={{
-                        backgroundColor: "#f5f5f5", // cinza claro
-                        display: "flex",
-                        flexDirection: "column",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        textAlign: "center",
-                        p: 2,
-                        borderRadius: 2,
-                        width: "50%",
+                        backgroundColor: "#b22222",
+                        color: "#fff",
+                        padding: "15px",
+                        fontWeight: "bold",
+                        fontSize: "20px",
                       }}
                     >
-                      <Typography sx={{ fontSize: "15px" }}>
-                        {reserva.descricao || "N/A"}
-                      </Typography>
-                      <Typography sx={{ fontSize: "17px" }}>
-                        Máx. {reserva.capacidade || "N/A"}
-                      </Typography>
-                    </Paper>
-                  </Box>
-                  <Box
-                    sx={{
-                      textAlign: "center",
-                    }}
-                  >
-                    <Typography sx={{ fontWeight: "bold", fontSize: "16px" }}>
-                      {dayjs(reserva.data_inicio).format("DD/MM/YYYY")} -{" "}
-                      {dayjs(reserva.data_fim).format("DD/MM/YYYY")}
-                    </Typography>
-                    <Typography sx={{ fontWeight: "bold", fontSize: "16px" }}>
-                      {reserva.horario_inicio.slice(0, 5)} -{" "}
-                      {reserva.horario_fim.slice(0, 5)}
-                    </Typography>
-                    <Typography
-                      sx={{ fontSize: "16px", textTransform: "uppercase" }}
+                      {reserva.nomeSala || "Disciplina"}
+                    </Box>
+
+                    <Box
+                      sx={{
+                        padding: "10px",
+                        flexGrow: 1,
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                      }}
                     >
-                      {reserva.dias}
-                    </Typography>
-                    <Typography sx={{ fontSize: "16px" }}>
-                      {reserva.nomeUsuario}
-                    </Typography>
-                  </Box>
-                </Paper>
-              ))}
+                      <Paper
+                        elevation={0}
+                        sx={{
+                          backgroundColor: "#f5f5f5",
+                          display: "flex",
+                          flexDirection: "column",
+                          justifyContent: "center",
+                          alignItems: "center",
+                          textAlign: "center",
+                          p: 2,
+                          borderRadius: 2,
+                          width: "50%",
+                        }}
+                      >
+                        <Typography sx={{ fontSize: "15px" }}>
+                          {reserva.descricao || "N/A"}
+                        </Typography>
+                        <Typography sx={{ fontSize: "17px" }}>
+                          Máx. {reserva.capacidade || "N/A"}
+                        </Typography>
+                      </Paper>
+                    </Box>
+
+                    <Box sx={{ textAlign: "center" }}>
+                      <Typography sx={{ fontWeight: "bold", fontSize: "16px" }}>
+                        {dayjs(reserva.data_inicio)
+                          .add(3, "hour")
+                          .format("DD/MM/YYYY")}{" "}
+                        -{" "}
+                        {dayjs(reserva.data_fim)
+                          .add(3, "hour")
+                          .format("DD/MM/YYYY")}
+                      </Typography>
+                      <Typography sx={{ fontWeight: "bold", fontSize: "16px" }}>
+                        {reserva.horario_inicio.slice(0, 5)} -{" "}
+                        {reserva.horario_fim.slice(0, 5)}
+                      </Typography>
+                      <Typography
+                        sx={{ fontSize: "16px", textTransform: "uppercase" }}
+                      >
+                        {reserva.dias}
+                      </Typography>
+                      <Typography sx={{ fontSize: "16px", marginBottom: 1 }}>
+                        {reserva.nomeUsuario}
+                      </Typography>
+                    </Box>
+                  </Paper>
+                ))}
+              </Box>
             </Box>
           ))}
         </Box>

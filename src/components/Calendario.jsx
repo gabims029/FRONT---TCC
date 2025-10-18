@@ -8,7 +8,7 @@ function Calendario() {
   const [selectedDays, setSelectedDays] = useState([]);
   const navigate = useNavigate();
 
-  const daysOfWeek = ["DOM", "SEG", "TER", "QUA", "QUI", "SEX", "SÁB"];
+  const daysOfWeek = ["DOM", "SEG", "TER", "QUA", "QUI", "SEX", "SÁB"]; // cabeçalho
 
   const changeMonth = (offset) => {
     setCurrentDate(
@@ -19,9 +19,10 @@ function Calendario() {
 
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
-  const firstDayOfMonth = new Date(year, month, 1).getDay();
-  const lastDayOfMonth = new Date(year, month + 1, 0).getDate();
+  const firstDayOfMonth = new Date(year, month, 1).getDay(); // dia da semana do 1º dia
+  const lastDayOfMonth = new Date(year, month + 1, 0).getDate(); // último dia do mês
 
+  // cria os quadradinhos do calendário
   const days = [
     ...Array(firstDayOfMonth).fill(""),
     ...Array.from({ length: lastDayOfMonth }, (_, i) => i + 1),
@@ -29,9 +30,9 @@ function Calendario() {
 
   const toggleDay = (day) => {
     if (selectedDays.includes(day)) {
-      setSelectedDays(selectedDays.filter((d) => d !== day));
+      setSelectedDays(selectedDays.filter((d) => d !== day)); // remove se já estava
     } else {
-      setSelectedDays([...selectedDays, day]);
+      setSelectedDays([...selectedDays, day]); // adiciona se não estava
     }
   };
 
@@ -40,11 +41,8 @@ function Calendario() {
 
     toggleDay(day);
 
-    // Armazena a data selecionada
     const selectedDate = new Date(year, month, day).toISOString().split("T")[0];
-
-    // Navega para a tela de salas e envia a data no state
-    navigate("/salas", { state: { data: selectedDate } });
+    navigate("/salas", { state: { data: selectedDate } }); // envia a data pra tela salas
   };
 
   return (
@@ -57,7 +55,7 @@ function Calendario() {
         bgcolor: "white",
       }}
     >
-      {/* Cabeçalho */}
+      {/* Cabeçalho do calendário */}
       <Box
         sx={{
           display: "flex",
@@ -69,15 +67,17 @@ function Calendario() {
         <IconButton onClick={() => changeMonth(-1)}>
           <ArrowBack />
         </IconButton>
+
         <Typography variant="h6">
-          {currentDate.toLocaleString("pt-BR", { month: "long" })} {year}
+          {currentDate.toLocaleString("pt-BR", { month: "long" })} {year} {/* nome do mês */}
         </Typography>
+
         <IconButton onClick={() => changeMonth(1)}>
           <ArrowForward />
         </IconButton>
       </Box>
 
-      {/* Dias da semana */}
+      {/* Cabeçalho dos dias da semana */}
       <Grid container>
         {daysOfWeek.map((day) => (
           <Grid item xs={12 / 7} key={day}>
@@ -99,7 +99,7 @@ function Calendario() {
                 p: 1,
                 borderRadius: "50%",
                 bgcolor: selectedDays.includes(day)
-                  ? "#c9c9c9ff"
+                  ? "#c9c9c9ff" // cor se selecionado
                   : "transparent",
                 color: day
                   ? selectedDays.includes(day)

@@ -169,15 +169,15 @@ export default function MinhasReservas() {
                   {reservasPorData[data]?.map((reserva) => {
                     const {
                       id_reserva,
-                      descricaoSala = "Sem descrição",
                       nomeSala = "Sala não informada",
+                      descricaoSala = "Sem descrição",
                       dias = "",
                       horario_inicio = "",
                       horario_fim = "",
                     } = reserva || {};
 
                     return (
-                      <Grid item key={id_reserva || Math.random()}>
+                      <Grid item key={id_reserva}>
                         <Card
                           onClick={() => {
                             setReservaSelecionada(reserva);

@@ -49,7 +49,7 @@ export default function SalasPage() {
     fetchSalas();
   }, [blocoSelecionado, dataSelecionada]);
 
-  {/*Pesquisar*/}
+  {/*pesquisar*/}
   const salasFiltradas = salas.filter(
     (s) =>
       s.numero?.toString().toLowerCase().includes(search.toLowerCase()) ||

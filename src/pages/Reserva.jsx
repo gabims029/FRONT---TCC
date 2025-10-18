@@ -62,7 +62,7 @@ export default function ReservaPage() {
       setAlert({
         type: "warning",
         message:
-          "Não foi possível carregar os horários. (Verifique o console para 404/400)",
+          "Não foi possível carregar os horários.",
         visible: true,
       });
     } finally {
@@ -160,7 +160,7 @@ export default function ReservaPage() {
   return (
     <Box sx={{ backgroundColor: "#ffe9e9", minHeight: "100vh", width: "100%" }}>
       <Box sx={{ width: "100%", p: 3, boxSizing: "border-box" }}>
-        {/* Cabeçalho com número da sala */}
+        {/*número da sala */}
         <Box
           sx={{
             backgroundColor: "#f4bcbc",
@@ -196,7 +196,7 @@ export default function ReservaPage() {
           </Typography>
         </Box>
 
-        {/* Campos de data */}
+        {/* campos de data */}
         <Grid
           container
           spacing={2}
@@ -276,7 +276,7 @@ export default function ReservaPage() {
         </Grid>
       </Box>
 
-      {/* Lista de horários */}
+      {/* lista de horários */}
       <Box
         sx={{ width: "100%", maxWidth: 600, px: 3, mx: "auto", mt: 2, pb: 3 }}
       >

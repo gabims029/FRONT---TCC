@@ -4,7 +4,7 @@ import Footer from "../components/Footer";
 import Calendario from "../components/Calendario";
 import Blocos from "../components/Blocos";
 
-export default function HomeAdm() {
+export default function Home() {
   const navigate = useNavigate();
 
   const handleClick = (bloco) => {

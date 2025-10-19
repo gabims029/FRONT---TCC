@@ -22,6 +22,8 @@ const sheets = {
   updateUser: (data) => api.put("/user/", data),
   getUserByID: (id_usuario) => api.get(`/user/${id_usuario}`),
   deleteUser: (id_usuario) => api.delete(`/user/${id_usuario}`),
+  getSalasDisponiveisPorData: (dataSelecionada) =>
+    api.get(`/salas/disponiveis?data=${dataSelecionada}`),
   getSalaByBloco: (bloco) => api.get(`/sala/bloco/${bloco}`),
   createReserva: (reserva) => api.post("/reserva/", reserva),
   getAllPeriodos: () => api.get("/periodo/"),
@@ -31,6 +33,16 @@ const sheets = {
   deleteSala: (sala) => api.delete(`/sala/${sala}`),
   getReservasByData: (data) => api.get(`/reservas/data/${data}`),
   deleteReserva: (id_reserva) => api.delete(`/reserva/${id_reserva}`)
+  getSchedulesByUserID: (id_usuario) =>
+    api.get(`/reserva/usuario/${id_usuario}`),
+  deleteSchedule: (id_reserva) => api.delete(`/reserva/${id_reserva}`),
+  getPeriodoStatus: (idSala, data) =>
+    api.get("/periodo/status", {
+      params: {
+        idSala: idSala,
+        data: data,
+      },
+    }),
 };
 
 export default sheets;

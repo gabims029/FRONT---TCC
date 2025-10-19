@@ -228,6 +228,7 @@ function Perfil() {
               borderRadius: 1,
               "&:hover": { backgroundColor: "#f0f0f0" },
             }}
+            onClick={() => navigate("/minhasReservas")}
           >
             Minhas Reservas
           </Button>

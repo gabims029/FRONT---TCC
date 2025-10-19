@@ -1,7 +1,7 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Login from "./pages/Login";
-import HomeAdm from "./pages/HomeAdm";
+import Home from "./pages/Home";
 import DefaultLayout from "./components/DefaultLayout";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Cadastro from "./pages/Cadastro";
@@ -13,7 +13,7 @@ import CriarSala from "./pages/CriarSala";
 import ListarSalas from "./pages/ListarSalas";
 import Reservas from "./pages/ReservasAdmin";
 // import MinhasReservas from "./pages/MinhasReservas";
-
+import MinhasReservas from "./pages/MinhasReservas";
 function App() {
   return (
     <Router>
@@ -30,14 +30,14 @@ function App() {
           path="/home"
           element={
             <ProtectedRoute>
-              <HomeAdm />
+              <Home />
             </ProtectedRoute>
           }
         />
         <Route
           path="/cadastro"
           element={
-            <ProtectedRoute tipo="Admin" >
+            <ProtectedRoute tipo="Admin">
               <Cadastro />
             </ProtectedRoute>
           }
@@ -77,7 +77,7 @@ function App() {
         <Route
           path="/criarSala"
           element={
-            <ProtectedRoute tipo="Admin" >
+            <ProtectedRoute tipo="Admin">
               <CriarSala />
             </ProtectedRoute>
           }
@@ -98,17 +98,18 @@ function App() {
             </ProtectedRoute>
           }
         />
-        {/* <Route
+         <Route
           path="/"
+          path="/minhasReservas"
           element={
             <ProtectedRoute>
               <MinhasReservas />
             </ProtectedRoute>
           }
-        /> */}
+        />
       </Routes>
     </Router>
   );
-}
+
 
 export default App;

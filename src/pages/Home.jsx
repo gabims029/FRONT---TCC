@@ -1,10 +1,10 @@
 import { useNavigate } from "react-router-dom";
-import { Box, Container } from "@mui/material";
+import { Box, Container, Typography } from "@mui/material";
 import Footer from "../components/Footer";
 import Calendario from "../components/Calendario";
 import Blocos from "../components/Blocos";
 
-export default function HomeAdm() {
+export default function Home() {
   const navigate = useNavigate();
 
   const handleClick = (bloco) => {
@@ -14,12 +14,11 @@ export default function HomeAdm() {
   return (
     <Box
       sx={{
-        height: "100%",
         backgroundColor: "#FFE9E9",
         display: "flex",
         flexDirection: "column",
         minHeight: "100vh",
-        padding: 2,
+        p: 2,
       }}
     >
       <Container
@@ -29,9 +28,32 @@ export default function HomeAdm() {
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
+          gap: 1.5,
         }}
       >
+        <Typography
+          variant="h6"
+          sx={{ color: "black", fontWeight: "bold", textAlign: "center", mb: 3 }}
+        >
+          SEJA BEM-VINDO AO RESERVAS SENAI
+        </Typography>
+
+        <Typography
+          variant="body1"
+          sx={{ color: "black", textAlign: "center", mb: 3 }}
+        >
+          Selecione um bloco para fazer sua reserva:
+        </Typography>
+
         <Blocos handleClick={handleClick} />
+
+        <Typography
+          variant="body1"
+          sx={{ color: "black", textAlign: "center", mt: -1 }}
+        >
+          Visualizar salas disponíveis:
+        </Typography>
+
         <Calendario />
       </Container>
 

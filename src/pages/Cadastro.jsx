@@ -23,7 +23,7 @@ function Cadastro() {
   });
 
   const [alert, setAlert] = useState({
-    type: "success",
+    type: "",
     message: "",
     visible: false,
   });

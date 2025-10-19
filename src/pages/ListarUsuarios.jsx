@@ -41,6 +41,8 @@ function ListarUsuario() {
         prev.filter((usuario) => usuario.id_user !== selectedUserId)
       );
 
+      setOpenConfirm(false);
+
       setAlert({
         message: response.data.message,
         type: "success",
@@ -94,9 +96,9 @@ function ListarUsuario() {
           >
             LISTA DE USUÁRIOS
           </Typography>
-          {usuarios.map((usuario, index) => (
+          {usuarios.map((usuario) => (
             <Box
-              key={index}
+              key={usuario.id_user}
               sx={{
                 backgroundColor: "#fff",
                 borderRadius: 2,

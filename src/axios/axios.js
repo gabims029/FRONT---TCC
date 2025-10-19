@@ -31,6 +31,8 @@ const sheets = {
   getSala: () => api.get("/sala"),
   createSala: (sala) => api.post("/sala", sala),
   deleteSala: (sala) => api.delete(`/sala/${sala}`),
+  getReservasByData: (data) => api.get(`/reservas/data/${data}`),
+  deleteReserva: (id_reserva) => api.delete(`/reserva/${id_reserva}`)
   getSchedulesByUserID: (id_usuario) =>
     api.get(`/reserva/usuario/${id_usuario}`),
   deleteSchedule: (id_reserva) => api.delete(`/reserva/${id_reserva}`),

@@ -31,6 +31,7 @@ function Header() {
           { label: "CADASTRAR USUÁRIO", path: "/cadastro" },
           { label: "CRIAR SALA", path: "/criarSala" },
           { label: "VISUALIZAR USUÁRIOS", path: "/users" },
+          { label: "TODAS RESERVAS", path: "/reservas"},
         ]
       : []),
     { label: "SAIR", path: "/" },
@@ -38,7 +39,7 @@ function Header() {
 
   const handleMenuClick = (item) => {
     if (item.label === "SAIR") {
-      setConfirmLogoutOpen(true); // Abrir modal de confirmação
+      setConfirmLogoutOpen(true); 
     } else {
       navigate(item.path);
       setDrawerOpen(false);

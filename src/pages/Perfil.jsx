@@ -28,7 +28,7 @@ function Perfil() {
   });
 
   const [openModal, setOpenModal] = useState(false);
-  const [openConfirm, setOpenConfirm] = useState(false); // estado do modal de confirmação
+  const [openConfirm, setOpenConfirm] = useState(false);
 
   const navigate = useNavigate();
   const id_usuario = localStorage.getItem("id_usuario");
@@ -61,7 +61,6 @@ function Perfil() {
     }
   };
 
-  // Confirmar exclusão
   const handleConfirmDelete = async () => {
     try {
       await api.deleteUser(id_usuario);
@@ -131,7 +130,6 @@ function Perfil() {
             {userData.nome || "NOME DO USUÁRIO"}
           </Typography>
 
-          {/* EMAIL */}
           <Typography
             sx={{
               color: "white",
@@ -160,7 +158,6 @@ function Perfil() {
             }}
           />
 
-          {/* SENHA */}
           <Typography
             sx={{
               color: "white",
@@ -265,13 +262,12 @@ function Perfil() {
               borderRadius: 1,
               "&:hover": { backgroundColor: "#f0f0f0" },
             }}
-            onClick={() => setOpenConfirm(true)} // abre modal
+            onClick={() => setOpenConfirm(true)}
           >
             Deletar Perfil
           </Button>
         </Box>
 
-        {/* Snackbar */}
         <Snackbar
           open={alert.visible}
           autoHideDuration={4000}

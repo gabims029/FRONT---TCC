@@ -11,8 +11,9 @@ import SalasPage from "./pages/Salas";
 import ReservaPage from "./pages/Reserva";
 import CriarSala from "./pages/CriarSala";
 import ListarSalas from "./pages/ListarSalas";
+import Reservas from "./pages/ReservasAdmin";
+// import MinhasReservas from "./pages/MinhasReservas";
 import MinhasReservas from "./pages/MinhasReservas";
-
 function App() {
   return (
     <Router>
@@ -90,6 +91,15 @@ function App() {
           }
         />
         <Route
+          path="/reservas"
+          element={
+            <ProtectedRoute tipo="Admin">
+              <Reservas/>
+            </ProtectedRoute>
+          }
+        />
+         <Route
+          path="/"
           path="/minhasReservas"
           element={
             <ProtectedRoute>
@@ -100,6 +110,6 @@ function App() {
       </Routes>
     </Router>
   );
-}
+
 
 export default App;

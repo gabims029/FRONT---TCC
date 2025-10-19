@@ -9,6 +9,8 @@ import {
   Alert,
 } from "@mui/material";
 import DefaultLayout from "../components/DefaultLayout";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import api from "../axios/axios";
 
 function Cadastro() {
@@ -20,14 +22,14 @@ function Cadastro() {
     tipo: "",
   });
 
-  // alert do MUI
   const [alert, setAlert] = useState({
     type: "",
     message: "",
     visible: false,
   });
 
-  // Atualizar o estado de um objeto (captura as mudanças)
+  const [showPassword, setShowPassword] = useState(false);
+
   const onChange = (event) => {
     const { name, value } = event.target;
     setUser({ ...user, [name]: value });
@@ -36,6 +38,10 @@ function Cadastro() {
   const handleSubmit = (event) => {
     event.preventDefault();
     cadastro();
+  };
+
+  const passwordVisibility = () => {
+    setShowPassword((state) => !state);
   };
 
   async function cadastro() {
@@ -48,7 +54,6 @@ function Cadastro() {
         visible: true,
       });
 
-      // Limpar o formulário
       setUser({
         nome: "",
         email: "",
@@ -59,16 +64,14 @@ function Cadastro() {
     } catch (error) {
       console.log(error);
 
-      // Mostrar alerta de erro com a mensagem da API
       setAlert({
         type: "error",
-        message: error.response?.data?.error || "Ocorreu um erro",
+        message: error.response?.data?.error ?? "Ocorreu um erro inesperado",
         visible: true,
       });
     }
   }
 
-  // Fechar alerta
   const handleClose = () => {
     setAlert({ ...alert, visible: false });
   };
@@ -78,7 +81,7 @@ function Cadastro() {
       <Box
         sx={{
           minHeight: "100vh",
-          backgroundColor: "#FFE9E9", // fundo
+          backgroundColor: "#FFE9E9",
           display: "flex",
           flexDirection: "column",
           justifyContent: "center",
@@ -110,7 +113,7 @@ function Cadastro() {
             placeholder="Nome"
             name="nome"
             value={user.nome}
-            onChange={onChange} // detectar mudanças
+            onChange={onChange}
             sx={{
               marginBottom: 2,
               backgroundColor: "white",
@@ -152,7 +155,7 @@ function Cadastro() {
             id="senha"
             placeholder="Senha"
             name="senha"
-            type="password"
+            type={showPassword ? "text" : "password"}
             value={user.senha}
             onChange={onChange}
             sx={{
@@ -160,9 +163,22 @@ function Cadastro() {
               backgroundColor: "white",
               borderRadius: 1,
             }}
+            InputProps={{
+              endAdornment: (
+                <Button
+                  onClick={passwordVisibility}
+                  sx={{ minWidth: "auto", padding: 0, color: "black" }}
+                >
+                  {showPassword ? (
+                    <VisibilityIcon color="disabled" />
+                  ) : (
+                    <VisibilityOffIcon color="disabled" />
+                  )}
+                </Button>
+              ),
+            }}
           />
 
-          {/* Campo tipo com seleção */}
           <TextField
             select
             fullWidth
@@ -194,14 +210,13 @@ function Cadastro() {
           </Button>
         </Box>
 
-        {/* Alert do MUI */}
         <Snackbar
           open={alert.visible}
-          autoHideDuration={4000} // tempo que o alerta fica visível
+          autoHideDuration={4000}
           onClose={handleClose}
-          anchorOrigin={{ vertical: "top", horizontal: "center" }} // posição do alerta
+          anchorOrigin={{ vertical: "top", horizontal: "center" }}
         >
-          {alert.type && (
+          {alert.visible && alert.message && alert.type && (
             <Alert
               severity={alert.type}
               onClose={handleClose}

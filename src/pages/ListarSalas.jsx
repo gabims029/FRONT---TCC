@@ -43,6 +43,7 @@ function ListarSalas() {
         type: "success",
         visible: true,
       });
+      setOpenConfirm(false);
     } catch (error) {
       console.log("Erro ao deletar sala...", error);
       setAlert({
@@ -50,8 +51,6 @@ function ListarSalas() {
         type: "error",
         visible: true,
       });
-    } finally {
-      setOpenConfirm(false);
     }
   };
 
@@ -124,7 +123,6 @@ function ListarSalas() {
         </Box>
       </Box>
 
-      {/* 🔹 Modal de Confirmação */}
       <ConfirmDialog
         open={openConfirm}
         onClose={() => setOpenConfirm(false)}

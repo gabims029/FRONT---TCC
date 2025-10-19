@@ -12,16 +12,14 @@ function CriarSala() {
     bloco: "",
   });
 
-   const navigate = useNavigate();
+  const navigate = useNavigate();
 
-  // alert do MUI
   const [alert, setAlert] = useState({
-    type: "",       
-    message: "",    
-    visible: false, 
+    type: "",
+    message: "",
+    visible: false,
   });
 
-  // Atualizar o estado de um objeto (captura as mudanças)
   const onChange = (event) => {
     const { name, value } = event.target;
     setSala({ ...sala, [name]: value });
@@ -42,7 +40,6 @@ function CriarSala() {
         visible: true,
       });
 
-      // Limpar o formulário
       setSala({
         numero: "",
         descricao: "",
@@ -50,9 +47,6 @@ function CriarSala() {
         bloco: "",
       });
     } catch (error) {
-      console.log(error);
-
-      // Mostrar alerta de erro com a mensagem da API
       setAlert({
         type: "error",
         message: error.response?.data?.error || "Ocorreu um erro",
@@ -61,7 +55,6 @@ function CriarSala() {
     }
   }
 
-  // Fechar alerta
   const handleClose = () => {
     setAlert({ ...alert, visible: false });
   };
@@ -71,7 +64,7 @@ function CriarSala() {
       <Box
         sx={{
           minHeight: "100vh",
-          backgroundColor: "#FFE9E9", // fundo
+          backgroundColor: "#FFE9E9",
           display: "flex",
           flexDirection: "column",
           justifyContent: "center",
@@ -165,7 +158,7 @@ function CriarSala() {
               color: "#B9181D",
               fontWeight: "bold",
               width: "100%",
-              marginBottom:"15px"
+              marginBottom: "15px"
             }}
             type="submit"
             variant="contained"
@@ -181,7 +174,7 @@ function CriarSala() {
             }}
             variant="contained"
             onClick={() => navigate("/listarSalas")}
-            
+
           >
             Listar Salas
           </Button>

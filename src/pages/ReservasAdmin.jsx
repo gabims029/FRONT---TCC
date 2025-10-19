@@ -15,7 +15,7 @@ import dayjs from "dayjs";
 import "dayjs/locale/pt-br";
 import api from "../axios/axios";
 import ConfirmDialog from "../components/ConfirmDialog";
-import Blocos from "../components/Blocos"; // Adicione esta linha de importação
+import Blocos from "../components/Blocos";
 
 
 export default function ReservasAdmin() {
@@ -27,7 +27,7 @@ export default function ReservasAdmin() {
   const [filtroLetra, setFiltroLetra] = useState(null);
 
   const handleOpenDialog = (id) => {
-    setReservaId(id); // Define o ID da reserva que será deletada
+    setReservaId(id);
     setOpenDialog(true);
   };
   const handleCloseDialog = () => {
@@ -58,7 +58,7 @@ export default function ReservasAdmin() {
     try {
       const response = await api.deleteReserva(reservaId);
       console.log("Reserva deletada com sucesso!");
-      setOpenDialog(false); // Fecha o diálogo após a exclusão
+      setOpenDialog(false);
 
       setAlert({
         message: response?.data?.message || "Erro desconhecido",
@@ -89,7 +89,7 @@ export default function ReservasAdmin() {
 
   const handleClick = (letra) => {
     console.log(`Botão clicado: ${letra}`);
-      setFiltroLetra((prev) => (prev === letra ? null : letra));
+    setFiltroLetra((prev) => (prev === letra ? null : letra));
   };
 
   return (
@@ -114,7 +114,7 @@ export default function ReservasAdmin() {
         }}
       >
         <Typography
-          sx={{ textAlign: "center", fontWeight: "bold", fontSize: "20px", mb:-1 }}
+          sx={{ textAlign: "center", fontWeight: "bold", fontSize: "20px", mb: -1 }}
         >
           Selecione uma data:
         </Typography>
@@ -122,7 +122,7 @@ export default function ReservasAdmin() {
           <DateCalendar
             value={dataSelecionada}
             onChange={(novaData) => setDataSelecionada(novaData)}
-            sx={{ backgroundColor: "white", border: "1px solid black", marginBottom:3,}}
+            sx={{ backgroundColor: "white", border: "1px solid black", marginBottom: 3, }}
           />
         </LocalizationProvider>
 
@@ -146,7 +146,7 @@ export default function ReservasAdmin() {
                     fontWeight: "bold",
                     fontSize: "20px",
                     marginBottom: "8px",
-                    mt:-4
+                    mt: -4
                   }}
                 >
                   {nomeSala} - {listaReservas[0]?.descricao}

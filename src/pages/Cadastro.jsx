@@ -22,16 +22,14 @@ function Cadastro() {
     tipo: "",
   });
 
-  // alert do MUI
   const [alert, setAlert] = useState({
-    type: "success", // default
-    message: "", // default
+    type: "success",
+    message: "",
     visible: false,
   });
 
   const [showPassword, setShowPassword] = useState(false);
 
-  // Atualizar o estado de um objeto (captura as mudanças)
   const onChange = (event) => {
     const { name, value } = event.target;
     setUser({ ...user, [name]: value });
@@ -56,7 +54,6 @@ function Cadastro() {
         visible: true,
       });
 
-      // Limpar o formulário
       setUser({
         nome: "",
         email: "",
@@ -75,7 +72,6 @@ function Cadastro() {
     }
   }
 
-  // Fechar alerta
   const handleClose = () => {
     setAlert({ ...alert, visible: false });
   };
@@ -85,7 +81,7 @@ function Cadastro() {
       <Box
         sx={{
           minHeight: "100vh",
-          backgroundColor: "#FFE9E9", // fundo
+          backgroundColor: "#FFE9E9",
           display: "flex",
           flexDirection: "column",
           justifyContent: "center",
@@ -117,7 +113,7 @@ function Cadastro() {
             placeholder="Nome"
             name="nome"
             value={user.nome}
-            onChange={onChange} // detectar mudanças
+            onChange={onChange}
             sx={{
               marginBottom: 2,
               backgroundColor: "white",
@@ -183,7 +179,6 @@ function Cadastro() {
             }}
           />
 
-          {/* Campo tipo com seleção */}
           <TextField
             select
             fullWidth
@@ -215,7 +210,6 @@ function Cadastro() {
           </Button>
         </Box>
 
-        {/* Alert do MUI */}
         <Snackbar
           open={alert.visible}
           autoHideDuration={4000}

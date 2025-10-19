@@ -53,21 +53,20 @@ function ModalEditarPerfil({
   const handleSave = async () => {
     try {
       const dataToUpload = {
-        id: id_usuario, // id do usuário
+        id: id_usuario,
         nome: userData.nome,
         email: userData.email,
         cpf: userData.cpf,
         senhaAtual: userData.senhaAtual,
       };
 
-      // Só envia nova senha se o usuário quiser trocar
       if (!userData.senha) {
         dataToUpload.senha = userData.senhaAtual;
       } else {
         dataToUpload.senha = userData.senha;
       }
 
-      await api.updateUser(dataToUpload); // PUT /user/
+      await api.updateUser(dataToUpload); 
       showAlert("Perfil atualizado com sucesso!", "success");
       onClose();
     } catch (err) {
@@ -90,12 +89,10 @@ function ModalEditarPerfil({
       fullWidth
       maxWidth="sm"
     >
-      {/* Ícone */}
       <Box sx={{ display: "flex", justifyContent: "center", mb: 3 }}>
         <AccountCircleIcon sx={{ color: "white", fontSize: 100 }} />
       </Box>
 
-      {/* NOME */}
       <Typography
         sx={{
           color: "white",
@@ -121,7 +118,6 @@ function ModalEditarPerfil({
         }}
       />
 
-      {/* CPF */}
       <Typography
         sx={{
           color: "white",
@@ -148,7 +144,6 @@ function ModalEditarPerfil({
         }}
       />
 
-      {/* EMAIL */}
       <Typography
         sx={{
           color: "white",
@@ -174,7 +169,6 @@ function ModalEditarPerfil({
         }}
       />
 
-      {/* SENHA ATUAL */}
       <Typography
         sx={{
           color: "white",
@@ -214,7 +208,6 @@ function ModalEditarPerfil({
         }}
       />
 
-      {/* NOVA SENHA */}
       <Typography
         sx={{
           color: "white",

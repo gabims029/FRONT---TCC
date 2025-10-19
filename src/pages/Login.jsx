@@ -175,7 +175,6 @@ function Login() {
           </Box>
         </Box>
 
-        {/* Imagem direita como plano de fundo */}
         <Box
           sx={{
             flex: 1,
@@ -189,9 +188,9 @@ function Login() {
 
       <Snackbar
         open={alert.visible}
-        autoHideDuration={4000} // tempo que o alerta fica visível
+        autoHideDuration={4000} 
         onClose={handleClose}
-        anchorOrigin={{ vertical: "top", horizontal: "center" }} // posição do alerta
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
       >
         {alert.type && (
           <Alert

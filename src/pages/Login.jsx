@@ -4,6 +4,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../axios/axios";
 import senaiLogo from "../assets/senai_logo.png";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import fotologin1 from "../assets/fotologin1.png";
 import fotologin2 from "../assets/fotologin2.png";
 
@@ -20,6 +22,8 @@ function Login() {
     visible: false,
   });
 
+  const [showPassword, setShowPassword] = useState(false);
+
   const handleClose = () => {
     setAlert({ ...alert, visible: false });
   };
@@ -32,6 +36,10 @@ function Login() {
   const handleSubmit = (event) => {
     event.preventDefault();
     login();
+  };
+
+  const passwordVisibility = () => {
+    setShowPassword((state) => !state);
   };
 
   async function login() {
@@ -48,7 +56,9 @@ function Login() {
       localStorage.setItem("id_usuario", response.data.user.id_user);
       localStorage.setItem("tipo", response.data.user.tipo);
 
-      navigate("home/");
+      setTimeout(() => {
+        navigate("home/");
+      }, 600);
     } catch (error) {
       setAlert({
         type: "error",
@@ -123,13 +133,27 @@ function Login() {
               id="senha"
               placeholder="Senha"
               name="senha"
-              type="password"
+              type={showPassword ? "text" : "password"}
               value={user.senha}
               onChange={onChange}
               sx={{
                 marginBottom: 3,
                 backgroundColor: "white",
                 borderRadius: 1,
+              }}
+              InputProps={{
+                endAdornment: (
+                  <Button
+                    onClick={passwordVisibility}
+                    sx={{ minWidth: "auto", padding: 0, color: "black" }}
+                  >
+                    {showPassword ? (
+                      <VisibilityIcon color="disabled" />
+                    ) : (
+                      <VisibilityOffIcon color="disabled" />
+                    )}
+                  </Button>
+                ),
               }}
             />
             <Button
@@ -151,7 +175,6 @@ function Login() {
           </Box>
         </Box>
 
-        {/* Imagem direita como plano de fundo */}
         <Box
           sx={{
             flex: 1,
@@ -165,9 +188,9 @@ function Login() {
 
       <Snackbar
         open={alert.visible}
-        autoHideDuration={4000} // tempo que o alerta fica visível
+        autoHideDuration={4000} 
         onClose={handleClose}
-        anchorOrigin={{ vertical: "top", horizontal: "center" }} // posição do alerta
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
       >
         {alert.type && (
           <Alert

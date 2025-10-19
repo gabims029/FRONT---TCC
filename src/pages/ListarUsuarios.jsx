@@ -30,16 +30,17 @@ function ListarUsuario() {
 
   const handleDeleteClick = (id) => {
     setSelectedUserId(id);
-    setOpenConfirm(true); // abre o modal
+    setOpenConfirm(true);
   };
 
-  // executa a exclusão depois da confirmação no modal
   const handleConfirmDelete = async () => {
     try {
       const response = await api.deleteUser(selectedUserId);
       setUsuarios((prev) =>
         prev.filter((usuario) => usuario.id_user !== selectedUserId)
       );
+
+      setOpenConfirm(false);
 
       setAlert({
         message: response.data.message,
@@ -94,9 +95,9 @@ function ListarUsuario() {
           >
             LISTA DE USUÁRIOS
           </Typography>
-          {usuarios.map((usuario, index) => (
+          {usuarios.map((usuario) => (
             <Box
-              key={index}
+              key={usuario.id_user}
               sx={{
                 backgroundColor: "#fff",
                 borderRadius: 2,
@@ -133,9 +134,9 @@ function ListarUsuario() {
 
       <Snackbar
         open={alert.visible}
-        autoHideDuration={4000} // tempo que o alerta fica visível
+        autoHideDuration={4000}
         onClose={handleClose}
-        anchorOrigin={{ vertical: "top", horizontal: "center" }} // posição do alerta
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
       >
         {alert.type && (
           <Alert

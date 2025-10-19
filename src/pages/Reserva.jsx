@@ -31,8 +31,9 @@ export default function ReservaPage() {
   const [loading, setLoading] = useState(true);
   const [erro, setErro] = useState(false);
   const [alert, setAlert] = useState({ type: "", message: "", visible: false });
-  const [dataInicio, setDataInicio] = useState(hoje);
-  const [dataFim, setDataFim] = useState(hoje);
+  const dataSelecionada = state?.data || hoje;
+  const [dataInicio, setDataInicio] = useState(dataSelecionada);
+  const [dataFim, setDataFim] = useState(dataSelecionada);
   const [diasSelecionados, setDiasSelecionados] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
 
@@ -42,8 +43,17 @@ export default function ReservaPage() {
     if (!sala) return;
     try {
       setLoading(true);
-      const res = await api.getAllPeriodos();
-      setHorarios(res.data?.periodos || []);
+
+      const res = await api.getPeriodoStatus(sala.id_sala, dataInicio);
+
+      const todosHorarios = res.data.periodos || [];
+
+      const horariosProcessados = todosHorarios.map((h) => ({
+        ...h,
+        reservado: h.status === "reservado",
+      }));
+
+      setHorarios(horariosProcessados);
       setErro(false);
     } catch (err) {
       console.error("Erro ao buscar horários:", err);
@@ -52,7 +62,7 @@ export default function ReservaPage() {
       setAlert({
         type: "warning",
         message:
-          "Atenção: A reserva foi feita, mas houve um erro ao atualizar a lista de horários.",
+          "Não foi possível carregar os horários.",
         visible: true,
       });
     } finally {
@@ -62,7 +72,7 @@ export default function ReservaPage() {
 
   useEffect(() => {
     fetchHorarios();
-  }, [sala]);
+  }, [sala, dataInicio]);
 
   const handleToggleHorario = (id, status) => {
     if (status === "ocupado") return;
@@ -150,92 +160,126 @@ export default function ReservaPage() {
   return (
     <Box sx={{ backgroundColor: "#ffe9e9", minHeight: "100vh", width: "100%" }}>
       <Box sx={{ width: "100%", p: 3, boxSizing: "border-box" }}>
+        {/*número da sala */}
         <Box
           sx={{
             backgroundColor: "#f4bcbc",
-            p: 2,
-            borderBottom: "1px solid #f4bcbc",
-          }}
-        >
-          <Typography variant="h6" fontWeight="bold">
-            {sala?.numero || "Sala"}
-          </Typography>
-        </Box>
-
-        {/* Campos de datas e dias */}
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "flex-start",
+            width: "100%",
+            py: 1.5,
             px: 2,
-            py: 1,
-            maxWidth: 600,
-            mx: "auto",
+            mb: 3,
+            mt: 5,
+            boxSizing: "border-box",
+            borderRadius: 2,
+            textAlign: "center",
           }}
         >
-          <Box sx={{ width: "100%", mb: 1 }}>
-            <Typography sx={{ fontSize: "0.9rem", mb: 1 }}>
-              Data Início:
-            </Typography>
-            <TextField
-              type="date"
-              size="small"
-              value={dataInicio}
-              onChange={(e) => setDataInicio(e.target.value)}
+          <Typography
+            variant="h4"
+            sx={{
+              color: "black",
+              textAlign: "left",
+              fontWeight: "bold",
+              fontSize: "1.2rem",
+            }}
+          >
+            <Box
+              component="span"
               sx={{
-                background: "#ddd",
-                "& input": { fontSize: "0.85rem", padding: "6px 8px" },
+                fontSize: "1.8rem",
+                fontWeight: "bold",
+                color: "#000000ff",
               }}
-            />
-          </Box>
-
-          <Box sx={{ width: "100%", mb: 1 }}>
-            <Typography sx={{ fontSize: "0.9rem", mb: 1 }}>
-              Data Fim:
-            </Typography>
-            <TextField
-              type="date"
-              size="small"
-              value={dataFim}
-              onChange={(e) => setDataFim(e.target.value)}
-              sx={{
-                background: "#ddd",
-                "& input": { fontSize: "0.85rem", padding: "6px 8px" },
-              }}
-            />
-          </Box>
-
-          <Typography sx={{ fontSize: "0.9rem", mb: 1 }}>
-            Dias da semana:
-          </Typography>
-          <FormControl fullWidth>
-            <InputLabel>Dias da semana</InputLabel>
-            <Select
-              multiple
-              value={diasSelecionados}
-              onChange={(e) => setDiasSelecionados(e.target.value)}
-              input={<OutlinedInput label="Dias da semana" />}
-              renderValue={(selected) => (
-                <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
-                  {selected.map((value) => (
-                    <Chip key={value} label={value} />
-                  ))}
-                </Box>
-              )}
             >
-              {["Seg", "Ter", "Qua", "Qui", "Sex", "Sab"].map((dia) => (
-                <MenuItem key={dia} value={dia}>
-                  {dia}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+              {sala?.numero}
+            </Box>
+          </Typography>
         </Box>
+
+        {/* campos de data */}
+        <Grid
+          container
+          spacing={2}
+          alignItems="flex-start"
+          justifyContent="center"
+          sx={{
+            maxWidth: 800,
+            mx: "auto",
+            mb: 2,
+          }}
+        >
+          <Grid item xs={12} md={4}>
+            <Box>
+              <Typography sx={{ fontSize: "0.9rem", mb: 1 }}>
+                Data Início:
+              </Typography>
+              <TextField
+                type="date"
+                size="small"
+                fullWidth
+                value={dataInicio}
+                onChange={(e) => setDataInicio(e.target.value)}
+                sx={{
+                  background: "#ddd",
+                  "& input": { fontSize: "0.85rem", padding: "6px 8px" },
+                }}
+              />
+            </Box>
+          </Grid>
+
+          <Grid item xs={12} md={4}>
+            <Box>
+              <Typography sx={{ fontSize: "0.9rem", mb: 1 }}>
+                Data Fim:
+              </Typography>
+              <TextField
+                type="date"
+                size="small"
+                fullWidth
+                value={dataFim}
+                onChange={(e) => setDataFim(e.target.value)}
+                sx={{
+                  background: "#ddd",
+                  "& input": { fontSize: "0.85rem", padding: "6px 8px" },
+                }}
+              />
+            </Box>
+          </Grid>
+
+          <Grid item xs={12} md={4}>
+            <Typography sx={{ fontSize: "0.9rem", mb: 1 }}>
+              Dias da semana:
+            </Typography>
+            <FormControl fullWidth size="small">
+              <InputLabel>Dias da semana</InputLabel>
+              <Select
+                multiple
+                value={diasSelecionados}
+                onChange={(e) => setDiasSelecionados(e.target.value)}
+                input={<OutlinedInput label="Dias da semana" />}
+                renderValue={(selected) => (
+                  <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
+                    {selected.map((value) => (
+                      <Chip key={value} label={value} />
+                    ))}
+                  </Box>
+                )}
+              >
+                {["Seg", "Ter", "Qua", "Qui", "Sex", "Sab"].map((dia) => (
+                  <MenuItem key={dia} value={dia}>
+                    {dia}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Grid>
+        </Grid>
       </Box>
 
-      {/* Lista de horários */}
-      <Box sx={{ width: "100%", maxWidth: 600, p: 3, mx: "auto", mt: 2 }}>
+      {/* lista de horários */}
+      <Box
+        sx={{ width: "100%", maxWidth: 600, px: 3, mx: "auto", mt: 2, pb: 3 }}
+      >
         {loading ? (
           <Typography textAlign="center">Carregando horários...</Typography>
         ) : erro ? (
@@ -252,34 +296,26 @@ export default function ReservaPage() {
                 <Grid item xs={6} sm={4} key={h.id_periodo}>
                   <Button
                     fullWidth
-                    onClick={() => handleToggleHorario(h.id_periodo, h.status)}
+                    onClick={() =>
+                      !h.reservado && handleToggleHorario(h.id_periodo)
+                    }
+                    disabled={h.reservado}
                     sx={{
-                      backgroundColor:
-                        h.status === "ocupado"
-                          ? "#e57373"
-                          : selecionado
-                          ? "#fff"
-                          : "#81c784",
-                      color:
-                        h.status === "ocupado"
-                          ? "#fff"
-                          : selecionado
-                          ? "#000"
-                          : "#fff",
+                      backgroundColor: h.reservado
+                        ? "#E56565"
+                        : selecionado
+                        ? "#feffffff"
+                        : "#a5d6a7",
+                      color: "black",
                       border: selecionado
-                        ? "2px solid red"
+                        ? "2px solid #b22222"
                         : "1px solid transparent",
                       "&:hover": {
-                        backgroundColor:
-                          h.status === "ocupado"
-                            ? "#e57373"
-                            : selecionado
-                            ? "#fff"
-                            : "#66bb6a",
+                        backgroundColor: h.reservado ? "#E56565" : "#81c784",
                       },
+
                       minHeight: "50px",
                     }}
-                    disabled={h.status === "ocupado"}
                   >
                     {`${h.horario_inicio.slice(0, 5)} - ${h.horario_fim.slice(
                       0,
@@ -292,7 +328,6 @@ export default function ReservaPage() {
           </Grid>
         )}
 
-        {/* Alertas */}
         <Snackbar
           open={alert.visible}
           autoHideDuration={4000}
@@ -325,7 +360,6 @@ export default function ReservaPage() {
         </Box>
       </Box>
 
-      {/* Modal de confirmação */}
       <ModalReserva
         open={modalOpen}
         handleClose={() => setModalOpen(false)}

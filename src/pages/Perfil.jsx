@@ -52,7 +52,6 @@ function Perfil() {
         email: response.data.user.email || "",
         cpf: response.data.user.cpf || "",
         senha: response.data.user.senha || "",
-        foto: response.data.user.foto || null, // 👈 adiciona a foto aqui
       });
     } catch (error) {
       showAlert(
@@ -108,25 +107,15 @@ function Perfil() {
           <Box
             sx={{
               borderRadius: "50%",
-              width: 140,
-              height: 140,
-              overflow: "hidden",
+              width: 100,
+              height: 100,
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
               marginBottom: 2,
-              backgroundColor: "white",
             }}
           >
-            {userData.foto ? (
-              <img
-                src={`data:image/jpeg;base64,${userData.foto}`}
-                alt="Foto do usuário"
-                style={{ width: "100%", height: "100%", objectFit: "cover" }}
-              />
-            ) : (
-              <AccountCircleIcon sx={{ color: "#B9181D", fontSize: 140 }} />
-            )}
+            <AccountCircleIcon sx={{ color: "white", fontSize: 140 }} />
           </Box>
 
           <Typography

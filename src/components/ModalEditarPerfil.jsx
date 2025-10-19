@@ -11,7 +11,6 @@ function ModalEditarPerfil({
   showAlert,
 }) {
   const id_usuario = localStorage.getItem("id_usuario");
-  // const [imagem, setImagem] = useState(null);
 
   useEffect(() => {
     async function getUserInfo() {
@@ -38,9 +37,6 @@ function ModalEditarPerfil({
     setUserData({ ...userData, [name]: value });
   };
 
-  // const handleFileChange = (e) => {
-  //   setImagem(e.target.files[0]);
-  // };
 
   const handleSave = async () => {
     try {
@@ -82,13 +78,6 @@ function ModalEditarPerfil({
       fullWidth
       maxWidth="sm"
     >
-      {/* Foto de perfil */}
-      {/* <input
-        type="file"
-        accept="image/*"
-        onChange={handleFileChange}
-        style={{ marginBottom: 16 }}
-      /> */}
 
       {/* Ícone */}
       <Box sx={{ display: "flex", justifyContent: "center", mb: 3 }}>

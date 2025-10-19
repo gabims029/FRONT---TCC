@@ -19,22 +19,7 @@ api.interceptors.request.use(
 const sheets = {
   postLogin: (user) => api.post("/user/login", user),
   postCadastro: (user) => api.post("/user/", user),
-
-  updateUser: (form, userId, imagem = null) => {
-    const data = new FormData();
-    for (let key in form) {
-      data.append(key, form[key]);
-    }
-
-    if (imagem) data.append("imagem", imagem);
-
-    return api.put(`/user/${userId}`, data, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-        Accept: "application/json",
-      },
-    });
-  },
+  updateUser: (data) => api.put("/user/", data),
   getUserByID: (id_usuario) => api.get(`/user/${id_usuario}`),
   deleteUser: (id_usuario) => api.delete(`/user/${id_usuario}`),
   getSalasDisponiveisPorData: (dataSelecionada) =>

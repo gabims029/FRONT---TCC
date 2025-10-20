@@ -191,7 +191,7 @@ export default function MinhasReservas() {
                           }}
                         >
                           <CardHeader
-                            title={descricaoSala}
+                            title={nomeSala}
                             titleTypographyProps={{
                               textAlign: "center",
                               fontWeight: "bold",
@@ -213,7 +213,7 @@ export default function MinhasReservas() {
                                 variant="body2"
                                 sx={{ fontWeight: "bold", textAlign: "center" }}
                               >
-                                {nomeSala}
+                                {descricaoSala}
                               </Typography>
                             </Box>
                             <Typography

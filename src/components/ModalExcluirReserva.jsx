@@ -39,19 +39,24 @@ export default function ModalExcluirReserva({
 
       <DialogContent sx={{ mt: 2, textAlign: "left" }}>
         <Typography variant="subtitle1" sx={{ mb: 1 }}>
-          SALA:
-          {reserva?.nomeSala || reserva?.descricaoSala || "Desconhecida"}
+          SALA: {reserva?.nomeSala || reserva?.descricaoSala || "Desconhecida"}
         </Typography>
         <Typography variant="subtitle1" sx={{ mb: 1 }}>
           DATA: {dataInicio}
         </Typography>
         <Typography variant="subtitle1" sx={{ mb: 1 }}>
-          HORÁRIO:
-          {reserva?.horario_inicio?.slice(0, 5) || ""}
-          {reserva?.horario_fim ? ` - ${reserva.horario_fim.slice(0, 5)}` : ""}
-        </Typography>
-        <Typography variant="subtitle1">
-          PROF: {reserva?.nomeUsuario || "Não informado"}
+          HORÁRIO:{" "}
+          {reserva?.periodos?.map((p, idx) => {
+            const inicio = p.horario_inicio?.slice(0, 5) || "";
+            const fim = p.horario_fim?.slice(0, 5) || "";
+            return (
+              <span key={idx}>
+                {inicio}
+                {fim ? ` - ${fim}` : ""}
+                {idx < reserva.periodos.length - 1 ? ", " : ""}
+              </span>
+            );
+          }) || "Não informado"}
         </Typography>
       </DialogContent>
 

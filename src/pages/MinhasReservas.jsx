@@ -38,8 +38,32 @@ export default function MinhasReservas() {
     api
       .getSchedulesByUserID(idUsuario)
       .then((res) => {
-        const dados = res.data?.reservas || [];
-        setReservas(dados);
+        const reservasObj = res.data?.reservas || {};
+
+        const reservasFormatadas = Object.entries(reservasObj).flatMap(
+          ([data, reservasDoDia]) =>
+            reservasDoDia.map((r, idx) => ({
+              ...r,
+              data_inicio: data,
+              nomeSala: r.nomeSala || r.nomeSalaDisplay || "Sala não informada",
+              descricaoSala:
+                r.descricaoSala || r.descricaoDetalhe || "Sem descrição",
+              periodos:
+                r.periodos && r.periodos.length > 0
+                  ? r.periodos
+                  : [
+                      {
+                        horario_inicio: r.horario_inicio,
+                        horario_fim: r.horario_fim,
+                      },
+                    ],
+              uniqueKey: `${data}-${r.nomeSalaDisplay || r.nomeSala || idx}-${
+                r.descricaoDetalhe || r.descricaoSala || idx
+              }`,
+            }))
+        );
+
+        setReservas(reservasFormatadas);
       })
       .catch((e) => {
         setAlert({
@@ -78,21 +102,15 @@ export default function MinhasReservas() {
     }
   };
 
-  <ModalExcluirReserva
-    open={modalOpen}
-    handleClose={() => setModalOpen(false)}
-    reserva={reservaSelecionada}
-    onConfirm={handleExcluir}
-  />;
+  const formatarData = (dataStr) => {
+    const [ano, mes, dia] = dataStr.split("-");
+    return `${dia}/${mes}/${ano}`;
+  };
 
-  // Agrupar reservas por data
+  // Agrupa reservas por data
   const reservasPorData = {};
   reservas.forEach((reserva) => {
-    let dataFormatada = "Data não informada";
-    if (reserva?.data_inicio) {
-      const [ano, mes, dia] = reserva.data_inicio.split("T")[0].split("-");
-      dataFormatada = `${dia}-${mes}-${ano}`;
-    }
+    const dataFormatada = reserva.data_inicio || "Data não informada";
     if (!reservasPorData[dataFormatada]) reservasPorData[dataFormatada] = [];
     reservasPorData[dataFormatada].push(reserva);
   });
@@ -123,7 +141,8 @@ export default function MinhasReservas() {
           <Typography>Carregando...</Typography>
         </Box>
       )}
-      {!loading && !reservas.length && (
+
+      {!loading && Object.keys(reservasPorData).length === 0 && (
         <Box
           sx={{
             display: "flex",
@@ -140,7 +159,8 @@ export default function MinhasReservas() {
           </Typography>
         </Box>
       )}
-      {!loading && reservas.length > 0 && (
+
+      {!loading && Object.keys(reservasPorData).length > 0 && (
         <Box sx={{ width: "90%", maxWidth: "800px" }}>
           {Object.keys(reservasPorData)
             .sort()
@@ -160,24 +180,18 @@ export default function MinhasReservas() {
                     variant="body1"
                     sx={{ fontWeight: "bold", color: "black" }}
                   >
-                    {data}
+                    {reservasPorData[data][0]?.diaDaSemana || ""} -{" "}
+                    {formatarData(data)}
                   </Typography>
                 </Box>
 
-                {/* Grid com as salas */}
                 <Grid container spacing={2}>
-                  {reservasPorData[data]?.map((reserva) => {
-                    const {
-                      id_reserva,
-                      nomeSala = "Sala não informada",
-                      descricaoSala = "Sem descrição",
-                      dias = "",
-                      horario_inicio = "",
-                      horario_fim = "",
-                    } = reserva || {};
+                  {reservasPorData[data].map((reserva) => {
+                    const { nomeSala, descricaoSala, periodos, uniqueKey } =
+                      reserva;
 
                     return (
-                      <Grid item key={id_reserva}>
+                      <Grid item key={uniqueKey}>
                         <Card
                           onClick={() => {
                             setReservaSelecionada(reserva);
@@ -216,27 +230,21 @@ export default function MinhasReservas() {
                                 {descricaoSala}
                               </Typography>
                             </Box>
-                            <Typography
-                              variant="body2"
-                              sx={{
-                                mt: 1,
-                                fontWeight: "bold",
-                                textAlign: "center",
-                              }}
-                            >
-                              {dias}
-                            </Typography>
-                            <Typography
-                              variant="body2"
-                              sx={{
-                                mt: 1,
-                                fontWeight: "bold",
-                                textAlign: "center",
-                              }}
-                            >
-                              {horario_inicio?.slice(0, 5)}{" "}
-                              {horario_fim && `- ${horario_fim.slice(0, 5)}`}
-                            </Typography>
+
+                            {periodos.map((p, idx) => (
+                              <Typography
+                                key={`${uniqueKey}-${idx}`}
+                                variant="body2"
+                                sx={{
+                                  mt: 1,
+                                  fontWeight: "bold",
+                                  textAlign: "center",
+                                }}
+                              >
+                                {p.horario_inicio?.slice(0, 5)} -{" "}
+                                {p.horario_fim?.slice(0, 5)}
+                              </Typography>
+                            ))}
                           </CardContent>
                         </Card>
                       </Grid>
@@ -247,6 +255,7 @@ export default function MinhasReservas() {
             ))}
         </Box>
       )}
+
       <ModalExcluirReserva
         open={modalOpen}
         handleClose={() => setModalOpen(false)}

@@ -61,8 +61,7 @@ export default function ReservaPage() {
       setHorarios([]);
       setAlert({
         type: "warning",
-        message:
-          "Não foi possível carregar os horários.",
+        message: "Não foi possível carregar os horários.",
         visible: true,
       });
     } finally {
@@ -301,10 +300,15 @@ export default function ReservaPage() {
                     }
                     disabled={h.reservado}
                     sx={{
+                      display: "flex",
+                      flexDirection: "column",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      gap: "2px",
                       backgroundColor: h.reservado
                         ? "#E56565"
                         : selecionado
-                        ? "#feffffff"
+                        ? "#ffffff"
                         : "#a5d6a7",
                       color: "black",
                       border: selecionado
@@ -313,14 +317,27 @@ export default function ReservaPage() {
                       "&:hover": {
                         backgroundColor: h.reservado ? "#E56565" : "#81c784",
                       },
-
-                      minHeight: "50px",
+                      minHeight: "60px",
+                      textTransform: "none",
                     }}
                   >
-                    {`${h.horario_inicio.slice(0, 5)} - ${h.horario_fim.slice(
-                      0,
-                      5
-                    )}`}
+                    {/* horário */}
+                    <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                      {`${h.horario_inicio.slice(0, 5)} - ${h.horario_fim.slice(
+                        0,
+                        5
+                      )}`}
+                    </Typography>
+
+                    {/* nome do usuário */}
+                    {h.reservado && (
+                      <Typography
+                        variant="caption"
+                        sx={{ fontSize: "0.75rem", color: "#222" }}
+                      >
+                        {h.usuario || "Desconhecido"}
+                      </Typography>
+                    )}
                   </Button>
                 </Grid>
               );

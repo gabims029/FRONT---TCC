@@ -22,6 +22,7 @@ export default function MinhasReservas() {
 
   const handleClose = () => setAlert({ ...alert, visible: false });
 
+  // Carrega reservas do usuário
   const carregarReservas = useCallback(() => {
     if (!idUsuario) {
       setAlert({
@@ -40,6 +41,7 @@ export default function MinhasReservas() {
       .then((res) => {
         const reservasObj = res.data?.reservas || {};
 
+        // Formata os dados para o front
         const reservasFormatadas = Object.entries(reservasObj).flatMap(
           ([data, reservasDoDia]) =>
             reservasDoDia.map((r, idx) => ({
@@ -48,15 +50,11 @@ export default function MinhasReservas() {
               nomeSala: r.nomeSala || r.nomeSalaDisplay || "Sala não informada",
               descricaoSala:
                 r.descricaoSala || r.descricaoDetalhe || "Sem descrição",
-              periodos:
-                r.periodos && r.periodos.length > 0
-                  ? r.periodos
-                  : [
-                      {
-                        horario_inicio: r.horario_inicio,
-                        horario_fim: r.horario_fim,
-                      },
-                    ],
+              periodos: r.periodos.map((p) => ({
+                ...p,
+                id_periodo: p.id_periodo, // usa o ID real do backend
+              })),
+              id_reserva: r.id_reserva, // garante que o front tenha o ID da reserva
               uniqueKey: `${data}-${r.nomeSalaDisplay || r.nomeSala || idx}-${
                 r.descricaoDetalhe || r.descricaoSala || idx
               }`,
@@ -79,15 +77,23 @@ export default function MinhasReservas() {
     carregarReservas();
   }, [carregarReservas]);
 
+  // Excluir período selecionado
   const handleExcluir = async () => {
-    if (!reservaSelecionada?.id_reserva) return;
+    if (!reservaSelecionada || !reservaSelecionada.periodoSelecionado) return;
 
     try {
-      await api.deleteSchedule(reservaSelecionada.id_reserva);
+      const idReserva = reservaSelecionada.id_reserva;
+      const idPeriodo = reservaSelecionada.periodoSelecionado.id_periodo;
+
+      if (!idReserva || !idPeriodo) {
+        throw new Error("ID da reserva ou do período não encontrado.");
+      }
+
+      await api.delete(`/reserva/periodo/${idReserva}/${idPeriodo}`);
 
       setAlert({
         type: "success",
-        message: "Reserva excluída com sucesso!",
+        message: "Horário excluído com sucesso!",
         visible: true,
       });
 
@@ -96,7 +102,10 @@ export default function MinhasReservas() {
     } catch (err) {
       setAlert({
         type: "error",
-        message: err.response?.data?.error || "Erro ao excluir a reserva.",
+        message:
+          err.response?.data?.error ||
+          err.message ||
+          "Erro ao excluir o horário.",
         visible: true,
       });
     }
@@ -193,15 +202,10 @@ export default function MinhasReservas() {
                     return (
                       <Grid item key={uniqueKey}>
                         <Card
-                          onClick={() => {
-                            setReservaSelecionada(reserva);
-                            setModalOpen(true);
-                          }}
                           sx={{
                             width: 200,
                             borderRadius: 2,
                             boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
-                            cursor: "pointer",
                           }}
                         >
                           <CardHeader
@@ -231,20 +235,38 @@ export default function MinhasReservas() {
                               </Typography>
                             </Box>
 
-                            {periodos.map((p, idx) => (
-                              <Typography
-                                key={`${uniqueKey}-${idx}`}
-                                variant="body2"
-                                sx={{
-                                  mt: 1,
-                                  fontWeight: "bold",
-                                  textAlign: "center",
-                                }}
-                              >
-                                {p.horario_inicio?.slice(0, 5)} -{" "}
-                                {p.horario_fim?.slice(0, 5)}
-                              </Typography>
-                            ))}
+                            {periodos.map((p, idx) => {
+                              const inicio = p.horario_inicio?.slice(0, 5);
+                              const fim = p.horario_fim?.slice(0, 5);
+                              const texto =
+                                inicio && fim
+                                  ? `${inicio} - ${fim}`
+                                  : "Horário: não informado";
+
+                              return (
+                                <Typography
+                                  key={`${uniqueKey}-${idx}`}
+                                  variant="body2"
+                                  sx={{
+                                    mt: 1,
+                                    fontWeight: "bold",
+                                    textAlign: "center",
+                                    cursor: "pointer",
+                                    "&:hover": { color: "primary.main" },
+                                  }}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setReservaSelecionada({
+                                      ...reserva,
+                                      periodoSelecionado: p,
+                                    });
+                                    setModalOpen(true);
+                                  }}
+                                >
+                                  {texto}
+                                </Typography>
+                              );
+                            })}
                           </CardContent>
                         </Card>
                       </Grid>

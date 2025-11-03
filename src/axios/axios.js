@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://10.89.240.76:3000/api",
+  baseURL: "http://10.89.240.88:3000/api",
   headers: { accept: "application/json" },
 });
 
@@ -32,8 +32,10 @@ const sheets = {
   createSala: (sala) => api.post("/sala", sala),
   deleteSala: (sala) => api.delete(`/sala/${sala}`),
   getReservasByData: (data) => api.get(`/reservas/data/${data}`),
-  deleteReserva: (id_reserva) => api.delete(`/reserva/${id_reserva}`),
-  getSchedulesByUserID: (id_usuario) => api.get(`/reserva/usuario/${id_usuario}`),
+  getSchedulesByUserID: (id_usuario) =>
+    api.get(`/reserva/usuario/${id_usuario}`),
+  deletePeriodoReserva: (idReserva, idPeriodo) =>
+    api.delete(`/reserva/periodo/${idReserva}/${idPeriodo}`),
   deleteSchedule: (id_reserva) => api.delete(`/reserva/${id_reserva}`),
   getPeriodoStatus: (idSala, data) =>
     api.get("/periodo/status", {

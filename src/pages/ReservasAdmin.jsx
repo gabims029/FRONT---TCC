@@ -42,8 +42,8 @@ export default function ReservasAdmin() {
   async function getReservas(dataFormatada) {
     try {
       const response = await api.getReservasByData(dataFormatada);
-      console.log("Reservas recebidas:", response.data.reservas);
-      setReservas(response.data.reservas);
+      console.log("Reservas recebidas:", response.data.reservaBySala);
+      setReservas(response.data.reservaBySala);
     } catch (error) {
       setAlert({
         message: error.response?.data?.error || "Erro desconhecido",
@@ -130,14 +130,14 @@ export default function ReservasAdmin() {
 
         <Box sx={{ display: "flex", flexDirection: "column" }}>
           {Object.entries(reservas)
-            .filter(([nomeSala]) => {
+            .filter(([salaNome]) => {
               if (!filtroLetra) return true;
-              return nomeSala.startsWith(filtroLetra);
-            }).sort(([nomeSalaA], [nomeSalaB]) =>
-              nomeSalaA.localeCompare(nomeSalaB)
+              return salaNome.startsWith(filtroLetra);
+            }).sort(([salaNomeA], [salaNomeB]) =>
+              salaNomeA.localeCompare(salaNomeB)
             )
-            .map(([nomeSala, listaReservas]) => (
-              <Box key={nomeSala} sx={{ mb: 5 }}>
+            .map(([salaNome, listaReservas]) => (
+              <Box key={salaNome} sx={{ mb: 5 }}>
                 <Box
                   sx={{
                     color: "black",
@@ -149,7 +149,7 @@ export default function ReservasAdmin() {
                     mt: -4
                   }}
                 >
-                  {nomeSala} - {listaReservas[0]?.descricao}
+                  {salaNome} - {listaReservas[0]?.descricao}
                 </Box>
 
                 <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2 }}>
@@ -176,7 +176,7 @@ export default function ReservasAdmin() {
                           fontSize: "20px",
                         }}
                       >
-                        {reserva.nomeSala || "Disciplina"}
+                        {reserva.salaNome || "Disciplina"}
                       </Box>
 
                       <Box
@@ -203,7 +203,7 @@ export default function ReservasAdmin() {
                           }}
                         >
                           <Typography sx={{ fontSize: "15px" }}>
-                            {reserva.descricao || "N/A"}
+                            {reserva.descricaoSala || "N/A"}
                           </Typography>
                           <Typography sx={{ fontSize: "17px" }}>
                             Máx. {reserva.capacidade || "N/A"}

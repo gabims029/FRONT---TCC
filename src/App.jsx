@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { Box, Snackbar, Alert } from "@mui/material";
+import { Snackbar, Alert } from "@mui/material";
 import Login from "./pages/Login";
 import Home from "./pages/Home";
 import DefaultLayout from "./components/DefaultLayout";
@@ -22,26 +22,30 @@ function App() {
     visible: false,
   });
 
+  const showAlert = (type, message) => {
+    setAlert({
+      type,
+      message,
+      visible: true,
+    });
+  };
+
   const handleClose = () => {
     setAlert({ ...alert, visible: false });
   };
 
   useEffect(() => {
     const isRefreshToken = localStorage.getItem("refresh_token");
-
     if (isRefreshToken) {
-      setAlert({
-        type: "warning",
-        message: response.data.message,
-        visible: true,
-      });
+      showAlert("warning", "Sua sessão expirou. Faça login novamente.");
     }
   }, []);
 
   return (
-    <Box>
+    <>
       <Router>
         <Routes>
+          {/* Rota de Login - Não protegida */}
           <Route
             path="/"
             element={
@@ -50,6 +54,8 @@ function App() {
               </DefaultLayout>
             }
           />
+
+          {/* Rotas protegidas */}
           <Route
             path="/home"
             element={
@@ -115,7 +121,7 @@ function App() {
             }
           />
           <Route
-            path="/reservas"
+            path="/allReservas"
             element={
               <ProtectedRoute tipo="Admin">
                 <ReservasAdmin />
@@ -149,7 +155,7 @@ function App() {
           </Alert>
         )}
       </Snackbar>
-    </Box>
+    </>
   );
 }
 

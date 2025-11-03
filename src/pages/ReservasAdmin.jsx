@@ -42,8 +42,8 @@ export default function ReservasAdmin() {
   async function getReservas(dataFormatada) {
     try {
       const response = await api.getReservasByData(dataFormatada);
-      console.log("Reservas recebidas:", response.data.schedulesBySala);
-      setReservas(response.data.schedulesBySala);
+      console.log("Reservas recebidas:", response.data.reservas);
+      setReservas(response.data.reservas);
     } catch (error) {
       setAlert({
         message: error.response?.data?.error || "Erro desconhecido",

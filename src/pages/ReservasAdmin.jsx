@@ -165,7 +165,7 @@ export default function ReservasAdmin() {
                     mb: 3,
                     borderRadius: 2,
                     bgcolor: "white",
-                    width: "28%",
+                    width: "23%",
                   }}
                 >
                   <Typography
@@ -210,19 +210,17 @@ export default function ReservasAdmin() {
                         <Typography
                           sx={{
                             fontWeight: "bold",
-                            ml: 1,
                             color: "#333",
                             textAlign: "center",
                           }}
                         >
-                          Usuário: {usuario}
+                          {usuario}
                         </Typography>
 
                         {reservasUsuario.map((reserva, i) => (
                           <Typography
                             key={i}
                             sx={{
-                              ml: 4,
                               textAlign: "center",
                               cursor: "pointer",
                               "&:hover": {
@@ -230,14 +228,10 @@ export default function ReservasAdmin() {
                                 fontWeight: "bold",
                               },
                             }}
-                            onClick={() =>
-                              console.log(
-                                
-                              )
-                            }
+                            onClick={() => console.log("clicado")}
                           >
                             {reserva.horario_inicio.slice(0, 5)} -{" "}
-                            {reserva.horario_fim.slice(0, 5)} ({reserva.dias})
+                            {reserva.horario_fim.slice(0, 5)}
                           </Typography>
                         ))}
                       </Box>

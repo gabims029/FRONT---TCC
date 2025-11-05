@@ -66,6 +66,7 @@ function Login() {
         visible: true,
       });
       console.log(error);
+      localStorage.removeItem("refresh_token");
     }
   }
 

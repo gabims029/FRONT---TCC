@@ -17,7 +17,6 @@ import api from "../axios/axios";
 import ConfirmDialog from "../components/ConfirmDialog";
 import Blocos from "../components/Blocos";
 
-
 export default function ReservasAdmin() {
   const [dataSelecionada, setDataSelecionada] = useState(null);
   const [reservas, setReservas] = useState({});
@@ -114,7 +113,12 @@ export default function ReservasAdmin() {
         }}
       >
         <Typography
-          sx={{ textAlign: "center", fontWeight: "bold", fontSize: "20px", mb: -1 }}
+          sx={{
+            textAlign: "center",
+            fontWeight: "bold",
+            fontSize: "20px",
+            mb: -1,
+          }}
         >
           Selecione uma data:
         </Typography>
@@ -122,142 +126,126 @@ export default function ReservasAdmin() {
           <DateCalendar
             value={dataSelecionada}
             onChange={(novaData) => setDataSelecionada(novaData)}
-            sx={{ backgroundColor: "white", border: "1px solid black", marginBottom: 3, }}
+            sx={{
+              backgroundColor: "white",
+              border: "1px solid black",
+              marginBottom: 3,
+            }}
           />
         </LocalizationProvider>
 
         <Blocos handleClick={handleClick} />
 
-        <Box sx={{ display: "flex", flexDirection: "column" }}>
+        <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2 }}>
           {Object.entries(reservas)
-            .filter(([salaNome]) => {
+            .filter(([nomeSala]) => {
               if (!filtroLetra) return true;
-              return salaNome.startsWith(filtroLetra);
-            }).sort(([salaNomeA], [salaNomeB]) =>
-              salaNomeA.localeCompare(salaNomeB)
+              return nomeSala.startsWith(filtroLetra);
+            })
+            .sort(([nomeSalaA], [nomeSalaB]) =>
+              nomeSalaA.localeCompare(nomeSalaB)
             )
-            .map(([salaNome, listaReservas]) => (
-              <Box key={salaNome} sx={{ mb: 5 }}>
+            .map(([nomeSala, reservasSala]) => {
+              const infoSala = reservasSala[0];
+              const reservasPorUsuario = reservasSala.reduce(
+                (agrupamento, reserva) => {
+                  if (!agrupamento[reserva.nomeUsuario]) {
+                    agrupamento[reserva.nomeUsuario] = [];
+                  }
+                  agrupamento[reserva.nomeUsuario].push(reserva);
+                  return agrupamento;
+                },
+                {}
+              );
+
+              return (
                 <Box
+                  key={nomeSala}
                   sx={{
-                    color: "black",
-                    padding: "2px 2px",
-                    textAlign: "left",
-                    fontWeight: "bold",
-                    fontSize: "20px",
-                    marginBottom: "8px",
-                    mt: -4
+                    mb: 3,
+                    borderRadius: 2,
+                    bgcolor: "white",
+                    width: "28%",
                   }}
                 >
-                  {salaNome} - {listaReservas[0]?.descricao}
-                </Box>
-
-                <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2 }}>
-                  {listaReservas.map((reserva) => (
-                    <Paper
-                      key={reserva.id_sala}
-                      sx={{
-                        borderRadius: "8px",
-                        border: "1px solid #b22222",
-                        minWidth: "22%",
-                        cursor: "pointer",
-                        overflow: "hidden",
-                        display: "flex",
-                        flexDirection: "column",
-                        marginBottom: 2,
-                      }}
+                  <Typography
+                    variant="h6"
+                    sx={{
+                      backgroundColor: "#b22222",
+                      color: "#fff",
+                      padding: "15px",
+                      fontWeight: "bold",
+                      fontSize: "20px",
+                      mb: 1,
+                      borderTopLeftRadius: "12px",
+                      borderTopRightRadius: "12px",
+                    }}
+                  >
+                    {infoSala.salaNome}
+                  </Typography>
+                  <Box
+                    sx={{
+                      bgcolor: "#f5f5f5",
+                      p: 1,
+                      borderRadius: 1,
+                      mb: 1,
+                      marginLeft: 1,
+                      marginRight: 1,
+                    }}
+                  >
+                    <Typography
+                      sx={{ fontWeight: "bold", textAlign: "center" }}
                     >
-                      <Box
-                        sx={{
-                          backgroundColor: "#b22222",
-                          color: "#fff",
-                          padding: "15px",
-                          fontWeight: "bold",
-                          fontSize: "20px",
-                        }}
-                      >
-                        {reserva.salaNome || "Disciplina"}
-                      </Box>
+                      {infoSala.descricaoSala}
+                    </Typography>
+                  </Box>
 
-                      <Box
-                        sx={{
-                          padding: "10px",
-                          flexGrow: 1,
-                          display: "flex",
-                          justifyContent: "center",
-                          alignItems: "center",
-                        }}
-                      >
-                        <Paper
-                          elevation={0}
+                  <Typography sx={{ mb: 2, textAlign: "center" }}>
+                    Capacidade: {infoSala.capacidade} pessoas
+                  </Typography>
+
+                  {Object.entries(reservasPorUsuario).map(
+                    ([usuario, reservasUsuario]) => (
+                      <Box key={usuario} sx={{ mb: 2 }}>
+                        <Typography
                           sx={{
-                            backgroundColor: "#f5f5f5",
-                            display: "flex",
-                            flexDirection: "column",
-                            justifyContent: "center",
-                            alignItems: "center",
+                            fontWeight: "bold",
+                            ml: 1,
+                            color: "#333",
                             textAlign: "center",
-                            p: 2,
-                            borderRadius: 2,
-                            width: "50%",
                           }}
                         >
-                          <Typography sx={{ fontSize: "15px" }}>
-                            {reserva.descricaoSala || "N/A"}
-                          </Typography>
-                          <Typography sx={{ fontSize: "17px" }}>
-                            Máx. {reserva.capacidade || "N/A"}
-                          </Typography>
-                        </Paper>
-                      </Box>
+                          Usuário: {usuario}
+                        </Typography>
 
-                      <Box sx={{ textAlign: "center" }}>
-                        <Typography
-                          sx={{ fontWeight: "bold", fontSize: "16px" }}
-                        >
-                          {dayjs(reserva.data_inicio)
-                            .add(3, "hour")
-                            .format("DD/MM/YYYY")}{" "}
-                          -{" "}
-                          {dayjs(reserva.data_fim)
-                            .add(3, "hour")
-                            .format("DD/MM/YYYY")}
-                        </Typography>
-                        <Typography
-                          sx={{ fontWeight: "bold", fontSize: "16px" }}
-                        >
-                          {reserva.horario_inicio.slice(0, 5)} -{" "}
-                          {reserva.horario_fim.slice(0, 5)}
-                        </Typography>
-                        <Typography
-                          sx={{ fontSize: "16px", textTransform: "uppercase" }}
-                        >
-                          {reserva.dias}
-                        </Typography>
-                        <Typography sx={{ fontSize: "16px", marginBottom: 1 }}>
-                          {reserva.nomeUsuario}
-                        </Typography>
-                        <Button
-                          size="small"
-                          onClick={() => handleOpenDialog(reserva.id_reserva)}
-                          sx={{
-                            color: "#fff",
-                            border: "1px solid #b22222",
-                            backgroundColor: "#b22222",
-                            fontSize: "14px",
-                            textTransform: "none",
-                            paddingX: 5,
-                            marginBottom: 1,
-                          }}
-                        >
-                          Deletar
-                        </Button>
+                        {reservasUsuario.map((reserva, i) => (
+                          <Typography
+                            key={i}
+                            sx={{
+                              ml: 4,
+                              textAlign: "center",
+                              cursor: "pointer",
+                              "&:hover": {
+                                color: "#b22222",
+                                fontWeight: "bold",
+                              },
+                            }}
+                            onClick={() =>
+                              console.log(
+                                
+                              )
+                            }
+                          >
+                            {reserva.horario_inicio.slice(0, 5)} -{" "}
+                            {reserva.horario_fim.slice(0, 5)} ({reserva.dias})
+                          </Typography>
+                        ))}
                       </Box>
-                    </Paper>
-                  ))}
+                    )
+                  )}
                 </Box>
-              </Box>
-            ))}
+              );
+            })}
         </Box>
       </Container>
 

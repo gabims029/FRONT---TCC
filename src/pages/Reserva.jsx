@@ -166,8 +166,8 @@ export default function ReservaPage() {
             width: "100%",
             py: 1.5,
             px: 2,
-            mb: 3,
-            mt: 5,
+            mb: 1,
+            mt: 3,
             boxSizing: "border-box",
             borderRadius: 2,
             textAlign: "center",
@@ -277,7 +277,7 @@ export default function ReservaPage() {
 
       {/* lista de horários */}
       <Box
-        sx={{ width: "100%", maxWidth: 600, px: 3, mx: "auto", mt: 2, pb: 3 }}
+        sx={{ width: "100%", maxWidth: 600, px: 2, mx: "auto", mt: -5, pb: 3 }}
       >
         {loading ? (
           <Typography textAlign="center">Carregando horários...</Typography>
@@ -288,7 +288,7 @@ export default function ReservaPage() {
         ) : horarios.length === 0 ? (
           <Typography textAlign="center">Nenhum horário disponível.</Typography>
         ) : (
-          <Grid container spacing={2} justifyContent="center">
+          <Grid container spacing={1} justifyContent="center">
             {horarios.map((h) => {
               const selecionado = horariosSelecionados.includes(h.id_periodo);
               return (
@@ -317,7 +317,7 @@ export default function ReservaPage() {
                       "&:hover": {
                         backgroundColor: h.reservado ? "#E56565" : "#81c784",
                       },
-                      minHeight: "60px",
+                      minHeight: "50px",
                       textTransform: "none",
                     }}
                   >

@@ -16,6 +16,29 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response) {
+      if (error.response.status === 401 && error.response.data.auth === false) {
+        localStorage.setItem("refresh_token", true);
+        localStorage.removeItem("token");
+        localStorage.removeItem("authenticated");
+        window.location.href = "/";
+      } else if (
+        error.response.status === 403 &&
+        error.response.data.auth === false
+      ) {
+        localStorage.setItem("refresh_token", true);
+        localStorage.removeItem("token");
+        localStorage.removeItem("authenticated");
+        window.location.href = "/";
+      }
+    }
+    return Promise.reject(error);
+  }
+);
+
 const sheets = {
   postLogin: (user) => api.post("/user/login", user),
   postCadastro: (user) => api.post("/user/", user),
@@ -32,8 +55,10 @@ const sheets = {
   createSala: (sala) => api.post("/sala", sala),
   deleteSala: (sala) => api.delete(`/sala/${sala}`),
   getReservasByData: (data) => api.get(`/reservas/data/${data}`),
-  deleteReserva: (id_reserva) => api.delete(`/reserva/${id_reserva}`),
-  getSchedulesByUserID: (id_usuario) => api.get(`/reserva/usuario/${id_usuario}`),
+  getSchedulesByUserID: (id_usuario) =>
+    api.get(`/reserva/usuario/${id_usuario}`),
+  deletePeriodoReserva: (idReserva, idPeriodo) =>
+    api.delete(`/reserva/periodo/${idReserva}/${idPeriodo}`),
   deleteSchedule: (id_reserva) => api.delete(`/reserva/${id_reserva}`),
   getPeriodoStatus: (idSala, data) =>
     api.get("/periodo/status", {

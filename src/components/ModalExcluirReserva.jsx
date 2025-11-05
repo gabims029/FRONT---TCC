@@ -24,6 +24,12 @@ export default function ModalExcluirReserva({
 
   const dataInicio = formatarData(reserva?.data_inicio || "");
 
+  // Pega apenas o horário clicado
+  const horarioInicio =
+    reserva?.periodoSelecionado?.horario_inicio?.slice(0, 5) || "";
+  const horarioFim =
+    reserva?.periodoSelecionado?.horario_fim?.slice(0, 5) || "";
+
   return (
     <Dialog open={open} onClose={handleClose} maxWidth="xs" fullWidth>
       <DialogTitle
@@ -46,17 +52,9 @@ export default function ModalExcluirReserva({
         </Typography>
         <Typography variant="subtitle1" sx={{ mb: 1 }}>
           HORÁRIO:{" "}
-          {reserva?.periodos?.map((p, idx) => {
-            const inicio = p.horario_inicio?.slice(0, 5) || "";
-            const fim = p.horario_fim?.slice(0, 5) || "";
-            return (
-              <span key={idx}>
-                {inicio}
-                {fim ? ` - ${fim}` : ""}
-                {idx < reserva.periodos.length - 1 ? ", " : ""}
-              </span>
-            );
-          }) || "Não informado"}
+          {horarioInicio && horarioFim
+            ? `${horarioInicio} - ${horarioFim}`
+            : "Não informado"}
         </Typography>
       </DialogContent>
 

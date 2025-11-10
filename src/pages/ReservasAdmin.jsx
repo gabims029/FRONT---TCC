@@ -26,6 +26,7 @@ export default function ReservasAdmin() {
   const [filtroLetra, setFiltroLetra] = useState(null);
 
   const handleOpenDialog = (id) => {
+    console.log("Abrindo diálogo para reserva:", id);
     setReservaId(id);
     setOpenDialog(true);
   };
@@ -60,7 +61,7 @@ export default function ReservasAdmin() {
       setOpenDialog(false);
 
       setAlert({
-        message: response?.data?.message || "Erro desconhecido",
+        message: response?.data?.message,
         type: "success",
         visible: true,
       });
@@ -228,7 +229,7 @@ export default function ReservasAdmin() {
                                 fontWeight: "bold",
                               },
                             }}
-                            onClick={() => console.log("clicado")}
+                            onClick={() => handleOpenDialog(reserva.id_reserva)}
                           >
                             {reserva.horario_inicio.slice(0, 5)} -{" "}
                             {reserva.horario_fim.slice(0, 5)}

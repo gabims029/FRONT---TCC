@@ -78,34 +78,35 @@ export default function MinhasReservas() {
   }, [carregarReservas]);
 
   // Excluir período selecionado
+  // Excluir reserva selecionada
   const handleExcluir = async () => {
-    if (!reservaSelecionada || !reservaSelecionada.periodoSelecionado) return;
+    if (!reservaSelecionada) return;
 
     try {
       const idReserva = reservaSelecionada.id_reserva;
-      const idPeriodo = reservaSelecionada.periodoSelecionado.id_periodo;
 
-      if (!idReserva || !idPeriodo) {
-        throw new Error("ID da reserva ou do período não encontrado.");
+      if (!idReserva) {
+        throw new Error("ID da reserva não encontrado.");
       }
 
-      await api.delete(`/reserva/periodo/${idReserva}/${idPeriodo}`);
+      await api.delete(`/reserva/${idReserva}`);
 
       setAlert({
         type: "success",
-        message: "Horário excluído com sucesso!",
+        message: "Reserva excluída com sucesso!",
         visible: true,
       });
 
       setModalOpen(false);
       carregarReservas();
     } catch (err) {
+      console.error("Erro ao excluir:", err);
       setAlert({
         type: "error",
         message:
           err.response?.data?.error ||
           err.message ||
-          "Erro ao excluir o horário.",
+          "Erro ao excluir a reserva.",
         visible: true,
       });
     }

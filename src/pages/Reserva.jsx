@@ -96,37 +96,47 @@ export default function ReservaPage() {
       });
     }
 
+    if (
+      !dataInicio ||
+      !dataFim ||
+      diasSelecionados.length === 0 ||
+      horariosSelecionados.length === 0
+    ) {
+      return setAlert({
+        type: "warning",
+        message:
+          "Selecione dias da semana, horário e defina a data de início e fim!",
+        visible: true,
+      });
+    }
+
     try {
-      for (let i = 0; i < horariosSelecionados.length; i++) {
-        const id = horariosSelecionados[i];
-        await api.createReserva({
-          fk_id_periodo: id,
-          fk_id_user: idUsuario,
-          fk_id_sala: sala.id_sala,
-          dias: diasSelecionados,
-          data_inicio: dataInicio,
-          data_fim: dataFim,
-        });
-      }
+      const response = await api.createReserva({
+        periodos: horariosSelecionados, 
+        fk_id_user: idUsuario,
+        fk_id_sala: sala.id_sala,
+        dias: diasSelecionados,
+        data_inicio: dataInicio,
+        data_fim: dataFim,
+      });
 
       setAlert({
         type: "success",
-        message: `Reserva feita para sala ${sala?.numero || "Desconhecida"}!`,
+        message:
+          response.data.message || `Reserva feita para sala ${sala?.numero}!`,
         visible: true,
       });
+
       resetForm();
+      fetchHorarios();
     } catch (err) {
       console.error("Erro ao reservar:", err);
       const errorMessage =
         err.response?.data?.error ||
         "Erro ao fazer a reserva. Tente novamente.";
 
-      if (!errorMessage.includes("A sala já está reservada")) resetForm();
-
       setAlert({ type: "error", message: errorMessage, visible: true });
     }
-
-    fetchHorarios();
   };
 
   const handleAbrirModal = () => {

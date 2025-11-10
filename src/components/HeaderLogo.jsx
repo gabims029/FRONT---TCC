@@ -28,10 +28,11 @@ function Header() {
     { label: "MINHAS RESERVAS", path: "/minhasReservas" },
     ...(tipo === "Admin"
       ? [
-          { label: "CADASTRAR USUÁRIO", path: "/cadastro" },
-          { label: "CRIAR SALA", path: "/criarSala" },
-          { label: "VISUALIZAR USUÁRIOS", path: "/users" },
           { label: "TODAS RESERVAS", path: "/allReservas"},
+          { label: "CADASTRAR USUÁRIO", path: "/cadastro" },
+          { label: "VISUALIZAR USUÁRIOS", path: "/users" },
+          { label: "CRIAR SALA", path: "/criarSala" },
+          
         ]
       : []),
     { label: "SAIR", path: "/" },
@@ -79,10 +80,10 @@ function Header() {
 
       <Drawer anchor="left" open={drawerOpen} onClose={toggleDrawer(false)}>
         <Box
-          sx={{ width: 250, backgroundColor: "#C91E1E", height: "100%" }}
+          sx={{ width: 240, backgroundColor: "#C91E1E", height: "100%" }}
           role="presentation"
         >
-          <List style={{ marginTop: 45 }}>
+          <List style={{ marginTop: 35 }}>
             {menuItems.map((item) => (
               <ListItem
                 button

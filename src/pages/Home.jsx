@@ -23,7 +23,7 @@ export default function Home() {
     >
       <Container
         sx={{
-          mt: 10,
+          mt: 5,
           flex: 1,
           display: "flex",
           flexDirection: "column",
@@ -33,7 +33,7 @@ export default function Home() {
       >
         <Typography
           variant="h6"
-          sx={{ color: "black", fontWeight: "bold", textAlign: "center", mb: 3 }}
+          sx={{ color: "black", fontWeight: "bold", textAlign: "center", mb: 1 }}
         >
           SEJA BEM-VINDO AO RESERVAS SENAI
         </Typography>
@@ -49,7 +49,7 @@ export default function Home() {
 
         <Typography
           variant="body1"
-          sx={{ color: "black", textAlign: "center", mt: -1 }}
+          sx={{ color: "black", textAlign: "center", mt: -2 }}
         >
           Visualizar salas disponíveis:
         </Typography>

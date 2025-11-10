@@ -87,8 +87,8 @@ function Perfil() {
         backgroundColor: "#FFE9E9",
         display: "flex",
         flexDirection: "column",
-        paddingTop: "60px",
-        paddingBottom: "60px",
+        paddingTop: "45px",
+        paddingBottom: "30px",
         alignItems: "center",
       }}
     >
@@ -111,7 +111,7 @@ function Perfil() {
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
-              marginBottom: 2,
+              marginBottom: 1,
             }}
           >
             <AccountCircleIcon sx={{ color: "white", fontSize: 140 }} />
@@ -123,7 +123,7 @@ function Perfil() {
             sx={{
               color: "white",
               fontWeight: "bold",
-              marginBottom: 3,
+              marginBottom: 1,
               textAlign: "center",
             }}
           >
@@ -147,7 +147,7 @@ function Perfil() {
             placeholder={userData.email}
             type="text"
             sx={{
-              marginBottom: 3,
+              marginBottom: 2,
               backgroundColor: "white",
               borderRadius: 1,
               "& .MuiInputBase-input": { color: "black" },
@@ -175,7 +175,7 @@ function Perfil() {
             placeholder="********"
             type="password"
             sx={{
-              marginBottom: 3,
+              marginBottom: 2,
               backgroundColor: "white",
               borderRadius: 1,
               "& .MuiInputBase-input": { color: "black" },

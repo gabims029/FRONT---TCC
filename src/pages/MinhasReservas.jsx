@@ -83,16 +83,19 @@ export default function MinhasReservas() {
     if (!reservaSelecionada) return;
 
     try {
+
       // pega o id_reserva corretamente, seja do grupo ou do período
       const idReserva =
         reservaSelecionada?.id_reserva ||
         reservaSelecionada?.periodoSelecionado?.id_reserva;
+
 
       if (!idReserva) {
         throw new Error("ID da reserva não encontrado.");
       }
 
       await api.deleteSchedule(idReserva);
+
 
       setAlert({
         type: "success",

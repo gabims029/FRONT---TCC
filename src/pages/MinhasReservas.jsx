@@ -41,7 +41,6 @@ export default function MinhasReservas() {
       .then((res) => {
         const reservasObj = res.data?.reservas || {};
 
-        // Formata os dados para o front
         const reservasFormatadas = Object.entries(reservasObj).flatMap(
           ([data, reservasDoDia]) =>
             reservasDoDia.map((r, idx) => ({
@@ -78,24 +77,19 @@ export default function MinhasReservas() {
     carregarReservas();
   }, [carregarReservas]);
 
-  // Excluir reserva selecionada
   const handleExcluir = async () => {
     if (!reservaSelecionada) return;
 
     try {
-
-      // pega o id_reserva corretamente, seja do grupo ou do período
       const idReserva =
         reservaSelecionada?.id_reserva ||
         reservaSelecionada?.periodoSelecionado?.id_reserva;
-
 
       if (!idReserva) {
         throw new Error("ID da reserva não encontrado.");
       }
 
       await api.deleteSchedule(idReserva);
-
 
       setAlert({
         type: "success",

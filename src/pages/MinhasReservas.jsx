@@ -52,9 +52,10 @@ export default function MinhasReservas() {
                 r.descricaoSala || r.descricaoDetalhe || "Sem descrição",
               periodos: r.periodos.map((p) => ({
                 ...p,
-                id_periodo: p.id_periodo, // usa o ID real do backend
+                id_periodo: p.id_periodo,
               })),
-              id_reserva: r.id_reserva, // garante que o front tenha o ID da reserva
+              // Se vier do backend, mantém. Caso contrário, pega do primeiro período.
+              id_reserva: r.id_reserva || r.periodos?.[0]?.id_reserva,
               uniqueKey: `${data}-${r.nomeSalaDisplay || r.nomeSala || idx}-${
                 r.descricaoDetalhe || r.descricaoSala || idx
               }`,
@@ -77,19 +78,24 @@ export default function MinhasReservas() {
     carregarReservas();
   }, [carregarReservas]);
 
-  // Excluir período selecionado
   // Excluir reserva selecionada
   const handleExcluir = async () => {
     if (!reservaSelecionada) return;
 
     try {
-      const idReserva = reservaSelecionada.id_reserva;
+
+      // pega o id_reserva corretamente, seja do grupo ou do período
+      const idReserva =
+        reservaSelecionada?.id_reserva ||
+        reservaSelecionada?.periodoSelecionado?.id_reserva;
+
 
       if (!idReserva) {
         throw new Error("ID da reserva não encontrado.");
       }
 
-      await api.delete(`/reserva/${idReserva}`);
+      await api.deleteSchedule(idReserva);
+
 
       setAlert({
         type: "success",

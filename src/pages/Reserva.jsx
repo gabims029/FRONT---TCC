@@ -120,6 +120,27 @@ export default function ReservaPage() {
         data_fim: dataFim,
       });
 
+      // Se vierem mensagens de erro SQL, junta tudo formatado
+      const msgErros =
+        Array.isArray(response.data?.msgErros) &&
+        response.data.msgErros.length > 0
+          ? response.data.msgErros
+              .map(
+                (e, i) =>
+                  `${i + 1}. ${e.erro || e.sqlMessage || JSON.stringify(e)}`
+              )
+              .join("\n")
+          : "";
+
+      const mensagemFinal = [
+        response.data?.message || `Reserva feita para sala ${sala?.numero}!`,
+        msgErros ? `\n\nErros:\n${msgErros}` : "",
+      ].join("");
+
+      setAlert({
+        type: msgErros ? "warning" : "success",
+        message: mensagemFinal,
+
       setAlert({
         type: "success",
         message:
@@ -131,8 +152,15 @@ export default function ReservaPage() {
       fetchHorarios();
     } catch (err) {
       console.error("Erro ao reservar:", err);
+      const errorData = err.response?.data;
+
       const errorMessage =
-        err.response?.data?.error ||
+        (errorData?.msgErros &&
+          errorData.msgErros
+            .map((e, i) => `${i + 1}. ${e.erro || e.sqlMessage}`)
+            .join("\n")) ||
+        errorData?.error ||
+        errorData?.message ||
         "Erro ao fazer a reserva. Tente novamente.";
 
       setAlert({ type: "error", message: errorMessage, visible: true });

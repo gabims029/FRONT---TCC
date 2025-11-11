@@ -26,6 +26,7 @@ export default function ReservasAdmin() {
   const [filtroLetra, setFiltroLetra] = useState(null);
 
   const handleOpenDialog = (id) => {
+    console.log("Abrindo diálogo para reserva:", id);
     setReservaId(id);
     setOpenDialog(true);
   };
@@ -44,8 +45,9 @@ export default function ReservasAdmin() {
       console.log("Reservas recebidas:", response.data.reservaBySala);
       setReservas(response.data.reservaBySala);
     } catch (error) {
+      setReservas({});
       setAlert({
-        message: error.response?.data?.error || "Erro desconhecido",
+        message: error.response?.data?.message || "Erro desconhecido",
         type: "error",
         visible: true,
       });
@@ -55,12 +57,12 @@ export default function ReservasAdmin() {
 
   const handleDeleteReserva = async () => {
     try {
-      const response = await api.deleteReserva(reservaId);
+      const response = await api.deleteSchedule(reservaId);
       console.log("Reserva deletada com sucesso!");
       setOpenDialog(false);
 
       setAlert({
-        message: response?.data?.message || "Erro desconhecido",
+        message: response?.data?.message,
         type: "success",
         visible: true,
       });
@@ -228,7 +230,7 @@ export default function ReservasAdmin() {
                                 fontWeight: "bold",
                               },
                             }}
-                            onClick={() => console.log("clicado")}
+                            onClick={() => handleOpenDialog(reserva.id_reserva)}
                           >
                             {reserva.horario_inicio.slice(0, 5)} -{" "}
                             {reserva.horario_fim.slice(0, 5)}

@@ -112,7 +112,7 @@ export default function ReservaPage() {
 
     try {
       const response = await api.createReserva({
-        periodos: horariosSelecionados, 
+        periodos: horariosSelecionados,
         fk_id_user: idUsuario,
         fk_id_sala: sala.id_sala,
         dias: diasSelecionados,
@@ -140,11 +140,6 @@ export default function ReservaPage() {
       setAlert({
         type: msgErros ? "warning" : "success",
         message: mensagemFinal,
-
-      setAlert({
-        type: "success",
-        message:
-          response.data.message || `Reserva feita para sala ${sala?.numero}!`,
         visible: true,
       });
 

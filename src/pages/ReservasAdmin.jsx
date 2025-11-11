@@ -45,8 +45,9 @@ export default function ReservasAdmin() {
       console.log("Reservas recebidas:", response.data.reservaBySala);
       setReservas(response.data.reservaBySala);
     } catch (error) {
+      setReservas({});
       setAlert({
-        message: error.response?.data?.error || "Erro desconhecido",
+        message: error.response?.data?.message || "Erro desconhecido",
         type: "error",
         visible: true,
       });
@@ -56,7 +57,7 @@ export default function ReservasAdmin() {
 
   const handleDeleteReserva = async () => {
     try {
-      const response = await api.deleteReserva(reservaId);
+      const response = await api.deleteSchedule(reservaId);
       console.log("Reserva deletada com sucesso!");
       setOpenDialog(false);
 

@@ -96,37 +96,70 @@ export default function ReservaPage() {
       });
     }
 
-    try {
-      for (let i = 0; i < horariosSelecionados.length; i++) {
-        const id = horariosSelecionados[i];
-        await api.createReserva({
-          fk_id_periodo: id,
-          fk_id_user: idUsuario,
-          fk_id_sala: sala.id_sala,
-          dias: diasSelecionados,
-          data_inicio: dataInicio,
-          data_fim: dataFim,
-        });
-      }
-
-      setAlert({
-        type: "success",
-        message: `Reserva feita para sala ${sala?.numero || "Desconhecida"}!`,
+    if (
+      !dataInicio ||
+      !dataFim ||
+      diasSelecionados.length === 0 ||
+      horariosSelecionados.length === 0
+    ) {
+      return setAlert({
+        type: "warning",
+        message:
+          "Selecione dias da semana, horário e defina a data de início e fim!",
         visible: true,
       });
+    }
+
+    try {
+      const response = await api.createReserva({
+        periodos: horariosSelecionados,
+        fk_id_user: idUsuario,
+        fk_id_sala: sala.id_sala,
+        dias: diasSelecionados,
+        data_inicio: dataInicio,
+        data_fim: dataFim,
+      });
+
+      // Se vierem mensagens de erro SQL, junta tudo formatado
+      const msgErros =
+        Array.isArray(response.data?.msgErros) &&
+        response.data.msgErros.length > 0
+          ? response.data.msgErros
+              .map(
+                (e, i) =>
+                  `${i + 1}. ${e.erro || e.sqlMessage || JSON.stringify(e)}`
+              )
+              .join("\n")
+          : "";
+
+      const mensagemFinal = [
+        response.data?.message || `Reserva feita para sala ${sala?.numero}!`,
+        msgErros ? `\n\nErros:\n${msgErros}` : "",
+      ].join("");
+
+      setAlert({
+        type: msgErros ? "warning" : "success",
+        message: mensagemFinal,
+        visible: true,
+      });
+
       resetForm();
+      fetchHorarios();
     } catch (err) {
       console.error("Erro ao reservar:", err);
-      const errorMessage =
-        err.response?.data?.error ||
-        "Erro ao fazer a reserva. Tente novamente.";
+      const errorData = err.response?.data;
 
-      if (!errorMessage.includes("A sala já está reservada")) resetForm();
+      const errorMessage =
+        (errorData?.msgErros &&
+          errorData.msgErros
+            .map((e, i) => `${i + 1}. ${e.erro || e.sqlMessage}`)
+            .join("\n")) ||
+        errorData?.error ||
+        errorData?.message ||
+        "Erro ao fazer a reserva. Tente novamente.";
 
       setAlert({ type: "error", message: errorMessage, visible: true });
     }
-
-    fetchHorarios();
   };
 
   const handleAbrirModal = () => {

@@ -52,9 +52,10 @@ export default function MinhasReservas() {
                 r.descricaoSala || r.descricaoDetalhe || "Sem descrição",
               periodos: r.periodos.map((p) => ({
                 ...p,
-                id_periodo: p.id_periodo, // usa o ID real do backend
+                id_periodo: p.id_periodo,
               })),
-              id_reserva: r.id_reserva, // garante que o front tenha o ID da reserva
+              // Se vier do backend, mantém. Caso contrário, pega do primeiro período.
+              id_reserva: r.id_reserva || r.periodos?.[0]?.id_reserva,
               uniqueKey: `${data}-${r.nomeSalaDisplay || r.nomeSala || idx}-${
                 r.descricaoDetalhe || r.descricaoSala || idx
               }`,
@@ -77,35 +78,38 @@ export default function MinhasReservas() {
     carregarReservas();
   }, [carregarReservas]);
 
-  // Excluir período selecionado
+  // Excluir reserva selecionada
   const handleExcluir = async () => {
-    if (!reservaSelecionada || !reservaSelecionada.periodoSelecionado) return;
+    if (!reservaSelecionada) return;
 
     try {
-      const idReserva = reservaSelecionada.id_reserva;
-      const idPeriodo = reservaSelecionada.periodoSelecionado.id_periodo;
+      // pega o id_reserva corretamente, seja do grupo ou do período
+      const idReserva =
+        reservaSelecionada?.id_reserva ||
+        reservaSelecionada?.periodoSelecionado?.id_reserva;
 
-      if (!idReserva || !idPeriodo) {
-        throw new Error("ID da reserva ou do período não encontrado.");
+      if (!idReserva) {
+        throw new Error("ID da reserva não encontrado.");
       }
 
-      await api.delete(`/reserva/periodo/${idReserva}/${idPeriodo}`);
+      await api.deleteSchedule(idReserva);
 
       setAlert({
         type: "success",
-        message: "Horário excluído com sucesso!",
+        message: "Reserva excluída com sucesso!",
         visible: true,
       });
 
       setModalOpen(false);
       carregarReservas();
     } catch (err) {
+      console.error("Erro ao excluir:", err);
       setAlert({
         type: "error",
         message:
           err.response?.data?.error ||
           err.message ||
-          "Erro ao excluir o horário.",
+          "Erro ao excluir a reserva.",
         visible: true,
       });
     }

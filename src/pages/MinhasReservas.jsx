@@ -53,7 +53,7 @@ export default function MinhasReservas() {
                 ...p,
                 id_periodo: p.id_periodo,
               })),
-              // Se vier do backend, mantém. Caso contrário, pega do primeiro período.
+              // Se vier do backend, caso contrário pega do primeiro período
               id_reserva: r.id_reserva || r.periodos?.[0]?.id_reserva,
               uniqueKey: `${data}-${r.nomeSalaDisplay || r.nomeSala || idx}-${
                 r.descricaoDetalhe || r.descricaoSala || idx
@@ -81,12 +81,10 @@ export default function MinhasReservas() {
     if (!reservaSelecionada) return;
 
     try {
-      const idReserva =
-        reservaSelecionada?.id_reserva ||
-        reservaSelecionada?.periodoSelecionado?.id_reserva;
+      const idReserva = reservaSelecionada?.periodoSelecionado?.id_reserva;
 
       if (!idReserva) {
-        throw new Error("ID da reserva não encontrado.");
+        throw new Error("ID da reserva não encontrado no período selecionado.");
       }
 
       await api.deleteSchedule(idReserva);

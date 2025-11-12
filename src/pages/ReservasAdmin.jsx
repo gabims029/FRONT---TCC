@@ -26,7 +26,6 @@ export default function ReservasAdmin() {
   const [filtroLetra, setFiltroLetra] = useState(null);
 
   const handleOpenDialog = (id) => {
-    console.log("Abrindo diálogo para reserva:", id);
     setReservaId(id);
     setOpenDialog(true);
   };
@@ -89,7 +88,6 @@ export default function ReservasAdmin() {
   }, [dataSelecionada]);
 
   const handleClick = (letra) => {
-    console.log(`Botão clicado: ${letra}`);
     setFiltroLetra((prev) => (prev === letra ? null : letra));
   };
 
@@ -167,7 +165,12 @@ export default function ReservasAdmin() {
                     mb: 3,
                     borderRadius: 2,
                     bgcolor: "white",
-                    width: "23%",
+                    width: {
+                      xs: "75%", // telas muito pequenas (celular)
+                      sm: "48%", // tablets pequenos (~2 por linha)
+                      md: "31%", // telas médias (~3 por linha)
+                      lg: "23%", // desktops (~4 por linha)
+                    },
                   }}
                 >
                   <Typography

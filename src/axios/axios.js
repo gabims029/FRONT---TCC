@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http:http://tcc.southafricanorth.cloudapp.azure.com/",
+  baseURL: "http://tcc.southafricanorth.cloudapp.azure.com/",
   headers: { accept: "application/json" },
 });
 

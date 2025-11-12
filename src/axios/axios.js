@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://10.89.240.117:3000/api",
+  baseURL: "http:http://tcc.southafricanorth.cloudapp.azure.com/",
   headers: { accept: "application/json" },
 });
 

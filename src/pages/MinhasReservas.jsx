@@ -8,6 +8,7 @@ import {
   Grid,
   Snackbar,
   Alert,
+  AlertTitle,
 } from "@mui/material";
 import api from "../axios/axios";
 import ModalExcluirReserva from "../components/ModalExcluirReserva";
@@ -55,9 +56,8 @@ export default function MinhasReservas() {
               })),
               // Se vier do backend, caso contrário pega do primeiro período
               id_reserva: r.id_reserva || r.periodos?.[0]?.id_reserva,
-              uniqueKey: `${data}-${r.nomeSalaDisplay || r.nomeSala || idx}-${
-                r.descricaoDetalhe || r.descricaoSala || idx
-              }`,
+              uniqueKey: `${data}-${r.nomeSalaDisplay || r.nomeSala || idx}-${r.descricaoDetalhe || r.descricaoSala || idx
+                }`,
             }))
         );
 
@@ -286,16 +286,18 @@ export default function MinhasReservas() {
 
       <Snackbar
         open={alert.visible}
-        autoHideDuration={4000}
         onClose={handleClose}
         anchorOrigin={{ vertical: "top", horizontal: "center" }}
       >
         {alert.type && (
-          <Alert
-            severity={alert.type}
-            onClose={handleClose}
-            sx={{ width: "100%" }}
-          >
+          <Alert severity={alert.type} onClose={handleClose} sx={{ width: "100%" }}>
+            <AlertTitle>
+              {alert.type === "success" && "Sucesso"}
+              {alert.type === "error" && "Erro"}
+              {alert.type === "warning" && "Atenção"}
+              {alert.type === "info" && "Informação"}
+            </AlertTitle>
+
             {alert.message}
           </Alert>
         )}

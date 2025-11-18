@@ -7,6 +7,7 @@ import {
   TextField,
   Grid,
   Alert,
+  AlertTitle,
   MenuItem,
   FormControl,
   InputLabel,
@@ -123,13 +124,13 @@ export default function ReservaPage() {
       // Se vierem mensagens de erro SQL, junta tudo formatado
       const msgErros =
         Array.isArray(response.data?.msgErros) &&
-        response.data.msgErros.length > 0
+          response.data.msgErros.length > 0
           ? response.data.msgErros
-              .map(
-                (e, i) =>
-                  `${i + 1}. ${e.erro || e.sqlMessage || JSON.stringify(e)}`
-              )
-              .join("\n")
+            .map(
+              (e, i) =>
+                `${i + 1}. ${e.erro || e.sqlMessage || JSON.stringify(e)}`
+            )
+            .join("\n")
           : "";
 
       const mensagemFinal = [
@@ -341,8 +342,8 @@ export default function ReservaPage() {
                       backgroundColor: h.reservado
                         ? "#E56565"
                         : selecionado
-                        ? "#ffffff"
-                        : "#a5d6a7",
+                          ? "#ffffff"
+                          : "#a5d6a7",
                       color: "black",
                       border: selecionado
                         ? "2px solid #b22222"
@@ -380,17 +381,22 @@ export default function ReservaPage() {
 
         <Snackbar
           open={alert.visible}
-          autoHideDuration={4000}
           onClose={handleClose}
           anchorOrigin={{ vertical: "top", horizontal: "center" }}
         >
           {alert.type && (
-            <Alert
-              severity={alert.type}
-              onClose={handleClose}
-              sx={{ width: "100%" }}
-            >
-              {alert.message}
+            <Alert severity={alert.type} onClose={handleClose} sx={{ width: "100%" }}>
+              <AlertTitle>
+                {alert.type === "success" && "Sucesso"}
+                {alert.type === "error" && "Erro"}
+                {alert.type === "warning" && "Atenção"}
+                {alert.type === "info" && "Informação"}
+              </AlertTitle>
+
+              <Typography sx={{ whiteSpace: "pre-line" }}> {/*para pular linha*/}
+                {alert.message}
+              </Typography>
+
             </Alert>
           )}
         </Snackbar>

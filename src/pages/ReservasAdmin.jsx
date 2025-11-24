@@ -174,7 +174,12 @@ export default function ReservasAdmin() {
                     mb: 3,
                     borderRadius: 2,
                     bgcolor: "white",
-                    width: "23%",
+                    width: {
+                      xs: "75%", // telas muito pequenas (celular)
+                      sm: "48%", // tablets pequenos (~2 por linha)
+                      md: "31%", // telas médias (~3 por linha)
+                      lg: "23%", // desktops (~4 por linha)
+                    },
                   }}
                 >
                   <Typography

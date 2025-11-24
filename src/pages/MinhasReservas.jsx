@@ -23,7 +23,6 @@ export default function MinhasReservas() {
 
   const handleClose = () => setAlert({ ...alert, visible: false });
 
-  // Carrega reservas do usuário
   const carregarReservas = useCallback(() => {
     if (!idUsuario) {
       setAlert({
@@ -54,10 +53,10 @@ export default function MinhasReservas() {
                 ...p,
                 id_periodo: p.id_periodo,
               })),
-              // Se vier do backend, caso contrário pega do primeiro período
               id_reserva: r.id_reserva || r.periodos?.[0]?.id_reserva,
-              uniqueKey: `${data}-${r.nomeSalaDisplay || r.nomeSala || idx}-${r.descricaoDetalhe || r.descricaoSala || idx
-                }`,
+              uniqueKey: `${data}-${r.nomeSalaDisplay || r.nomeSala || idx}-${
+                r.descricaoDetalhe || r.descricaoSala || idx
+              }`,
             }))
         );
 
@@ -77,17 +76,28 @@ export default function MinhasReservas() {
     carregarReservas();
   }, [carregarReservas]);
 
-  const handleExcluir = async () => {
-    if (!reservaSelecionada) return;
-
+  const handleExcluir = async (ids) => {
     try {
-      const idReserva = reservaSelecionada?.periodoSelecionado?.id_reserva;
-
-      if (!idReserva) {
-        throw new Error("ID da reserva não encontrado no período selecionado.");
+      // ids deve ser um array de números (pelo modal)
+      if (!Array.isArray(ids) || ids.length === 0) {
+        setAlert({
+          type: "warning",
+          message: "Nenhum horário selecionado para exclusão.",
+          visible: true,
+        });
+        return;
       }
 
-      await api.deleteSchedule(idReserva);
+      // garante que são números (strip strings numéricas)
+      const idsNumericos = ids.map((v) =>
+        typeof v === "string" && /^\d+$/.test(v) ? Number(v) : v
+      );
+
+      try {
+        await api.deleteSchedule(reservaId);
+      } catch (err) {
+        await Promise.all(idsNumericos.map((id) => api.deleteSchedule(id)));
+      }
 
       setAlert({
         type: "success",
@@ -98,13 +108,13 @@ export default function MinhasReservas() {
       setModalOpen(false);
       carregarReservas();
     } catch (err) {
-      console.error("Erro ao excluir:", err);
+      console.error("Erro ao excluir reservas:", err);
       setAlert({
         type: "error",
         message:
           err.response?.data?.error ||
           err.message ||
-          "Erro ao excluir a reserva.",
+          "Erro ao excluir as reservas.",
         visible: true,
       });
     }
@@ -115,7 +125,6 @@ export default function MinhasReservas() {
     return `${dia}/${mes}/${ano}`;
   };
 
-  // Agrupa reservas por data
   const reservasPorData = {};
   reservas.forEach((reserva) => {
     const dataFormatada = reserva.data_inicio || "Data não informada";
@@ -234,7 +243,7 @@ export default function MinhasReservas() {
                               </Typography>
                             </Box>
 
-                            {periodos.map((p, idx) => {
+                            {periodos.map((p) => {
                               const inicio = p.horario_inicio?.slice(0, 5);
                               const fim = p.horario_fim?.slice(0, 5);
                               const texto =
@@ -244,7 +253,7 @@ export default function MinhasReservas() {
 
                               return (
                                 <Typography
-                                  key={`${uniqueKey}-${idx}`}
+                                  key={p.id_periodo || p.id_reserva}
                                   variant="body2"
                                   sx={{
                                     mt: 1,
@@ -256,9 +265,14 @@ export default function MinhasReservas() {
                                   onClick={(e) => {
                                     e.stopPropagation();
                                     setReservaSelecionada({
-                                      ...reserva,
+                                      id_reserva: reserva.id_reserva,
+                                      nomeSala: reserva.nomeSala,
+                                      descricaoSala: reserva.descricaoSala,
+                                      data_inicio: reserva.data_inicio,
+                                      periodos: reserva.periodos,
                                       periodoSelecionado: p,
                                     });
+
                                     setModalOpen(true);
                                   }}
                                 >
@@ -277,11 +291,12 @@ export default function MinhasReservas() {
         </Box>
       )}
 
+      {/*Modal para excluir*/}
       <ModalExcluirReserva
         open={modalOpen}
         handleClose={() => setModalOpen(false)}
         reserva={reservaSelecionada}
-        onConfirm={handleExcluir}
+        onConfirm={(ids) => handleExcluir(ids)}
       />
 
       <Snackbar
@@ -290,7 +305,11 @@ export default function MinhasReservas() {
         anchorOrigin={{ vertical: "top", horizontal: "center" }}
       >
         {alert.type && (
-          <Alert severity={alert.type} onClose={handleClose} sx={{ width: "100%" }}>
+          <Alert
+            severity={alert.type}
+            onClose={handleClose}
+            sx={{ width: "100%" }}
+          >
             <AlertTitle>
               {alert.type === "success" && "Sucesso"}
               {alert.type === "error" && "Erro"}

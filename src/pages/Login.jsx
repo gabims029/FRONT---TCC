@@ -6,8 +6,8 @@ import api from "../axios/axios";
 import senaiLogo from "../assets/senai_logo.png";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
-import fotologin1 from "../assets/fotologin1.png";
-import fotologin2 from "../assets/fotologin2.png";
+import TelaLogin1 from "../assets/TelaLogin1.png";
+import TelaLogin2 from "../assets/TelaLogin2.png";
 
 function Login() {
   const [user, setUser] = useState({
@@ -83,7 +83,7 @@ function Login() {
         <Box
           sx={{
             flex: 1,
-            backgroundImage: `url(${fotologin1})`,
+            backgroundImage: `url(${TelaLogin1})`,
             backgroundSize: "cover",
             backgroundPosition: "center",
             backgroundRepeat: "no-repeat",
@@ -179,7 +179,7 @@ function Login() {
         <Box
           sx={{
             flex: 1,
-            backgroundImage: `url(${fotologin2})`,
+            backgroundImage: `url(${TelaLogin2})`,
             backgroundSize: "cover",
             backgroundPosition: "center",
             backgroundRepeat: "no-repeat",

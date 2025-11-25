@@ -62,13 +62,25 @@ export default function ReservasAdmin() {
     }
   }
 
-  const handleDeleteReserva = async () => {
+  const handleDeleteReserva = async (idsSelecionados) => {
     try {
-      const response = await api.deleteSchedule(reservaId);
+      if (!Array.isArray(idsSelecionados) || idsSelecionados.length === 0) {
+        setAlert({
+          message: "Nenhum horário selecionado.",
+          type: "warning",
+          visible: true,
+        });
+        return;
+      }
+
+      const ids = idsSelecionados.map(Number);
+
+      await Promise.all(ids.map((id) => api.deleteSchedule(id)));
+
       setOpenDialog(false);
 
       setAlert({
-        message: response?.data?.message,
+        message: "Horário(s) deletado(s) com sucesso!",
         type: "success",
         visible: true,
       });
@@ -85,6 +97,7 @@ export default function ReservasAdmin() {
       });
     }
   };
+
 
   useEffect(() => {
     if (dataSelecionada) {
@@ -243,8 +256,13 @@ export default function ReservasAdmin() {
                               },
                             }}
                             onClick={() =>
-                              handleOpenDialog(reserva.id_reserva, reservasSala)
+                              handleOpenDialog(
+                                reserva.id_reserva,
+                                reservasSala.filter((r) => r.nomeUsuario === reserva.nomeUsuario)
+                              )
                             }
+
+
                           >
                             {reserva.horario_inicio.slice(0, 5)} -{" "}
                             {reserva.horario_fim.slice(0, 5)}
@@ -284,6 +302,7 @@ export default function ReservasAdmin() {
         onConfirm={handleDeleteReserva}
         title="Selecione os horários que deseja deletar."
         periodos={horariosDaSala}
+        periodoSelecionado={reservaId}
       />
     </Box>
   );
